@@ -19,9 +19,20 @@ const Partner = () => {
   const handleFindPartner = async () => {
     if (!partnerEmail) return setMessage("Enter an email!");
     if (!user) return setMessage("You must be logged in!");
+    if (partnerEmail === user?.email) {
+      return setMessage("You cannot link to yourself.");
+    }
+    const userDoc = await getDoc(doc(db, "users", user!.uid));
+    const userData = userDoc.data();
+
+    if (userData?.partnerId) {
+      setMessage("You are already linked to a partner. Please unlink first.");
+      return;
+    }
 
     try {
       // Query Firestore for a user with the provided email
+
       const usersRef = collection(db, "users");
       const q = query(usersRef, where("email", "==", partnerEmail));
       const querySnapshot = await getDocs(q);
@@ -31,15 +42,30 @@ const Partner = () => {
       }
 
       // Get the first matched document
+      const partnerRef = doc(db, "users", partnerEmail);
       const partnerDoc = querySnapshot.docs[0];
       const partnerId = partnerDoc.id; // This is the unique Firebase UID
+      const partnerData = partnerDoc.data();
+
+      if (!partnerData) {
+        return setMessage("Partner data not found.");
+      }
+      //   Prevent linking two accounts with the same role.
+      if (userData?.role === partnerData?.role) {
+        return setMessage("You can only link with the opposite role.");
+      }
 
       // Update both users' profiles to link them as partners
-      const userRef = doc(db, "users", user.uid);
-      await updateDoc(userRef, { partnerId });
-      await updateDoc(doc(db, "users", partnerId), { partnerId: user.uid });
-
-      setMessage("Partner successfully linked!");
+      //   const userRef = doc(db, "users", user.uid);
+      //   await updateDoc(userRef, { partnerId });
+      //   await updateDoc(doc(db, "users", partnerId), { partnerId: user.uid });
+      await updateDoc(doc(db, "users", partnerId), {
+        invitations: [...(partnerData.invitations || []), user!.uid],
+      });
+      //   await updateDoc(partnerRef, {
+      //     invitations: [...(partnerData.invitations || []), user!.uid],
+      //   });
+      setMessage("Partner invitation was sent successfully.");
     } catch (error) {
       console.error("Error finding partner:", error);
       setMessage("Error linking partner.");

@@ -17,6 +17,8 @@ interface SignUpValues {
   email: string;
   password: string;
   confirmPassword: string;
+  partnerId: string;
+  invitations: string[];
 }
 
 const SignUp = () => {
@@ -32,6 +34,8 @@ const SignUp = () => {
       email: "",
       password: "",
       confirmPassword: "",
+      partnerId: "",
+      invitations: [],
     },
     validationSchema: Yup.object({
       firstName: Yup.string().required("Required"),
@@ -62,6 +66,8 @@ const SignUp = () => {
           lastName: values.lastName,
           email: values.email,
           role: values.role,
+          partnerId: "",
+          invitations: [],
           createdAt: new Date(),
         });
 

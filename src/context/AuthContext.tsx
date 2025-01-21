@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { auth, db } from "../services/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { onSnapshot, doc, getDoc } from "firebase/firestore";
 
 interface AuthContextType {
   user: User | null;
@@ -15,20 +15,40 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<any>(null);
 
+  // useEffect(() => {
+  //   const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+  //     setUser(currentUser);
+  //     if (currentUser) {
+  //       const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+  //       setUserData(userDoc.exists() ? userDoc.data() : null);
+  //     } else {
+  //       setUserData(null);
+  //     }
+  //   });
+
+  //   return () => unsubscribe();
+  // }, []);
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-        setUserData(userDoc.exists() ? userDoc.data() : null);
+    const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+
+      if (firebaseUser) {
+        // Listen for user data changes in real-time
+        const userRef = doc(db, "users", firebaseUser.uid);
+        const unsubscribeUser = onSnapshot(userRef, (doc) => {
+          if (doc.exists()) {
+            setUserData(doc.data());
+          }
+        });
+
+        return () => unsubscribeUser(); // Cleanup Firestore listener
       } else {
         setUserData(null);
       }
     });
 
-    return () => unsubscribe();
+    return () => unsubscribeAuth(); // Cleanup auth listener
   }, []);
-
   const logout = async () => {
     await signOut(auth);
   };
