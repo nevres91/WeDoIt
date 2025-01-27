@@ -1,38 +1,60 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import LogIn from "./LogIn";
+import { useAuth } from "../context/AuthContext";
+import { useEffect, useState } from "react";
+import SignUp from "./SignUp";
 
 const Home = () => {
+  const [register, setRegister] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    }
+  });
   return (
     <>
-      <div>
-        <Link to="/">
-          <button className="border-2 border-red-700 bg-orange-600 rounded-sm px-4 py-2 mx-2 hover:bg-lime-600">
-            Home
-          </button>
-        </Link>
-        <Link
-          className="border-2 border-red-700 bg-orange-600 rounded-sm px-4 py-2 mx-2 hover:bg-lime-600"
-          to="/dashboard"
+      <div
+        style={{
+          backgroundImage: `url('src/assets/LoginPage.jpg')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div
+          className={`${
+            register ? "w-[500px]" : "w-[400px]"
+          } bg-form-bg p-10 rounded-xl bg-opacity-40 backdrop-blur-[6px]`}
         >
-          Dashboard
-        </Link>
-        <Link
-          className="border-2 border-red-700 bg-orange-600 rounded-sm px-4 py-2 mx-2 hover:bg-lime-600"
-          to="/signup"
-        >
-          Sign Up
-        </Link>
-        <Link
-          className="border-2 border-red-700 bg-orange-600 rounded-sm px-4 py-2 mx-2 hover:bg-lime-600"
-          to="/login"
-        >
-          Login
-        </Link>
-        <Link
-          className="border-2 border-red-700 bg-orange-600 rounded-sm px-4 py-2 mx-2 hover:bg-lime-600"
-          to="/partner"
-        >
-          Link your partner!
-        </Link>
+          {register ? <SignUp /> : <LogIn />}
+          {register ? (
+            <div className="flex flex-row mt-3">
+              <p>Already have an account?</p>{" "}
+              <button
+                onClick={() => setRegister(false)}
+                className="p-0 ml-2  text-orange-900"
+              >
+                Login
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-row mt-3">
+              <p>Don't have an account yet?</p>{" "}
+              <button
+                onClick={() => setRegister(true)}
+                className="p-0 ml-2 text-orange-900"
+              >
+                Register
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

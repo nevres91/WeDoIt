@@ -88,12 +88,9 @@ const SignUp = () => {
   });
 
   return (
-    <form
-      onSubmit={formik.handleSubmit}
-      className="space-y-4 w-1/2 m-auto my-8"
-    >
+    <form onSubmit={formik.handleSubmit} className="space-y-4  m-auto">
       <div>
-        <label htmlFor="firstName" className="block font-medium">
+        <label htmlFor="firstName" className="block text-text-color">
           First Name
         </label>
         <input
@@ -103,7 +100,7 @@ const SignUp = () => {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           value={formik.values.firstName}
-          className="border p-2 w-full rounded"
+          className="p-2 rounded-md w-full text-input-text bg-input-bg"
         />
         {formik.touched.firstName && formik.errors.firstName && (
           <div className="text-red-500">{formik.errors.firstName}</div>
@@ -111,7 +108,7 @@ const SignUp = () => {
       </div>
 
       <div>
-        <label htmlFor="lastName" className="block font-medium">
+        <label htmlFor="lastName" className="block text-text-color">
           Last Name
         </label>
         <input
@@ -121,7 +118,7 @@ const SignUp = () => {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           value={formik.values.lastName}
-          className="border p-2 w-full rounded"
+          className="p-2 rounded-md w-full text-input-text bg-input-bg"
         />
         {formik.touched.lastName && formik.errors.lastName && (
           <div className="text-red-500">{formik.errors.lastName}</div>
@@ -129,7 +126,7 @@ const SignUp = () => {
       </div>
 
       <div>
-        <label htmlFor="role" className="block font-medium">
+        <label htmlFor="role" className="block text-text-color">
           Role
         </label>
         <select
@@ -138,7 +135,7 @@ const SignUp = () => {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           value={formik.values.role}
-          className="border p-2 w-full rounded"
+          className="p-2 rounded-md w-full text-input-text bg-input-bg"
         >
           <option value="husband">Husband</option>
           <option value="wife">Wife</option>
@@ -149,7 +146,7 @@ const SignUp = () => {
       </div>
 
       <div>
-        <label htmlFor="email" className="block font-medium">
+        <label htmlFor="email" className="block text-text-color">
           Email
         </label>
         <input
@@ -159,7 +156,7 @@ const SignUp = () => {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           value={formik.values.email}
-          className="border p-2 w-full rounded"
+          className="p-2 rounded-md w-full text-input-text bg-input-bg"
         />
         {formik.touched.email && formik.errors.email && (
           <div className="text-red-500">{formik.errors.email}</div>
@@ -167,7 +164,7 @@ const SignUp = () => {
       </div>
 
       <div>
-        <label htmlFor="password" className="block font-medium">
+        <label htmlFor="password" className="block text-text-color">
           Password
         </label>
         <input
@@ -177,7 +174,7 @@ const SignUp = () => {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           value={formik.values.password}
-          className="border p-2 w-full rounded"
+          className="p-2 rounded-md w-full text-input-text bg-input-bg"
         />
         {formik.touched.password && formik.errors.password && (
           <div className="text-red-500">{formik.errors.password}</div>
@@ -185,7 +182,7 @@ const SignUp = () => {
       </div>
 
       <div>
-        <label htmlFor="confirmPassword" className="block font-medium">
+        <label htmlFor="confirmPassword" className="block text-text-color">
           Confirm Password
         </label>
         <input
@@ -195,7 +192,7 @@ const SignUp = () => {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           value={formik.values.confirmPassword}
-          className="border p-2 w-full rounded"
+          className="p-2 rounded-md w-full text-input-text bg-input-bg"
         />
         {formik.touched.confirmPassword && formik.errors.confirmPassword && (
           <div className="text-red-500">{formik.errors.confirmPassword}</div>
@@ -205,7 +202,7 @@ const SignUp = () => {
       <button
         type="submit"
         disabled={loading}
-        className="bg-blue-500 text-white p-2 rounded w-full hover:bg-blue-600 disabled:opacity-50"
+        className="bg-login-button text-input-bg p-2 rounded-md w-full hover:bg-button-hover transition-all duration-100 disabled:opacity-50"
       >
         {loading ? "Signing Up..." : "Sign Up"}
       </button>
