@@ -73,8 +73,10 @@ const Partner = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-bold mb-4 text-center">Find Your Partner</h2>
+    <div className="max-w-md mx-auto ">
+      <h2 className="text-2xl text-button-hover font-bold my-4 text-center">
+        Find Your Partner
+      </h2>
       {message && <div className="text-red-500 text-center">{message}</div>}
 
       <input
@@ -86,7 +88,7 @@ const Partner = () => {
       />
       <button
         onClick={handleFindPartner}
-        className="bg-blue-500 text-white p-2 rounded w-full hover:bg-blue-600 mt-2"
+        className="bg-login-button text-white p-2 rounded w-full hover:bg-button-hover mt-2"
       >
         Link Partner
       </button>

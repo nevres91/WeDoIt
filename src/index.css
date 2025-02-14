@@ -7,3 +7,21 @@
   margin: 0;
   box-sizing: border-box;
 }
+
+#scrollable-content::-webkit-scrollbar {
+  width: 8px; /* Adjust width */
+}
+
+#scrollable-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1); /* Transparent scrollbar */
+  border-radius: 4px;
+}
+
+#scrollable-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#scrollable-content::-webkit-scrollbar-track {
+  margin-top: 55px;
+  background: transparent;
+}

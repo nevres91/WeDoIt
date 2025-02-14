@@ -6,6 +6,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
 import LogIn from "./pages/LogIn";
 import Partner from "./components/Partner";
+import TestingPage from "./pages/TestingPage";
 
 export default function AppRouter() {
   return (
@@ -13,6 +14,7 @@ export default function AppRouter() {
       <AuthProvider>
         <Routes>
           <Route path="/" element={<Home />} />
+          {/* <Route path="/" element={<TestingPage />} /> */}
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<LogIn />} />
           <Route element={<PrivateRoute />}>

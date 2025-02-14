@@ -6,6 +6,7 @@ import { onSnapshot, doc, getDoc } from "firebase/firestore";
 interface AuthContextType {
   user: User | null;
   userData: any;
+  setUserData: any;
   logout: () => Promise<void>;
 }
 
@@ -15,19 +16,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<any>(null);
 
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-  //     setUser(currentUser);
-  //     if (currentUser) {
-  //       const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-  //       setUserData(userDoc.exists() ? userDoc.data() : null);
-  //     } else {
-  //       setUserData(null);
-  //     }
-  //   });
-
-  //   return () => unsubscribe();
-  // }, []);
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
@@ -54,7 +42,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, userData, logout }}>
+    <AuthContext.Provider value={{ user, userData, logout, setUserData }}>
       {children}
     </AuthContext.Provider>
   );
