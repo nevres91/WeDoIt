@@ -5,7 +5,7 @@ import { acceptInvitation, rejectInvitation } from "../utils/PartnerService";
 import { useAuth } from "../context/AuthContext";
 
 export const useInvitations = () => {
-  const { user, userData } = useAuth();
+  const { user, userData, setUserData } = useAuth();
   const [invitations, setInvitations] = useState<
     { id: string; firstName: string; lastName: string }[]
   >([]);

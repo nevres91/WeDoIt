@@ -8,19 +8,10 @@ import { usePartnerData } from "../hooks/usePartnerData";
 
 const Dashboard = () => {
   const [partnerLink, setPartnerLink] = useState<boolean>(false);
-  const { userData, logout, setUserData } = useAuth();
+  const { userData, logout } = useAuth();
   const { invitations, handleAccept, handleReject } = useInvitations();
   const { partnerData } = usePartnerData() || { partnerData: null };
   const { visible } = useHideOnScroll();
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      setUserData(null);
-    } catch (error) {
-      console.error("Logout failed", error);
-    }
-  };
 
   return (
     <div //BACKGROUND
@@ -39,7 +30,7 @@ const Dashboard = () => {
           className="flex flex-col items-center shadow-2xl h-[calc(100%-6px)] w-[18%] bg-white bg-opacity-80 backdrop-blur-[9px] rounded-[4px] ml-[3px]"
         >
           <button
-            onClick={handleLogout}
+            onClick={logout}
             className="bg-login-button text-input-bg p-2  rounded-md w-[90%] hover:bg-button-hover transition-all duration-100 disabled:opacity-50 mt-2 absolute bottom-5"
           >
             Logout
