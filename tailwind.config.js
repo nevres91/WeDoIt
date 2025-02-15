@@ -13,6 +13,12 @@ export default {
         "button-hover": "#c7603a ",
         "custom-blue": "#4A90E2",
       },
+      backgroundImage: {
+        couple: "url('/src/assets/couple.png')",
+        husband: "url('/src/assets/husband.png')",
+        wife: "url('/src/assets/wife.png')",
+        dashboard: `url('src/assets/dashboard_2.jpg')`,
+      },
     },
   },
   plugins: [],
