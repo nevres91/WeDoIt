@@ -1,7 +1,5 @@
-import { User } from "firebase/auth";
 import { Invitation, PartnerData, UserData } from "../types";
 import { leavePartner } from "../utils/PartnerService";
-import { useEffect } from "react";
 
 interface DashboardRightProps {
   partnerData: PartnerData | null;
@@ -10,6 +8,8 @@ interface DashboardRightProps {
   handleAccept: (id: string) => void;
   handleReject: (id: string) => void;
   userData: UserData;
+  invitationsMessage: string | null;
+  // inviterHasPartner: boolean;
 }
 export const DashboardRight: React.FC<DashboardRightProps> = ({
   partnerData,
@@ -18,12 +18,16 @@ export const DashboardRight: React.FC<DashboardRightProps> = ({
   handleReject,
   userId,
   userData,
+  invitationsMessage,
+  // inviterHasPartner,
 }) => {
   const isLeaveDisabled = !userId || !userData?.partnerId;
-
+  // useEffect(() => {
+  //   console.log(userData);
+  // });
   const handleLeave = () => {
     if (userId && userData?.partnerId) {
-      leavePartner(userId, userData.partnerId, () => {});
+      leavePartner(userId, userData.partnerId);
     }
   };
   return (
@@ -46,6 +50,9 @@ export const DashboardRight: React.FC<DashboardRightProps> = ({
             <h2 className="text-login-button font-semibold ">
               Partner Invitation:
             </h2>
+            {userData.partnerId && (
+              <div className="text-red-400">You already have a partner</div>
+            )}
             {invitations.length > 0 ? (
               invitations.map((inviter: any) => (
                 <div key={inviter.id}>
@@ -54,8 +61,18 @@ export const DashboardRight: React.FC<DashboardRightProps> = ({
                   </p>
                   <div className="w-full">
                     <button
-                      className="border bg-green-400 p-2  rounded-md text-white w-[50%] hover:bg-green-500 transition-all duration-100"
-                      onClick={() => handleAccept(inviter.id)}
+                      disabled={userData.partnerId ? true : false}
+                      className={`border ${
+                        userData.partnerId ? "bg-gray-400" : "bg-green-400"
+                      } p-2  rounded-md text-white w-[50%] ${
+                        !userData.partnerId ? "hover:bg-green-500" : ""
+                      } transition-all duration-100`}
+                      onClick={() => {
+                        if (userData.partnerId) {
+                          return console.log("You already have a partner");
+                        }
+                        handleAccept(inviter.id);
+                      }}
                     >
                       Accept
                     </button>
@@ -75,7 +92,11 @@ export const DashboardRight: React.FC<DashboardRightProps> = ({
         ) : (
           ""
         )}
-        {/* Leave Partner Button */}
+        {invitationsMessage && (
+          <div className="  mt-5 rounded-xl bg-red-200 text-red-600 p-3 content-center text-md font-thin text-center">
+            {invitationsMessage}
+          </div>
+        )}
         {/* Leave Partner Button */}
         <button
           onClick={handleLeave}

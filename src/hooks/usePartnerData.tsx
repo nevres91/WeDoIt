@@ -22,7 +22,10 @@ export const usePartnerData = () => {
     } else {
       setPartnerData(null);
     }
-    setLoading(false);
+    // Prevent showing any image before partnerData is fetched
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
   };
 
   useEffect(() => {

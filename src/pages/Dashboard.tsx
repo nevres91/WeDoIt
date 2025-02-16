@@ -10,7 +10,8 @@ import { DashboardRight } from "../components/DashboardRight";
 const Dashboard = () => {
   const [partnerLink, setPartnerLink] = useState<boolean>(false);
   const { userData, logout, user } = useAuth();
-  const { invitations, handleAccept, handleReject } = useInvitations();
+  const { invitations, handleAccept, handleReject, invitationsMessage } =
+    useInvitations();
   const { partnerData, loading } = usePartnerData() || {
     partnerData: null,
   };
@@ -42,6 +43,7 @@ const Dashboard = () => {
           partnerData={partnerData}
           userId={user?.uid}
           userData={userData}
+          invitationsMessage={invitationsMessage}
         />
       </div>
     </div>
