@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useHideOnScroll } from "../hooks/UseHideOnScroll";
 import { useInvitations } from "../hooks/useInvitations";
 import { usePartnerData } from "../hooks/usePartnerData";
-import { DashbarLeft } from "../components/DashbarLeft";
+import DashbarLeft from "../components/DashbarLeft";
 import { DashboardMiddle } from "../components/DashboardMiddle";
 import { DashboardRight } from "../components/DashboardRight";
 
@@ -11,7 +11,7 @@ const Dashboard = () => {
   const [partnerLink, setPartnerLink] = useState<boolean>(false);
   const { userData, logout } = useAuth();
   const { invitations, handleAccept, handleReject } = useInvitations();
-  const { partnerData } = usePartnerData() || { partnerData: null };
+  const { partnerData, loading } = usePartnerData() || { partnerData: null };
   const { visible } = useHideOnScroll();
 
   return (
@@ -30,6 +30,7 @@ const Dashboard = () => {
           setPartnerLink={setPartnerLink}
           userData={userData}
           visible={visible}
+          loading={loading}
         />
         {/* --------------------RIGHT SIDE-------------------- */}
         <DashboardRight

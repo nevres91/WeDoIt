@@ -1,12 +1,19 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { auth, db } from "../services/firebase";
-import { onSnapshot, doc, getDoc } from "firebase/firestore";
+import { onSnapshot, doc } from "firebase/firestore";
+import { UserData } from "../types";
 
 interface AuthContextType {
   user: User | null;
-  userData: any;
-  setUserData: any;
+  userData: UserData;
+  setUserData: React.Dispatch<SetStateAction<UserData>>; //Check if error appears
   logout: () => Promise<void>;
 }
 
@@ -16,35 +23,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<any>(null);
 
-  // useEffect(() => {
-  //   const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
-  //     setUser(firebaseUser);
-
-  //     if (firebaseUser) {
-  //       const userRef = doc(db, "users", firebaseUser.uid);
-  //       console.log("FIREBASE USER UID:", firebaseUser.uid)
-
-  //       // Store Firestore unsubscribe function
-  //       const unsubscribeUser = onSnapshot(userRef, (doc) => {
-  //         if (doc.exists()) {
-  //           setUserData(doc.data());
-  //         }
-  //       });
-
-  //       // Ensure Firestore listener is cleaned up properly
-  //       return () => {
-  //         unsubscribeUser();
-  //       };
-  //     } else {
-  //       setUserData(null);
-  //     }
-  //   });
-
-  //   // Cleanup Auth listener properly
-  //   return () => {
-  //     unsubscribeAuth();
-  //   };
-  // }, []);
   useEffect(() => {
     // console.log("Auth state change triggered");
 

@@ -1,42 +1,59 @@
+import { PartnerData, UserData } from "../types";
 import Navbar from "./Navbar";
 import Partner from "./Partner";
+import clsx from "clsx";
 
-export const DashboardMiddle = ({
+interface DashboardMiddleProps {
+  visible: boolean;
+  userData: UserData;
+  partnerData: PartnerData;
+  partnerLink: boolean;
+  setPartnerLink: React.Dispatch<React.SetStateAction<boolean>>;
+  loading: boolean;
+}
+
+export const DashboardMiddle: React.FC<DashboardMiddleProps> = ({
   partnerData,
   visible,
   userData,
   partnerLink,
   setPartnerLink,
-}: {
-  partnerData: any;
-  visible: any;
-  userData: any;
-  partnerLink: boolean;
-  setPartnerLink: any;
+  loading,
 }) => {
   return (
     <>
-      <div /* --------------------MIDDLE-------------------- */
+      <div
         id="scrollable-content"
         className="flex shadow-2xl h-[calc(100%-6px)] w-[60%] bg-white bg-opacity-80 backdrop-blur-[9px] rounded-[4px] flex-col items-center overflow-auto relative"
       >
         <Navbar visible={visible} />
         {/* ROLE IMAGE */}
         <div
-          className={`w-[150px] h-[150px] min-h-[150px] mt-10 bg-contain bg-no-repeat bg-center ${
-            partnerData
-              ? "bg-couple"
-              : userData?.role === "husband"
-              ? "bg-husband"
-              : "bg-wife"
-          }`}
+          className={clsx(
+            "w-[150px]",
+            "h-[150px]",
+            "min-h-[150px]",
+            "mt-10",
+            "bg-contain",
+            "bg-no-repeat",
+            "bg-center",
+            {
+              "bg-couple": partnerData && !loading,
+              "bg-husband":
+                userData?.role === "husband" && !partnerData && !loading,
+              "bg-wife":
+                userData?.role !== "husband" && !partnerData && !loading,
+            }
+          )}
         />
         {/* NAMES */}
         <h2 className="text-2xl font-bold mt-4 text-button-hover">
-          {userData?.firstName.toUpperCase() +
-            (partnerData
-              ? " " + "& " + partnerData?.firstName.toUpperCase()
-              : "")}
+          {!userData
+            ? ""
+            : userData.firstName.toUpperCase() +
+              (partnerData
+                ? " " + "& " + partnerData?.firstName.toUpperCase()
+                : "")}
         </h2>
         {/* Partner data */}
         <div className="w-[45%]   p-10 mt-10 bg-login-button shadow-lg bg-opacity-15 rounded-md flex flex-col items-center">

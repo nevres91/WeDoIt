@@ -1,19 +1,20 @@
-export const DashboardRight = ({
+import { Invitation, PartnerData } from "../types";
+
+interface DashboardRightProps {
+  partnerData: PartnerData | null;
+  invitations: Invitation[];
+  handleAccept: (id: string) => void;
+  handleReject: (id: string) => void;
+}
+export const DashboardRight: React.FC<DashboardRightProps> = ({
   partnerData,
   invitations,
   handleAccept,
   handleReject,
-}: {
-  partnerData: any;
-  invitations: any;
-  handleAccept: any;
-  handleReject: any;
 }) => {
   return (
     <>
-      <div /* --------------------RIGHT-------------------- */
-        className="flex flex-col p-5 shadow-2xl h-[calc(100%-6px)] w-[22%] bg-white  bg-opacity-80 backdrop-blur-[9px] rounded-[4px] mr-[3px]"
-      >
+      <div className="flex flex-col p-5 shadow-2xl h-[calc(100%-6px)] w-[22%] bg-white  bg-opacity-80 backdrop-blur-[9px] rounded-[4px] mr-[3px]">
         <p className="text">Partnesr's Information</p>
         {partnerData ? (
           <div className=" mt-10 p-2 rounded-sm bg-white shadow-lg bg-opacity-30  ">
@@ -35,7 +36,7 @@ export const DashboardRight = ({
               invitations.map((inviter: any) => (
                 <div key={inviter.id}>
                   <p className="my-2">
-                    From: {inviter.firstName} {inviter.lastName}
+                    From: {inviter.senderFirstName} {inviter.senderLastName}
                   </p>
                   <div className="w-full">
                     <button

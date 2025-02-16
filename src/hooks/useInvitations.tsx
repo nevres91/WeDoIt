@@ -3,47 +3,69 @@ import { getDoc, doc } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { acceptInvitation, rejectInvitation } from "../utils/PartnerService";
 import { useAuth } from "../context/AuthContext";
+import { Invitation } from "../types";
 
 export const useInvitations = () => {
-  const { user, userData, setUserData } = useAuth();
-  const [invitations, setInvitations] = useState<
-    { id: string; firstName: string; lastName: string }[]
-  >([]);
+  const { user, userData } = useAuth();
+  const [invitations, setInvitations] = useState<Invitation[]>([]);
 
   useEffect(() => {
-    if (userData?.invitations?.length) {
-      const fetchInviters = async () => {
+    const fetchInvitations = async () => {
+      if (!userData?.invitations?.length) {
+        setInvitations([]); // Clear invitations when there are none
+        return;
+      }
+
+      try {
         const inviterDetails = await Promise.all(
           userData.invitations.map(async (inviterId: string) => {
             const inviterDoc = await getDoc(doc(db, "users", inviterId));
             if (inviterDoc.exists()) {
-              return { id: inviterId, ...inviterDoc.data() };
+              const inviterData = inviterDoc.data();
+              return {
+                id: inviterId, // Ensure each invitation has an ID
+                senderId: inviterId,
+                senderFirstName: inviterData.firstName,
+                senderLastName: inviterData.lastName,
+              };
             }
-            return null;
+            return null; // Filter out invalid inviter data
           })
         );
 
-        // Filter out null results
-        setInvitations(inviterDetails.filter(Boolean) as any);
-      };
+        // Filter out null results and set the state
+        setInvitations(inviterDetails.filter(Boolean) as Invitation[]);
+      } catch (error) {
+        console.error("Error fetching invitations:", error);
+      }
+    };
 
-      fetchInviters();
-    }
-  }, [userData]);
+    fetchInvitations();
+  }, [userData]); // Dependency array includes only userData to prevent unnecessary re-fetching
+
   const handleAccept = async (inviterId: string) => {
     if (!user?.uid) return;
-    await acceptInvitation(user.uid, inviterId);
-    setInvitations((prevInvitations) =>
-      prevInvitations.filter((inviter) => inviter.id !== inviterId)
-    );
+    try {
+      await acceptInvitation(user.uid, inviterId);
+      setInvitations((prevInvitations) =>
+        prevInvitations.filter((inviter) => inviter.senderId !== inviterId)
+      );
+    } catch (error) {
+      console.error("Error accepting invitation:", error);
+    }
   };
 
   const handleReject = async (inviterId: string) => {
     if (!user?.uid) return;
-    await rejectInvitation(user.uid, inviterId);
-    setInvitations((prevInvitations) =>
-      prevInvitations.filter((inviter) => inviter.id !== inviterId)
-    );
+    try {
+      await rejectInvitation(user.uid, inviterId);
+      setInvitations((prevInvitations) =>
+        prevInvitations.filter((inviter) => inviter.senderId !== inviterId)
+      );
+    } catch (error) {
+      console.error("Error rejecting invitation:", error);
+    }
   };
+
   return { invitations, handleAccept, handleReject };
 };
