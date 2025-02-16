@@ -1,17 +1,31 @@
-import { Invitation, PartnerData } from "../types";
+import { User } from "firebase/auth";
+import { Invitation, PartnerData, UserData } from "../types";
+import { leavePartner } from "../utils/PartnerService";
+import { useEffect } from "react";
 
 interface DashboardRightProps {
   partnerData: PartnerData | null;
   invitations: Invitation[];
+  userId: string | undefined;
   handleAccept: (id: string) => void;
   handleReject: (id: string) => void;
+  userData: UserData;
 }
 export const DashboardRight: React.FC<DashboardRightProps> = ({
   partnerData,
   invitations,
   handleAccept,
   handleReject,
+  userId,
+  userData,
 }) => {
+  const isLeaveDisabled = !userId || !userData?.partnerId;
+
+  const handleLeave = () => {
+    if (userId && userData?.partnerId) {
+      leavePartner(userId, userData.partnerId, () => {});
+    }
+  };
   return (
     <>
       <div className="flex flex-col p-5 shadow-2xl h-[calc(100%-6px)] w-[22%] bg-white  bg-opacity-80 backdrop-blur-[9px] rounded-[4px] mr-[3px]">
@@ -61,6 +75,15 @@ export const DashboardRight: React.FC<DashboardRightProps> = ({
         ) : (
           ""
         )}
+        {/* Leave Partner Button */}
+        {/* Leave Partner Button */}
+        <button
+          onClick={handleLeave}
+          disabled={isLeaveDisabled}
+          className="bg-red-500 text-input-bg p-2 rounded-md w-[90%] hover:bg-red-600 transition-all duration-100 disabled:opacity-50 mt-2 absolute bottom-5"
+        >
+          Leave your partner
+        </button>
       </div>
     </>
   );

@@ -6,7 +6,7 @@ import clsx from "clsx";
 interface DashboardMiddleProps {
   visible: boolean;
   userData: UserData;
-  partnerData: PartnerData;
+  partnerData: PartnerData | null;
   partnerLink: boolean;
   setPartnerLink: React.Dispatch<React.SetStateAction<boolean>>;
   loading: boolean;
