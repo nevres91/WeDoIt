@@ -24,7 +24,7 @@ export const DashboardMiddle: React.FC<DashboardMiddleProps> = ({
     <>
       <div
         id="scrollable-content"
-        className="flex shadow-2xl h-[calc(100%-6px)] w-[60%] bg-white bg-opacity-80 backdrop-blur-[9px] rounded-[4px] flex-col items-center overflow-auto relative"
+        className="flex shadow-2xl h-[calc(100%-6px)] w-[60%] bg-calm-n-cool-5 bg-opacity-80 backdrop-blur-[9px] rounded-[4px] flex-col items-center overflow-auto relative"
       >
         <Navbar visible={visible} />
         {/* ROLE IMAGE */}

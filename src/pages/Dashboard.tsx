@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useHideOnScroll } from "../hooks/UseHideOnScroll";
 import { useInvitations } from "../hooks/useInvitations";
@@ -10,6 +10,7 @@ import { DashboardRight } from "../components/DashboardRight";
 const Dashboard = () => {
   const [partnerLink, setPartnerLink] = useState<boolean>(false);
   const { userData, logout, user } = useAuth();
+  const [role, setRole] = useState<string>("");
   const { invitations, handleAccept, handleReject, invitationsMessage } =
     useInvitations();
   const { partnerData, loading } = usePartnerData() || {
@@ -17,15 +18,22 @@ const Dashboard = () => {
   };
   const { visible } = useHideOnScroll();
 
+  useEffect(() => {
+    if (userData) {
+      const role = userData.role;
+      setRole(role);
+    }
+  });
+
   return (
     <div //BACKGROUND
-      className="flex bg-dashboard bg-cover bg-center min-h-[100vh] "
+      className="flex bg-calm-n-cool-3 bg-cover bg-center min-h-[100vh] "
     >
       <div // CONTAINER
         className="flex gap-[3px] rounded-xl  w-[100vw] h-[100vh] items-center "
       >
         {/* --------------------LEFT SIDE-------------------- */}
-        <DashbarLeft logout={logout} />
+        <DashbarLeft logout={logout} role={role} />
         {/* --------------------MIDDLE-------------------- */}
         <DashboardMiddle
           partnerLink={partnerLink}
@@ -44,6 +52,7 @@ const Dashboard = () => {
           userId={user?.uid}
           userData={userData}
           invitationsMessage={invitationsMessage}
+          role={role}
         />
       </div>
     </div>

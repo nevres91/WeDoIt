@@ -9,6 +9,7 @@ interface DashboardRightProps {
   handleReject: (id: string) => void;
   userData: UserData;
   invitationsMessage: string | null;
+  role: string;
   // inviterHasPartner: boolean;
 }
 export const DashboardRight: React.FC<DashboardRightProps> = ({
@@ -19,6 +20,7 @@ export const DashboardRight: React.FC<DashboardRightProps> = ({
   userId,
   userData,
   invitationsMessage,
+  role,
   // inviterHasPartner,
 }) => {
   const isLeaveDisabled = !userId || !userData?.partnerId;
@@ -32,7 +34,12 @@ export const DashboardRight: React.FC<DashboardRightProps> = ({
   };
   return (
     <>
-      <div className="flex flex-col p-5 shadow-2xl h-[calc(100%-6px)] w-[22%] bg-white  bg-opacity-80 backdrop-blur-[9px] rounded-[4px] mr-[3px]">
+      <div className=" flex flex-col p-5 shadow-2xl h-[calc(100%-6px)] w-[22%] bg-white  bg-opacity-80 backdrop-blur-[9px] rounded-[4px] mr-[3px]">
+        <div
+          className={`w-full h-full absolute top-0 left-0 opacity-5 ${
+            role === "husband" ? "bg-woman scale-x-[-1]" : "bg-man"
+          } bg-contain bg-no-repeat bg-center `}
+        />
         <p className="text">Partnesr's Information</p>
         {partnerData ? (
           <div className=" mt-10 p-2 rounded-sm bg-white shadow-lg bg-opacity-30  ">
