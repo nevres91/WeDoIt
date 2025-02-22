@@ -1,5 +1,5 @@
-import { Invitation, PartnerData, UserData } from "../types";
-import { leavePartner } from "../utils/PartnerService";
+import { Invitation, PartnerData, UserData } from "../../types";
+import { leavePartner } from "../../utils/PartnerService";
 
 interface DashboardRightProps {
   partnerData: PartnerData | null;
@@ -53,7 +53,9 @@ export const DashboardRight: React.FC<DashboardRightProps> = ({
         )}
         {/* PENDING INVITATIONS */}
         {invitations.length > 0 ? (
-          <div className="bg-white bg-opacity-30 mt-5 p-3 shadow-lg  ">
+          <div className="bg-white bg-opacity-30 mt-5 p-3 shadow-lg z-40  ">
+            {" "}
+            {/* added z index, was below. */}
             <h2 className="text-login-button font-semibold ">
               Partner Invitation:
             </h2>

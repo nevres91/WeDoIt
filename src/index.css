@@ -10,6 +10,17 @@ body {
   margin: 0;
   box-sizing: border-box;
 }
+@layer utilities {
+  .scrollbar-transparent::-webkit-scrollbar {
+    width: 0px;
+  }
+  .scrollbar-transparent::-webkit-scrollbar-thumb {
+    background: transparent;
+  }
+  .scrollbar-transparent::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
 
 #scrollable-content::-webkit-scrollbar {
   width: 8px; /* Adjust width */

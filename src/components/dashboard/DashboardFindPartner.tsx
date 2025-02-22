@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { db } from "../services/firebase";
 import {
   doc,
   getDoc,
@@ -10,11 +8,13 @@ import {
   where,
   getDocs,
 } from "firebase/firestore";
+import { useAuth } from "../../context/AuthContext";
+import { db } from "../../services/firebase";
 
-const Partner = () => {
+export const DashboardFindPartner = () => {
   const { user } = useAuth();
-  const [partnerEmail, setPartnerEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [partnerEmail, setPartnerEmail] = useState("");
 
   const handleFindPartner = async () => {
     if (!partnerEmail) return setMessage("Enter an email!");
@@ -69,27 +69,37 @@ const Partner = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto ">
-      <h2 className="text-2xl text-calm-n-cool-5 font-bold my-4 text-center">
-        Find Your Partner
-      </h2>
-      {message && <div className="text-red-500 text-center">{message}</div>}
-
-      <input
-        type="email"
-        placeholder="Enter partner's email"
-        value={partnerEmail}
-        onChange={(e) => setPartnerEmail(e.target.value)}
-        className="border p-2 w-full rounded"
-      />
-      <button
-        onClick={handleFindPartner}
-        className="bg-calm-n-cool-5 text-calm-n-cool-1 p-2 rounded w-full hover:bg-calm-n-cool-4  mt-2 transition-all duration-100"
+    <>
+      <div // Container
+        className="w-full flex justify-center  h-screen -mt-28 bg-findPartner bg-no-repeat bg-cover  bg-center"
       >
-        Link Partner
-      </button>
-    </div>
+        <div className="absolute top-0 left-0 border-2 border-red-600 w-full h-full bg-cupid bg-no-repeat bg-contain bg-center  opacity-40" />
+        <div className="w-[500px] h-[220px] min-w-[280px] ml-2 mr-2 p-6 mt-10 bg-calm-n-cool-2 backdrop-blur-[2px] shadow-[0px_0px_10px_0px_rgba(0,0,0,0.75)] bg-opacity-15 rounded-md flex flex-col items-center">
+          <div className="max-w-md mx-auto ">
+            <h2 className="text-2xl text-calm-n-cool-5 font-bold my-4 text-center">
+              Find Your Partner
+            </h2>
+            {message && (
+              <div className="text-red-500 text-center">{message}</div>
+            )}
+
+            <input
+              type="email"
+              placeholder="Enter partner's email"
+              value={partnerEmail}
+              onChange={(e) => setPartnerEmail(e.target.value)}
+              className="border p-2 w-full rounded"
+            />
+            <button
+              onClick={handleFindPartner}
+              className="bg-calm-n-cool-5 text-calm-n-cool-1 p-2 rounded w-full hover:bg-calm-n-cool-4  mt-2 transition-all duration-100"
+            >
+              Link Partner
+            </button>
+          </div>
+          {/* <Partner /> */}
+        </div>
+      </div>
+    </>
   );
 };
-
-export default Partner;

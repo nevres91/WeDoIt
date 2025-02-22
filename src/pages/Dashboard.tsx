@@ -3,16 +3,17 @@ import { useAuth } from "../context/AuthContext";
 import { useHideOnScroll } from "../hooks/UseHideOnScroll";
 import { useInvitations } from "../hooks/useInvitations";
 import { usePartnerData } from "../hooks/usePartnerData";
-import DashbarLeft from "../components/DashbarLeft";
-import { DashboardMiddle } from "../components/DashboardMiddle";
-import { DashboardRight } from "../components/DashboardRight";
+import DashbarLeft from "../components/dashboard/DashbarLeft";
+import { DashboardMiddle } from "../components/dashboard/DashboardMiddle";
+import { DashboardRight } from "../components/dashboard/DashboardRight";
+import { DashboardProvider, useDashboard } from "../context/DashboardContext";
 
 const Dashboard = () => {
   const [partnerLink, setPartnerLink] = useState<boolean>(false);
   const { userData, logout, user } = useAuth();
   const [role, setRole] = useState<string>("");
-  const { invitations, handleAccept, handleReject, invitationsMessage } =
-    useInvitations();
+  // const { invitations, handleAccept, handleReject, invitationsMessage } =
+  //   useInvitations();
   const { partnerData, loading } = usePartnerData() || {
     partnerData: null,
   };
@@ -26,25 +27,31 @@ const Dashboard = () => {
   });
 
   return (
-    <div //BACKGROUND
-      className="flex bg-calm-n-cool-3 bg-cover bg-center min-h-[100vh] "
-    >
-      <div // CONTAINER
-        className="flex gap-[3px] rounded-xl  w-[100vw] h-[100vh] items-center "
+    <DashboardProvider>
+      <div //BACKGROUND
+        className="flex bg-calm-n-cool-3 bg-cover bg-center min-h-[100vh] "
       >
-        {/* --------------------LEFT SIDE-------------------- */}
-        <DashbarLeft logout={logout} role={role} />
-        {/* --------------------MIDDLE-------------------- */}
-        <DashboardMiddle
-          partnerLink={partnerLink}
-          partnerData={partnerData}
-          setPartnerLink={setPartnerLink}
-          userData={userData}
-          visible={visible}
-          loading={loading}
-        />
-        {/* --------------------RIGHT SIDE-------------------- */}
-        <DashboardRight
+        <div // CONTAINER
+          className="flex gap-[3px] rounded-xl  w-[100vw] h-[100vh] items-center "
+        >
+          {/* --------------------LEFT SIDE-------------------- */}
+          <DashbarLeft
+            logout={logout}
+            role={role}
+            userData={userData}
+            userId={user?.uid}
+          />
+          {/* --------------------MIDDLE-------------------- */}
+          <DashboardMiddle
+            partnerLink={partnerLink}
+            partnerData={partnerData}
+            setPartnerLink={setPartnerLink}
+            userData={userData}
+            visible={visible}
+            loading={loading}
+          />
+          {/* --------------------RIGHT SIDE-------------------- */}
+          {/* <DashboardRight
           handleAccept={handleAccept}
           handleReject={handleReject}
           invitations={invitations}
@@ -53,9 +60,10 @@ const Dashboard = () => {
           userData={userData}
           invitationsMessage={invitationsMessage}
           role={role}
-        />
+        /> */}
+        </div>
       </div>
-    </div>
+    </DashboardProvider>
   );
 };
 

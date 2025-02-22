@@ -28,6 +28,9 @@ export default {
         dashboard: `url('src/assets/dashboard_2.jpg')`,
         woman: `url('src/assets/woman_small.png')`,
         man: `url('src/assets/man.png')`,
+        profile: `url('src/assets/profile_picture.jpg')`,
+        findPartner: `url('src/assets/find_partner_2.png')`,
+        cupid: `url('src/assets/cupid.png')`,
       },
       fontFamily: {
         montserrat: ["montserrat", "sans-serif"],
