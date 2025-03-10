@@ -7,6 +7,7 @@ import { AuthProvider } from "./context/AuthContext";
 import LogIn from "./pages/LogIn";
 import Partner from "./components/Partner";
 import TestingPage from "./pages/TestingPage";
+import DashboardPartner from "./components/dashboard/DashboardPartner";
 
 export default function AppRouter() {
   return (

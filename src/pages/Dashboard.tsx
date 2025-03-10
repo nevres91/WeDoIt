@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useHideOnScroll } from "../hooks/UseHideOnScroll";
-import { useInvitations } from "../hooks/useInvitations";
 import { usePartnerData } from "../hooks/usePartnerData";
 import DashbarLeft from "../components/dashboard/DashbarLeft";
 import { DashboardMiddle } from "../components/dashboard/DashboardMiddle";
-import { DashboardRight } from "../components/dashboard/DashboardRight";
-import { DashboardProvider, useDashboard } from "../context/DashboardContext";
+import { DashboardProvider } from "../context/DashboardContext";
 
 const Dashboard = () => {
   const [partnerLink, setPartnerLink] = useState<boolean>(false);
@@ -32,7 +30,7 @@ const Dashboard = () => {
         className="flex bg-calm-n-cool-3 bg-cover bg-center min-h-[100vh] "
       >
         <div // CONTAINER
-          className="flex gap-[3px] rounded-xl  w-[100vw] h-[100vh] items-center "
+          className="flex gap-[3px] rounded-md  w-[100vw] h-[100vh] items-center"
         >
           {/* --------------------LEFT SIDE-------------------- */}
           <DashbarLeft

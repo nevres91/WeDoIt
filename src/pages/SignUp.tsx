@@ -6,7 +6,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 // Define the types for the form values
@@ -68,15 +68,49 @@ const SignUp = () => {
           role: values.role,
           partnerId: "",
           invitations: [],
-          createdAt: new Date(),
+          createdAt: new Date().toISOString(),
         });
+        // Add initial tasks to Firestore 'tasks' collection
+        const tasksCollection = collection(db, "tasks");
+        const initialTasks = [
+          {
+            title: "Welcome to weDoIt!",
+            description: "Explore your new task board and add some tasks.",
+            status: "To Do",
+            creator: "self",
+            createdAt: new Date().toISOString(),
+            dueDate: new Date(
+              Date.now() + 7 * 24 * 60 * 60 * 1000
+            ).toISOString(), // 7 days from now
+            priority: "Low",
+            userId: user.uid,
+          },
+          {
+            title: "Invite your partner",
+            description: "Share your partner ID with your spouse to connect.",
+            status: "To Do",
+            creator: "self",
+            createdAt: new Date().toISOString(),
+            dueDate: new Date(
+              Date.now() + 14 * 24 * 60 * 60 * 1000
+            ).toISOString(), // 14 days from now
+            priority: "Medium",
+            userId: user.uid,
+          },
+        ];
+        // Add each initial task to the 'tasks' collection
+        for (const task of initialTasks) {
+          await addDoc(tasksCollection, task);
+        }
 
         // Log the user in after successful register
         await signInWithEmailAndPassword(auth, values.email, values.password);
         console.log("User loged in");
+
         // Redirect to dashboard or another page (optional)
         navigate("/dashboard");
         // history.push("/dashboard"); // Uncomment if using React Router
+
         setError(null); // Clear any previous error
       } catch (error: any) {
         setError(error.message); // Set error message if something goes wrong
@@ -198,6 +232,8 @@ const SignUp = () => {
           <div className="text-red-500">{formik.errors.confirmPassword}</div>
         )}
       </div>
+
+      {error && <div className="text-red-500 text-center">{error}</div>}
 
       <button
         type="submit"

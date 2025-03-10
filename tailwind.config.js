@@ -15,6 +15,7 @@ export default {
 
         "calm-n-cool-1-hover": "#d1c6be",
         "calm-n-cool-1": "#F6EAE2",
+        "calm-n-cool-2.2": "#6c807e",
         "calm-n-cool-2": "#47DCCa",
         "calm-n-cool-3": "#04BFBF",
         "calm-n-cool-4": "#037F8C",
