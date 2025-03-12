@@ -67,6 +67,7 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
             task={task}
             onClick={() => setSelectedTask(task)}
             onUpdateTask={onUpdateTask}
+            hideActions
           />
         ))}
       </div>

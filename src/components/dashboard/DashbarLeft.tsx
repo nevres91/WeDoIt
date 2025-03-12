@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { UserData } from "../../types";
 import { leavePartner } from "../../utils/PartnerService";
 import { PartnershipInvitations } from "./PartnershipInvitations";
@@ -9,6 +10,7 @@ interface DashbarLeftProps {
   role: string;
   userData: UserData;
   userId: string | undefined;
+  sidebar: boolean;
 }
 
 const DashbarLeft: React.FC<DashbarLeftProps> = ({
@@ -16,6 +18,7 @@ const DashbarLeft: React.FC<DashbarLeftProps> = ({
   role,
   userData,
   userId,
+  sidebar,
 }) => {
   const handleLeave = () => {
     if (userId && userData?.partnerId) {
@@ -25,7 +28,11 @@ const DashbarLeft: React.FC<DashbarLeftProps> = ({
   const isLeaveDisabled = !userId || !userData?.partnerId;
   return (
     <>
-      <div className="flex flex-col items-center shadow-2xl h-[calc(100%-6px)] w-[16%] min-w-[240px] max-w-[300px] bg-calm-n-cool-6  backdrop-blur-[9px] rounded-[4px] ml-[3px] overflow-y-auto scrollbar-transparent">
+      <div //Container
+        className={`-translate-x-[100%] ${
+          sidebar ? "translate-x-[0] z-40 " : "-translate-x-[110%] z-40"
+        } absolute  lg:relative lg:translate-x-[0] transition-all ease-in-out duration-200 flex flex-col items-center shadow-2xl h-[calc(100%-6px)] w-[16%] min-w-[240px] max-w-[300px] bg-calm-n-cool-6  backdrop-blur-[9px] rounded-[4px] ml-[3px] overflow-y-auto scrollbar-transparent`}
+      >
         <div
           className={`w-full h-full absolute top-0 left-0 opacity-5 ${
             role === "husband" ? "bg-man scale-x-[-1]" : "bg-woman"

@@ -27,9 +27,15 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const toDoTasks = tasks.filter((task) => task.status === "To Do");
-  const inProgressTasks = tasks.filter((task) => task.status === "In Progress");
-  const doneTasks = tasks.filter((task) => task.status === "Done");
+  const toDoTasks = tasks.filter(
+    (task) => task.status === "To Do" && task.declined != true
+  );
+  const inProgressTasks = tasks.filter(
+    (task) => task.status === "In Progress" && task.declined !== true
+  );
+  const doneTasks = tasks.filter(
+    (task) => task.status === "Done" && task.declined !== true
+  );
 
   const handleCreateTask = async () => {
     if (!newTask.title.trim() || !newTask.dueDate) return;
@@ -102,7 +108,7 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({
           <i className="fa-solid fa-plus mr-2"></i> Create New Task
         </button>
       </div>
-      <div className="relative flex flex-col md:flex-row space-x-1 xl:space-x-2 space-y-6 md:space-y-0 max-h-[calc(100%-43px)]">
+      <div className="relative flex flex-col md:flex-row space-x-1 xl:space-x-2 space-y-6 md:space-y-0 max-h-[calc(100%-52px)]">
         <div className="w-full md:w-1/3 bg-yellow-100 p-5 bg-opacity-40  rounded-t-none rounded-b-none rounded-l-lg  overflow-auto max-h-[100%] scrollbar-transparent">
           <h2 className="text-2xl font-semibold text-gray-700 mb-4">To Do</h2>
           <div className="py-2 overflow-y-auto space-y-3 pr-2">

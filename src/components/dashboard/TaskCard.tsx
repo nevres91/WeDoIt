@@ -4,8 +4,9 @@ import { Task } from "../../types";
 const TaskCard: React.FC<{
   task: Task;
   onClick: () => void;
-  onUpdateTask: (task: Task) => void;
-}> = ({ task, onClick }) => {
+  onUpdateTask?: (task: Task) => void;
+  hideActions?: boolean;
+}> = ({ task, onClick, hideActions }) => {
   const priorityColor = {
     Low: "bg-gray-200 text-gray-800",
     Medium: "bg-yellow-200 text-yellow-800",
@@ -15,7 +16,7 @@ const TaskCard: React.FC<{
 
   return (
     <div //container
-      className={`flex relative overflow-hidden w-full min-w-[200px] rounded-lg shadow-md hover:shadow-lg transition-all duration-100 h-[110px]  ${
+      className={`flex relative overflow-hidden w-full max-w-[450px] min-w-[200px] rounded-lg shadow-md hover:shadow-lg transition-all duration-100 h-[110px]  ${
         task.creator === "partner" && userData?.role === "husband"
           ? "bg-pink-50 border-l-4 border-pink-400 hover:bg-pink-100"
           : task.creator === "partner" && userData?.role === "wife"
@@ -25,6 +26,16 @@ const TaskCard: React.FC<{
           : "bg-pink-50 border-l-4 border-pink-400 hover:bg-pink-100"
       }`}
     >
+      <div // DECLINE OVERLAY
+        className={`w-full h-full bg-red-200 absolute top-0 left-0 bg-opacity-30 flex items-center justify-center cursor-pointer ${
+          task.declined ? "" : "hidden"
+        }`}
+        onClick={onClick}
+      >
+        <p className="font-bold text-2xl text-red-600 z-10 opacity-70 absolute bottom-1 right-3">
+          DECLINED
+        </p>
+      </div>
       <div //content
         onClick={onClick}
         className="flex flex-col cursor-pointer rounded-lg p-2 h-full w-[82%]"
@@ -79,7 +90,9 @@ const TaskCard: React.FC<{
       </div>
       <div className="w-[18%] h-full rounded-lg p-2 content-center font-normal min-w-[75px]">
         <button
-          className={`w-full text-xs px-2 py-1 rounded-full bg-green-200 text-green-700 my-1 hover:bg-green-400 hover:text-white transition-all duration-100`}
+          className={`w-full text-xs px-2 py-1 rounded-full bg-green-200 text-green-700 my-1 hover:bg-green-400 hover:text-white transition-all duration-100 ${
+            hideActions ? "hidden" : ""
+          }`}
         >
           {task.status === "To Do"
             ? "Accept"
@@ -88,12 +101,16 @@ const TaskCard: React.FC<{
             : "Restart"}
         </button>
         <button
-          className={`w-full text-xs px-2 py-1 rounded-full bg-red-200 text-red-700 my-1 hover:bg-red-400 hover:text-white transition-all duration-100`}
+          className={`w-full text-xs px-2 py-1 rounded-full bg-red-200 text-red-700 my-1 hover:bg-red-400 hover:text-white transition-all duration-100 ${
+            hideActions ? "hidden" : ""
+          }`}
         >
           Reject
         </button>
         <button
-          className={`w-full text-xs  px-2 py-1 rounded-full bg-red-400 text-white my-1 hover:bg-red-500 hover:text-white transition-all duration-100`}
+          className={`w-full text-xs  px-2 py-1 rounded-full bg-red-400 text-white my-1 hover:bg-red-500 hover:text-white transition-all duration-100 ${
+            hideActions ? "hidden" : ""
+          }`}
         >
           Delete
         </button>

@@ -3,11 +3,12 @@ import { Task } from "../../types";
 import { db } from "../../services/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { useTasks } from "../../hooks/useTasks";
+import { useDashboard } from "../../context/DashboardContext";
 
 const TaskDetails: React.FC<{
   task: Task;
   onClose: () => void;
-  onUpdateTask: (task: Task) => void;
+  onUpdateTask?: (task: Task) => void;
 }> = ({ task, onClose, onUpdateTask }) => {
   const [declineMessage, setDeclineMessage] = useState(
     task.declineMessage || ""
@@ -18,8 +19,7 @@ const TaskDetails: React.FC<{
   const [editedDescription, setEditedDescription] = useState(task.description);
   const [error, setError] = useState<string | null>(null);
   const { handleDelete, handleDecline } = useTasks();
-
-  console.log("TaskDetails received task with ID:", task.id);
+  const { activeTab } = useDashboard();
 
   const onDecline = async () => {
     const success = await handleDecline(task.id, declineMessage);
@@ -30,7 +30,9 @@ const TaskDetails: React.FC<{
         declineMessage,
       };
       setTaskState(updatedTask);
-      onUpdateTask(updatedTask);
+      if (onUpdateTask) {
+        onUpdateTask(updatedTask);
+      }
       setError(null);
     } else {
       setError("Failed to decline task"); // Error is already set in useTasks, but you can customize this
@@ -50,7 +52,9 @@ const TaskDetails: React.FC<{
         description: editedDescription,
       });
       setTaskState(updatedTask);
-      onUpdateTask(updatedTask);
+      if (onUpdateTask) {
+        onUpdateTask(updatedTask);
+      }
       setIsEditing(false);
       setError(null);
     } catch (err: any) {
@@ -63,7 +67,9 @@ const TaskDetails: React.FC<{
       const taskRef = doc(db, "tasks", task.id);
       await updateDoc(taskRef, { status: newStatus });
       setTaskState(updatedTask);
-      onUpdateTask(updatedTask);
+      if (onUpdateTask) {
+        onUpdateTask(updatedTask);
+      }
       setError(null);
     } catch (err: any) {
       setError("Failed to update status: " + err.message);
@@ -71,7 +77,7 @@ const TaskDetails: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-20">
       <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
         {error && <div className="text-red-500 mb-4">{error}</div>}
         {isEditing ? (
@@ -118,8 +124,14 @@ const TaskDetails: React.FC<{
               </p>
               {taskState.declined && (
                 <div>
-                  <p className="text-red-600 font-semibold">Status: Declined</p>
-                  <p>
+                  <p className="font-semibold">
+                    Status:{" "}
+                    <span className="text-red-600 font-semibold">Declined</span>
+                  </p>
+                  <p
+                    className="bg-red-100 p-2 w-full text-wrap max-h-44 overflow-y-auto scrollbar-thin scrollable_content"
+                    id="scrollable-content"
+                  >
                     <span className="font-semibold">Reason:</span>{" "}
                     {taskState.declineMessage}
                   </p>
@@ -133,7 +145,9 @@ const TaskDetails: React.FC<{
             {taskState.status === "To Do" && (
               <button
                 onClick={() => handleStatusChange("In Progress")}
-                className="flex-1 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 active:bg-yellow-700 transition-all duration-200"
+                className={`flex-1 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 active:bg-yellow-700 transition-all duration-200 ${
+                  activeTab === "partner" || task.declined ? "hidden" : ""
+                }`}
               >
                 Start
               </button>
@@ -141,7 +155,9 @@ const TaskDetails: React.FC<{
             {taskState.status === "In Progress" && (
               <button
                 onClick={() => handleStatusChange("Done")}
-                className="flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 active:bg-green-700 transition-all duration-200"
+                className={`flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 active:bg-green-700 transition-all duration-200 ${
+                  activeTab === "partner" || task.declined ? "hidden" : ""
+                }`}
               >
                 Finish
               </button>
@@ -149,7 +165,9 @@ const TaskDetails: React.FC<{
             {taskState.status === "Done" && (
               <button
                 onClick={() => handleStatusChange("To Do")}
-                className="flex-1 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 active:bg-gray-700 transition-all duration-200"
+                className={`flex-1 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 active:bg-gray-700 transition-all duration-200 ${
+                  activeTab === "partner" || task.declined ? "hidden" : ""
+                }`}
               >
                 Restart
               </button>
@@ -160,7 +178,9 @@ const TaskDetails: React.FC<{
               <button
                 onClick={onDecline}
                 disabled={!declineMessage.trim()}
-                className="flex-1 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 active:bg-red-700 disabled:bg-red-300 transition-all duration-200"
+                className={`flex-1 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 active:bg-red-700 disabled:bg-red-300 transition-all duration-200 ${
+                  activeTab === "partner" ? "hidden" : ""
+                }`}
               >
                 Decline
               </button>
@@ -195,7 +215,9 @@ const TaskDetails: React.FC<{
               taskState.creator === "self" && (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="flex-1 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 active:bg-yellow-700 transition-all duration-200"
+                  className={`flex-1 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 active:bg-yellow-700 transition-all duration-200 ${
+                    activeTab === "partner" ? "hidden" : ""
+                  }`}
                 >
                   Edit
                 </button>
@@ -203,7 +225,9 @@ const TaskDetails: React.FC<{
             )}
             <button
               onClick={() => handleDelete(task.id)}
-              className="flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 active:bg-red-800 transition-all duration-200"
+              className={`flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 active:bg-red-800 transition-all duration-200 ${
+                activeTab === "partner" ? "hidden" : ""
+              }`}
             >
               Delete
             </button>

@@ -17,7 +17,7 @@ export const SidebarMenu = () => {
                 !userData?.partnerId ? "hidden" : ""
               }`}
             >
-              Partner
+              Partner's tasks
             </button>
             <button
               onClick={() => setActiveTab("find-partner")}
@@ -28,18 +28,10 @@ export const SidebarMenu = () => {
               Link a partner
             </button>
             <button
-              onClick={() => setActiveTab("your-tasks")}
+              onClick={() => setActiveTab("declined")}
               className={buttonClassses}
             >
-              Your Tasks
-            </button>
-            <button
-              onClick={() => setActiveTab("partners-tasks")}
-              className={`${buttonClassses}, ${
-                !userData?.partnerId ? "hidden" : ""
-              }`}
-            >
-              Partner's Tasks
+              Declined Tasks
             </button>
             <button
               onClick={() => setActiveTab("todo")}

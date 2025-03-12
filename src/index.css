@@ -36,6 +36,5 @@ body {
 }
 
 #scrollable-content::-webkit-scrollbar-track {
-  margin-top: 55px;
   background: transparent;
 }

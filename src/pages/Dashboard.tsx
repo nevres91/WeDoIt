@@ -16,6 +16,7 @@ const Dashboard = () => {
     partnerData: null,
   };
   const { visible } = useHideOnScroll();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (userData) {
@@ -32,12 +33,25 @@ const Dashboard = () => {
         <div // CONTAINER
           className="flex gap-[3px] rounded-md  w-[100vw] h-[100vh] items-center"
         >
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className={`absolute transition-all ease-in-out duration-200 text-calm-n-cool-5 ${
+              sidebarOpen ? "left-[255px]" : "left-1"
+            } top-4 left-4 z-40`}
+          >
+            {!sidebarOpen ? (
+              <i className="fa-solid fa-bars fa-xl" />
+            ) : (
+              <i className="fa-solid fa-close fa-xl"></i>
+            )}
+          </button>
           {/* --------------------LEFT SIDE-------------------- */}
           <DashbarLeft
             logout={logout}
             role={role}
             userData={userData}
             userId={user?.uid}
+            sidebar={sidebarOpen}
           />
           {/* --------------------MIDDLE-------------------- */}
           <DashboardMiddle

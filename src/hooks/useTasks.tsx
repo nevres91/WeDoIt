@@ -114,9 +114,16 @@ export const useTasks = (userId?: string | null) => {
     }
   };
 
-  const toDoTasks = tasks.filter((task) => task.status === "To Do");
-  const inProgressTasks = tasks.filter((task) => task.status === "In Progress");
-  const doneTasks = tasks.filter((task) => task.status === "Done");
+  const toDoTasks = tasks.filter(
+    (task) => task.status === "To Do" && task.declined !== true
+  );
+  const inProgressTasks = tasks.filter(
+    (task) => task.status === "In Progress" && task.declined !== true
+  );
+  const doneTasks = tasks.filter(
+    (task) => task.status === "Done" && task.declined !== true
+  );
+  const declinedTasks = tasks.filter((task) => task.declined === true);
 
   return {
     tasks,
@@ -131,5 +138,6 @@ export const useTasks = (userId?: string | null) => {
     selectedTask,
     setSelectedTask,
     handleDecline,
+    declinedTasks,
   };
 };
