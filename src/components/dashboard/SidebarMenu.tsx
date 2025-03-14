@@ -1,7 +1,12 @@
+import { SetStateAction } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useDashboard } from "../../context/DashboardContext";
 
-export const SidebarMenu = () => {
+export const SidebarMenu = ({
+  setSidebar,
+}: {
+  setSidebar: React.Dispatch<SetStateAction<boolean>>;
+}) => {
   const { setActiveTab } = useDashboard();
   const { userData } = useAuth();
   const buttonClassses =
@@ -12,7 +17,10 @@ export const SidebarMenu = () => {
         <ul className="">
           <li>
             <button
-              onClick={() => setActiveTab("partner")}
+              onClick={() => {
+                setActiveTab("partner");
+                setSidebar(false);
+              }}
               className={`${buttonClassses}, ${
                 !userData?.partnerId ? "hidden" : ""
               }`}
@@ -20,7 +28,10 @@ export const SidebarMenu = () => {
               Partner's tasks
             </button>
             <button
-              onClick={() => setActiveTab("find-partner")}
+              onClick={() => {
+                setActiveTab("find-partner");
+                setSidebar(false);
+              }}
               className={`${buttonClassses}, ${
                 userData?.partnerId ? "hidden" : ""
               }`}
@@ -28,19 +39,28 @@ export const SidebarMenu = () => {
               Link a partner
             </button>
             <button
-              onClick={() => setActiveTab("declined")}
+              onClick={() => {
+                setActiveTab("declined");
+                setSidebar(false);
+              }}
               className={buttonClassses}
             >
               Declined Tasks
             </button>
             <button
-              onClick={() => setActiveTab("todo")}
+              onClick={() => {
+                setActiveTab("todo");
+                setSidebar(false);
+              }}
               className={buttonClassses}
             >
               To Do
             </button>
             <button
-              onClick={() => setActiveTab("calendar")}
+              onClick={() => {
+                setActiveTab("calendar");
+                setSidebar(false);
+              }}
               className={buttonClassses}
             >
               Calendar

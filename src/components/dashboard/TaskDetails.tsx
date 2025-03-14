@@ -102,9 +102,7 @@ const TaskDetails: React.FC<{
             <div className="space-y-3 text-gray-700">
               <p>
                 <span className="font-semibold">Description:</span>{" "}
-                <span className="block whitespace-pre-wrap">
-                  {taskState.description}
-                </span>
+                <span className="block">{taskState.description}</span>
               </p>
               <p>
                 <span className="font-semibold">Priority:</span>{" "}

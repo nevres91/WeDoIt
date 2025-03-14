@@ -78,15 +78,21 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
 
   return (
     <div className="h-full w-full bg-gradient-to-t from-calm-n-cool-5 to-calm-n-cool-1 p-2 xl:p-6">
-      <div className="relative flex justify-between items-center mb-6">
-        <h1 className="text-3xl text-calm-n-cool-6 text-center flex-1">
+      <div className="relative flex justify-between items-center mb-6 ">
+        <h1 className="text-xl text-calm-n-cool-6 text-center flex-1">
           Partner's Task Board
         </h1>
-        <button
+        <button //Create new task
           onClick={() => setIsCreatingTask(true)}
-          className="absolute top-0 right-0 bg-calm-n-cool-4 text-white px-4 py-2 rounded hover:bg-calm-n-cool-5"
+          className="hidden absolute top-0 right-0 bg-calm-n-cool-4 text-white px-4 py-2 rounded hover:bg-calm-n-cool-5 active:bg-calm-n-cool-6 transition-all duration-200"
         >
           <i className="fa-solid fa-plus mr-2"></i> Create New Task
+        </button>
+        <button //Create new task mobile
+          onClick={() => setIsCreatingTask(true)}
+          className="lg:hidden  bg-calm-n-cool-4 text-white px-4 py-2 rounded hover:bg-calm-n-cool-5 active:bg-calm-n-cool-6 transition-all duration-200"
+        >
+          <i className="fa-solid fa-plus" />
         </button>
       </div>
 

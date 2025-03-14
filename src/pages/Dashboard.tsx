@@ -33,18 +33,25 @@ const Dashboard = () => {
         <div // CONTAINER
           className="flex gap-[3px] rounded-md  w-[100vw] h-[100vh] items-center"
         >
-          <button
+          <button //Hamburger button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className={`absolute transition-all ease-in-out duration-200 text-calm-n-cool-5 ${
-              sidebarOpen ? "left-[255px]" : "left-1"
-            } top-4 left-4 z-40`}
+            className={`absolute transition-all ease-in-out duration-200 text-calm-n-cool-1 bg-calm-n-cool-5 p-1 px-2 md:p-2 md:px-3 rounded-md ${
+              sidebarOpen
+                ? "left-[290px] top-1"
+                : "left-[12px] md:left-[30px] top-[11px] md:top-[27px]"
+            }   z-40`}
           >
             {!sidebarOpen ? (
-              <i className="fa-solid fa-bars fa-xl" />
+              <i className="fa-solid fa-bars fa-lg" />
             ) : (
-              <i className="fa-solid fa-close fa-xl"></i>
+              <i className="fa-solid fa-close fa-lg p-2 px-1"></i>
             )}
           </button>
+          <div // Black overlay
+            className={`${
+              sidebarOpen ? "block" : "hidden"
+            } bg-black h-[100vh] w-full absolute top-0 left-0 z-10 bg-opacity-80 transition-all ease-out duration-0`}
+          />
           {/* --------------------LEFT SIDE-------------------- */}
           <DashbarLeft
             logout={logout}
@@ -52,6 +59,7 @@ const Dashboard = () => {
             userData={userData}
             userId={user?.uid}
             sidebar={sidebarOpen}
+            setSidebar={setSidebarOpen}
           />
           {/* --------------------MIDDLE-------------------- */}
           <DashboardMiddle

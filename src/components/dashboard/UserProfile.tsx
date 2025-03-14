@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import { useDashboard } from "../../context/DashboardContext";
 import { useAuth } from "../../context/AuthContext";
 
-export const UserProfile = () => {
+export const UserProfile = ({
+  setSidebar,
+}: {
+  setSidebar: React.Dispatch<SetStateAction<boolean>>;
+}) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const { userData } = useAuth();
   const { setActiveTab } = useDashboard();
@@ -22,7 +26,10 @@ export const UserProfile = () => {
             <i className=" fa-solid fa-user-pen fa-lg  ml-[calc(50%-25%)]"></i>
           </div>
           <div // Button-right
-            onClick={() => setActiveTab("home")}
+            onClick={() => {
+              setActiveTab("home");
+              setSidebar(false);
+            }}
             className="flex items-center content-center text-center bg-calm-n-cool-1 h-[40px] absolute  right-0 w-[50%] rounded-md hover:bg-calm-n-cool-4 transition-all duration-150 cursor-pointer p-1 text-calm-n-cool-6 hover:text-calm-n-cool-1"
           >
             <i className=" fa-solid fa-house fa-lg  ml-[calc(50%+5%)]"></i>

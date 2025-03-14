@@ -5,6 +5,7 @@ import { Task } from "../../types";
 import { auth, db } from "../../services/firebase";
 import { collection, addDoc, doc, getDoc } from "firebase/firestore";
 import { useTasks } from "../../hooks/useTasks";
+import { TabsComponent } from "../TabsComponent";
 
 interface DashboardHomeProps {
   tasks: Task[];
@@ -17,6 +18,7 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({
 }) => {
   const { selectedTask, setSelectedTask, handleAddTask } = useTasks();
   const [isCreatingTask, setIsCreatingTask] = useState(false);
+
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
@@ -26,6 +28,7 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({
   });
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("todo");
 
   const toDoTasks = tasks.filter(
     (task) => task.status === "To Do" && task.declined != true
@@ -36,6 +39,65 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({
   const doneTasks = tasks.filter(
     (task) => task.status === "Done" && task.declined !== true
   );
+
+  const taskTabs = [
+    { id: "todo", label: "To-Do", color: "red-300" },
+    { id: "inProgress", label: "In Progress", color: "yellow-100" },
+    { id: "done", label: "Done", color: "green-300" },
+  ];
+
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+  };
+
+  // Get the current tab's color
+  const activeTabColor =
+    taskTabs.find((tab) => tab.id === activeTab)?.color || "red-300";
+
+  const tabsContent = {
+    todo: (
+      <div className="py-2 overflow-y-auto space-y-3 px-1">
+        {toDoTasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            task={task}
+            onClick={() => setSelectedTask(task)}
+            onUpdateTask={onUpdateTask}
+          />
+        ))}
+      </div>
+    ),
+    inProgress: (
+      <div className="py-2 overflow-y-auto space-y-3 px-1">
+        {inProgressTasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            task={task}
+            onClick={() => {
+              console.log("Selected task ID:", task.id);
+              setSelectedTask(task);
+            }}
+            onUpdateTask={onUpdateTask}
+          />
+        ))}
+      </div>
+    ),
+    done: (
+      <div className="py-2 overflow-y-auto space-y-3 px-1">
+        {doneTasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            task={task}
+            onClick={() => {
+              console.log("Selected task ID:", task.id);
+              setSelectedTask(task);
+            }}
+            onUpdateTask={onUpdateTask}
+          />
+        ))}
+      </div>
+    ),
+  };
 
   const handleCreateTask = async () => {
     if (!newTask.title.trim() || !newTask.dueDate) return;
@@ -96,19 +158,42 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({
   };
 
   return (
-    <div className="h-full w-full bg-gradient-to-t from-calm-n-cool-5 to-calm-n-cool-1 p-2 xl:p-6 max-h-[calc(100%-0px)]">
+    <div className="h-full w-full bg-gradient-to-t from-calm-n-cool-5 to-calm-n-cool-1 p-2 md:p-6 max-h-[calc(100%-0px)]">
       <div className="relative flex justify-between items-center mb-6">
-        <h1 className="text-3xl  text-calm-n-cool-6 text-center flex-1">
+        <h1 className="text-2xl md:text-3xl  text-calm-n-cool-6 text-center flex-1">
           Your Task Board
         </h1>
-        <button
+
+        <button //Create new task mobile
           onClick={() => setIsCreatingTask(true)}
-          className="absolute top-0 right-0 bg-calm-n-cool-4 text-white px-4 py-2 rounded hover:bg-calm-n-cool-5 active:bg-calm-n-cool-6 transition-all duration-200"
+          className="lg:hidden  bg-calm-n-cool-5 text-white p-1 px-[10px] md:p-2 md:px-[14px] rounded-md hover:bg-calm-n-cool-5 active:bg-calm-n-cool-6 transition-all duration-200"
+        >
+          <i className="fa-solid fa-plus" />
+        </button>
+      </div>
+      <div //Tabs Component
+        className="relative h-[calc(100vh-100px)]"
+      >
+        <button //Create new task
+          onClick={() => setIsCreatingTask(true)}
+          className={`hidden lg:block  absolute top-0 right-[40px] rounded-t-xl text-white ${
+            activeTab === "done"
+              ? "bg-[linear-gradient(to_bottom,rgba(74,157,191,1),rgba(134,239,172,0.4))]"
+              : activeTab === "inProgress"
+              ? "bg-[linear-gradient(to_bottom,rgba(74,157,191,1),rgba(254,249,195,0.4))]"
+              : "bg-[linear-gradient(to_bottom,rgba(74,157,191,1),rgba(252,165,165,0.4))]"
+          } px-4 py-2 hover:bg-calm-n-cool-5 active:bg-calm-n-cool-6 transition-all duration-200`}
         >
           <i className="fa-solid fa-plus mr-2"></i> Create New Task
         </button>
+        <TabsComponent
+          tabs={taskTabs}
+          tabContent={tabsContent}
+          defaultTab="todo"
+          onTabChange={handleTabChange}
+        />
       </div>
-      <div className="relative flex flex-col md:flex-row space-x-1 xl:space-x-2 space-y-6 md:space-y-0 max-h-[calc(100%-52px)]">
+      {/* <div className="hidden relative flex flex-col md:flex-row space-x-1 xl:space-x-2 space-y-6 md:space-y-0 max-h-[calc(100%-52px)]">
         <div className="w-full md:w-1/3 bg-yellow-100 p-5 bg-opacity-40  rounded-t-none rounded-b-none rounded-l-lg  overflow-auto max-h-[100%] scrollbar-transparent">
           <h2 className="text-2xl font-semibold text-gray-700 mb-4">To Do</h2>
           <div className="py-2 overflow-y-auto space-y-3 pr-2">
@@ -156,7 +241,7 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({
             ))}
           </div>
         </div>
-      </div>
+      </div> */}
       {selectedTask && (
         <TaskDetails
           task={selectedTask}

@@ -37,7 +37,7 @@ export const DashboardMiddle: React.FC<DashboardMiddleProps> = ({
     <>
       <div
         id="scrollable-content"
-        className="flex shadow-2xl h-[calc(100%-6px)] transition-all ease-in-out duration-200 w-full lg:w-[84%] mr-[3px] bg-calm-n-cool-1  backdrop-blur-[9px] rounded-[4px] flex-col items-center overflow-auto relative"
+        className="flex shadow-2xl h-[calc(100%-6px)] transition-all ease-in-out duration-200 w-[calc(100%-6px)] mx-auto lg:w-[84%] mr-[3px] bg-calm-n-cool-1  backdrop-blur-[9px] rounded-[4px] flex-col items-center overflow-auto relative"
       >
         {/* <Navbar visible={visible} /> */}
         {/* TEST */}

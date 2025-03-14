@@ -16,7 +16,7 @@ const TaskCard: React.FC<{
 
   return (
     <div //container
-      className={`flex relative overflow-hidden w-full max-w-[450px] min-w-[200px] rounded-lg shadow-md hover:shadow-lg transition-all duration-100 h-[110px]  ${
+      className={`flex relative overflow-hidden justify-between w-full xs:w-[45%] lg:w-full  min-w-[200px] rounded-lg shadow-md hover:shadow-lg transition-all duration-100 h-[110px]  ${
         task.creator === "partner" && userData?.role === "husband"
           ? "bg-pink-50 border-l-4 border-pink-400 hover:bg-pink-100"
           : task.creator === "partner" && userData?.role === "wife"
@@ -88,7 +88,7 @@ const TaskCard: React.FC<{
           </span>
         </div>
       </div>
-      <div className="w-[18%] h-full rounded-lg p-2 content-center font-normal min-w-[75px]">
+      <div className="w-[18%] max-w-[80px] h-full rounded-lg p-2 font-normal min-w-[75px]">
         <button
           className={`w-full text-xs px-2 py-1 rounded-full bg-green-200 text-green-700 my-1 hover:bg-green-400 hover:text-white transition-all duration-100 ${
             hideActions ? "hidden" : ""
