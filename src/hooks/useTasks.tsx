@@ -53,7 +53,10 @@ export const useTasks = (userId?: string | null) => {
   // -------------------------------ADD TASK-------------------------------
   const handleAddTask = (newTask: Task) => {
     // Prevent duplicates by checking if task already exists (based on Firestore ID)
-    if (!tasks.some((task) => task.id === newTask.id)) {
+    if (
+      newTask.userId === userId &&
+      !tasks.some((task) => task.id === newTask.id)
+    ) {
       setTasks([...tasks, newTask]);
     }
   };

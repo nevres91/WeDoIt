@@ -71,10 +71,10 @@ export const DashboardFindPartner = () => {
   return (
     <>
       <div // Container
-        className="w-full flex justify-center  h-screen -mt-28 bg-findPartner bg-no-repeat bg-cover  bg-center"
+        className="w-full h-[100%] absolute top-0 left-0 flex justify-center bg-findPartner bg-no-repeat bg-cover  bg-center "
       >
-        <div className="absolute top-0 left-0 border-2 border-red-600 w-full h-full bg-cupid bg-no-repeat bg-contain bg-center  opacity-40" />
-        <div className="w-[500px] h-[220px] min-w-[280px] ml-2 mr-2 p-6 mt-10 bg-calm-n-cool-2 backdrop-blur-[2px] shadow-[0px_0px_10px_0px_rgba(0,0,0,0.75)] bg-opacity-15 rounded-md flex flex-col items-center">
+        <div className="absolute top-0 left-0 w-full h-full bg-cupid bg-no-repeat bg-contain bg-center  opacity-40" />
+        <div className="w-[500px] h-[220px] min-w-[280px] ml-2 mr-2 p-6 translate-y-[100%] bg-calm-n-cool-2 backdrop-blur-[2px] shadow-[0px_0px_10px_0px_rgba(0,0,0,0.75)] bg-opacity-15 rounded-md flex flex-col items-center">
           <div className="max-w-md mx-auto ">
             <h2 className="text-2xl text-calm-n-cool-5 font-bold my-4 text-center">
               Find Your Partner

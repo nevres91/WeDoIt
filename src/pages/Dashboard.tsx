@@ -38,7 +38,7 @@ const Dashboard = () => {
             className={`absolute transition-all ease-in-out duration-200 text-calm-n-cool-1 bg-calm-n-cool-5 p-1 px-2 md:p-2 md:px-3 rounded-md ${
               sidebarOpen
                 ? "left-[290px] top-1"
-                : "left-[12px] md:left-[30px] top-[11px] md:top-[27px]"
+                : "left-[7px] md:left-[30px] top-[7px] md:top-[27px]"
             }   z-40`}
           >
             {!sidebarOpen ? (

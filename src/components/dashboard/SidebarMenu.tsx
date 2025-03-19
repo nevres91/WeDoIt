@@ -18,6 +18,15 @@ export const SidebarMenu = ({
           <li>
             <button
               onClick={() => {
+                setActiveTab("home");
+                setSidebar(false);
+              }}
+              className={`${buttonClassses}`}
+            >
+              Your tasks
+            </button>
+            <button
+              onClick={() => {
                 setActiveTab("partner");
                 setSidebar(false);
               }}

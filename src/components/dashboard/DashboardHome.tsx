@@ -38,7 +38,7 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onUpdateTask }) => {
   // -----------------------------TABS COMPONENT-----------------------------
   const taskTabs = [
     { id: "todo", label: "To-Do", color: "red-200" },
-    { id: "inProgress", label: "In Progress", color: "yellow-100" },
+    { id: "inProgress", label: "In Progress", color: "yellow-200" },
     { id: "done", label: "Done", color: "green-200" },
   ];
 
@@ -109,14 +109,17 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onUpdateTask }) => {
         dueDate: "",
         priority: "Medium" as "Low" | "Medium" | "High",
       });
-      setTimeout(() => setIsCreatingTask(false), 1000);
+      setTimeout(() => {
+        setIsCreatingTask(false);
+        setMessage(null); // Clear message when modal closes
+      }, 1000);
     }
   };
 
   return (
-    <div className="h-full w-full bg-gradient-to-t from-calm-n-cool-5 to-calm-n-cool-1 p-2 md:p-6 lg:px-0  max-h-[calc(100%-0px)]">
+    <div className="h-full w-full bg-gradient-to-t from-calm-n-cool-5 to-calm-n-cool-1 p-1 sm:p-2 md:p-6 lg:px-0  max-h-[calc(100%-0px)]">
       <div className="relative flex justify-between items-center mb-6">
-        <h1 className="text-2xl md:text-3xl text-calm-n-cool-6 text-center flex-1">
+        <h1 className="text-xl md:text-3xl text-calm-n-cool-6 text-center flex-1">
           Your Task Board
         </h1>
 

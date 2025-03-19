@@ -1,6 +1,8 @@
 import { SetStateAction, useState } from "react";
 import { useDashboard } from "../../context/DashboardContext";
 import { useAuth } from "../../context/AuthContext";
+import { useTasks } from "../../hooks/useTasks";
+import { auth } from "../../services/firebase";
 
 export const UserProfile = ({
   setSidebar,
@@ -10,6 +12,8 @@ export const UserProfile = ({
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const { userData } = useAuth();
   const { setActiveTab } = useDashboard();
+  const { firstName, lastName, email, role } = userData || {};
+  const { inProgressTasks, doneTasks } = useTasks(auth.currentUser?.uid);
   return (
     <>
       <div // Container
@@ -42,11 +46,9 @@ export const UserProfile = ({
           className={`z-40 text-calm-n-cool-6 font-semibold text-xl text-center rounded-md bg-calm-n-cool-1 w-full h-full`}
           style={{ fontFamily: "montserrat" }}
         >
-          <p className="mt-[40px]">
-            {userData?.firstName + " " + userData?.lastName}
-          </p>
+          <p className="mt-[40px]">{firstName + " " + lastName}</p>
           <p className="text-[13px] font-light px-2 break-all line-clamp-1">
-            nevres_muratovic@hotmail.com
+            {email}
           </p>
           <button // Expand Button
             className={`fa-solid ${
@@ -63,15 +65,17 @@ export const UserProfile = ({
             <ul className="text-calm-n-cool-1 text-sm font-semibold w-[97%] m-auto text-start">
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
                 <p className="w-[90px]">First Name:</p>{" "}
-                <span className="font-light ml-4">Nevres</span>
+                <span className="font-light ml-4">{firstName}</span>
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
                 <p className="w-[90px]">Last Name:</p>{" "}
-                <span className="font-light ml-4">Muratovic</span>
+                <span className="font-light ml-4">{lastName}</span>
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
                 <p className="w-[90px]">Sex:</p>{" "}
-                <span className="font-light ml-4">Male</span>
+                <span className="font-light ml-4">
+                  {role === "wife" ? "Female" : "Male"}
+                </span>
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
                 <p className="w-[90px]">Age:</p>{" "}
@@ -94,11 +98,13 @@ export const UserProfile = ({
             <ul className="text-calm-n-cool-1 text-sm font-semibold w-[97%] m-auto text-start">
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
                 <p className="w-[90px]">Completed:</p>{" "}
-                <span className="font-light ml-4">23</span>
+                <span className="font-light ml-4">{doneTasks.length}</span>
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
                 <p className="w-[90px]">Ongoing:</p>{" "}
-                <span className="font-light ml-4">15</span>
+                <span className="font-light ml-4">
+                  {inProgressTasks.length}
+                </span>
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
                 <p className="w-[90px]">Expired:</p>{" "}

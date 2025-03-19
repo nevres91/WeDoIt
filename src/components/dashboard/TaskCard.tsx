@@ -1,4 +1,5 @@
 import { useAuth } from "../../context/AuthContext";
+import { useDashboard } from "../../context/DashboardContext";
 import { Task } from "../../types";
 
 const TaskCard: React.FC<{
@@ -13,15 +14,24 @@ const TaskCard: React.FC<{
     High: "bg-red-200 text-red-800",
   };
   const { userData } = useAuth();
+  const { activeTab } = useDashboard();
 
   return (
     <div //container
       className={`flex relative overflow-hidden justify-between w-full xs:w-[45%] lg:w-full  min-w-[200px] rounded-lg shadow-md hover:shadow-lg transition-all duration-100 h-[110px]  ${
-        task.creator === "partner" && userData?.role === "husband"
-          ? "bg-pink-50 border-l-4 border-pink-400 hover:bg-pink-100"
-          : task.creator === "partner" && userData?.role === "wife"
-          ? "bg-blue-50 border-l-4 border-blue-400 hover:bg-blue-100"
-          : task.creator === "self" && userData?.role === "husband"
+        activeTab === "partner" && task.creator === "self"
+          ? userData?.role === "wife"
+            ? "bg-blue-50 border-l-4 border-blue-400 hover:bg-blue-100"
+            : "bg-pink-50 border-l-4 border-pink-400 hover:bg-pink-100"
+          : activeTab === "partner" && task.creator === "partner"
+          ? userData?.role === "wife"
+            ? "bg-pink-50 border-l-4 border-pink-400 hover:bg-pink-100"
+            : "bg-blue-50 border-l-4 border-blue-400 hover:bg-blue-100"
+          : activeTab === "home" && task.creator === "self"
+          ? userData?.role === "wife"
+            ? "bg-pink-50 border-l-4 border-pink-400 hover:bg-pink-100"
+            : "bg-blue-50 border-l-4 border-blue-400 hover:bg-blue-100"
+          : userData?.role === "wife"
           ? "bg-blue-50 border-l-4 border-blue-400 hover:bg-blue-100"
           : "bg-pink-50 border-l-4 border-pink-400 hover:bg-pink-100"
       }`}
@@ -70,21 +80,38 @@ const TaskCard: React.FC<{
             {task.priority}
           </span>
           <span
-            className={`text-xs font-semibold px-2 py-1 rounded-full ${
-              task.creator === "partner" && userData?.role === "husband"
-                ? "bg-pink-200 text-pink-800"
-                : task.creator === "partner" && userData?.role === "wife"
-                ? "bg-blue-200 text-blue-800"
-                : task.creator === "self" && userData?.role === "husband"
-                ? "bg-blue-200 text-blue-800"
-                : "bg-pink-200 text-pink-800"
-            }`}
+            className={`text-xs font-semibold px-2 py-1 rounded-full 
+              ${
+                activeTab === "partner" && task.creator === "self"
+                  ? userData?.role === "wife"
+                    ? "bg-blue-200 text-blue-800"
+                    : "bg-pink-200 text-pink-800"
+                  : activeTab === "partner" && task.creator === "partner"
+                  ? userData?.role === "wife"
+                    ? "bg-pink-200 text-pink-800"
+                    : "bg-blue-200 text-blue-800"
+                  : activeTab === "home" && task.creator === "self"
+                  ? userData?.role === "wife"
+                    ? "bg-pink-200 text-pink-800"
+                    : "bg-blue-200 text-blue-800"
+                  : userData?.role === "wife"
+                  ? "bg-blue-200 text-blue-800"
+                  : "bg-pink-200 text-pink-800"
+              }`}
           >
-            {userData?.role === "husband" && task.creator === "partner"
-              ? "From Wife"
-              : userData?.role === "wife" && task.creator === "partner"
+            {activeTab === "partner" && task.creator === "self"
+              ? userData?.role === "wife"
+                ? "From Husband"
+                : "From Wife"
+              : activeTab === "partner" && task.creator === "partner"
+              ? userData?.role === "wife"
+                ? "From Wife"
+                : "From Husband"
+              : task.creator === "self"
+              ? "From You"
+              : userData?.role === "wife"
               ? "From Husband"
-              : "From You"}
+              : "From Wife"}
           </span>
         </div>
       </div>

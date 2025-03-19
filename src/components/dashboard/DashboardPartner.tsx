@@ -36,8 +36,8 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
 
   // -----------------------------TABS COMPONENT-----------------------------
   const taskTabs = [
-    { id: "todo", label: "To-Do", color: "red-200" },
-    { id: "inProgress", label: "In Progress", color: "yellow-100" },
+    { id: "todo", label: "To-Do", color: "red-300" },
+    { id: "inProgress", label: "In Progress", color: "yellow-200" },
     { id: "done", label: "Done", color: "green-200" },
   ];
 
@@ -120,7 +120,7 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="h-full w-full bg-gradient-to-t from-calm-n-cool-5 to-calm-n-cool-1 p-2 md:p-6 lg:px-0  max-h-[calc(100%-0px)]">
+    <div className="h-full w-full bg-gradient-to-t from-calm-n-cool-5 to-calm-n-cool-1 p-1 sm:p-2 md:p-6 lg:px-0  max-h-[calc(100%-0px)]">
       <div className="relative flex justify-between items-center mb-6 ">
         <h1 className="text-xl sm:text-2xl md:text-3xl text-calm-n-cool-6 text-center flex-1">
           Partner's Task Board
@@ -133,7 +133,7 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
         </button>
         <button //Create new task mobile
           onClick={() => setIsCreatingTask(true)}
-          className="lg:hidden absolute top-0 right-0  bg-calm-n-cool-5 text-white py-[4px] px-[11px] md:p-2 md:px-[14px] rounded-md hover:bg-calm-n-cool-5 active:bg-calm-n-cool-6 transition-all duration-200"
+          className="lg:hidden absolute top-0 right-0  bg-calm-n-cool-5 text-white py-[4px] px-[10px] md:p-2 md:px-[14px] rounded-md hover:bg-calm-n-cool-5 active:bg-calm-n-cool-6 transition-all duration-200"
         >
           <i className="fa-solid fa-plus" />
         </button>

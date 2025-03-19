@@ -52,7 +52,7 @@ export function TabsComponent({
         ))}
       </div>
       <div
-        className={`bg-${activeTabColor} transition-all ease-in-out duration-200 bg-opacity-50 p-0 lg:p-8 lg:pb-0 mx-0 lg:mx-10 shadow-xl space-y-5 h-[calc(100vh-125px)] md:max-h-[calc(100vh-141px)] lg:max-h-[calc(100vh-137px)]`}
+        className={`bg-${activeTabColor} transition-all ease-in-out duration-200 bg-opacity-50 pt-2 p-0 md:p-4 md:pb-0 lg:p-8 lg:pb-0 mx-0 lg:mx-10 shadow-xl space-y-5 h-[calc(100vh-106px)] rounded-sm md:max-h-[calc(100vh-141px)] lg:max-h-[calc(100vh-137px)]`}
       >
         <div className="overflow-auto h-full max-h-[100%] scrollbar-transparent">
           {tabContent[activeTab]}
