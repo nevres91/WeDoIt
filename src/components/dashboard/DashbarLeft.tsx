@@ -46,14 +46,14 @@ const DashbarLeft: React.FC<DashbarLeftProps> = ({
         <SidebarMenu setSidebar={setSidebar} />
         <PartnershipInvitations userData={userData} />
         <div className="bg-calm-n-cool-6 w-full flex flex-col mt-auto pt-8 pb-2 rounded-b-md  ">
-          <button
+          <button //Leave Partner Button
             onClick={handleLeave}
             disabled={isLeaveDisabled}
             className="mb-2 z-40 bg-red-500 font-light  hover:bg-red-600 hover:text-calm-n-cool-1 text-white p-2  rounded-md w-[calc(100%-12px)]  transition-all duration-100 disabled:bg-red-600 disabled:opacity-50 m-auto"
           >
             Leave your partner
           </button>
-          <button
+          <button // Logout Button
             onClick={logout}
             className="z-40 bg-calm-n-cool-4 font-light hover:bg-calm-n-cool-1 hover:text-calm-n-cool-6 text-white p-2  rounded-md w-[calc(100%-12px)]  transition-all duration-100 disabled:opacity-50 m-auto"
           >

@@ -31,7 +31,7 @@ const createTaskBase = (newTask: NewTask): Omit<Task, "id" | "userId"> => ({
   priority: newTask.priority,
 });
 
-// Function to create a task ONLY for the partner
+// ------------------------------CREATE TASK FOR PARTNER ONLY------------------------------
 export const createPartnerTask = async (
   newTask: NewTask,
   onAddTask: (task: Task) => void
@@ -68,7 +68,7 @@ export const createPartnerTask = async (
   }
 };
 
-// Function to create a task for either self or partner
+// ------------------------------CREATE TASK FOR SELF OR PARTNER------------------------------
 export const createTask = async (
   newTask: NewTask,
   onAddTask: (task: Task) => void

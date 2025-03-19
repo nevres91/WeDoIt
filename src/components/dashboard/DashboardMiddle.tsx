@@ -11,7 +11,6 @@ import { auth } from "../../services/firebase";
 import DashboardPartner from "./DashboardPartner";
 import { useTasks } from "../../hooks/useTasks";
 import DeclinedTasks from "./DeclinedTasks";
-import { useState } from "react";
 
 interface DashboardMiddleProps {
   visible: boolean;
@@ -61,7 +60,7 @@ export const DashboardMiddle: React.FC<DashboardMiddleProps> = ({
         )}
 
         {activeTab === "home" ? (
-          <DashboardHome tasks={tasks} onUpdateTask={handleUpdateTask} />
+          <DashboardHome onUpdateTask={handleUpdateTask} />
         ) : activeTab === "partner" ? (
           <DashboardPartner onUpdateTask={handleUpdateTask} />
         ) : activeTab === "your-tasks" ? (

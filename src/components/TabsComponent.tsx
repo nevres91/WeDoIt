@@ -40,9 +40,9 @@ export function TabsComponent({
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            className={`px-4 py-2 font-semibold ${
+            className={`px-4 py-2 font-semibold transition-all ease-in-out duration-200 ${
               activeTab === tab.id
-                ? `text-calm-n-cool-5 bg-${tab.color} bg-opacity-40 rounded-t-xl`
+                ? `text-calm-n-cool-5 bg-${tab.color} bg-opacity-50 rounded-t-xl`
                 : `text-gray-500`
             }`}
             onClick={() => handleTabClick(tab.id)}
@@ -52,7 +52,7 @@ export function TabsComponent({
         ))}
       </div>
       <div
-        className={`bg-${activeTabColor} bg-opacity-40 p-0 lg:p-8 lg:pb-0 mx-0 lg:mx-10 shadow-xl space-y-5 h-[calc(100vh-125px)] md:max-h-[calc(100vh-141px)] lg:max-h-[calc(100vh-137px)] bg-red-200`}
+        className={`bg-${activeTabColor} transition-all ease-in-out duration-200 bg-opacity-50 p-0 lg:p-8 lg:pb-0 mx-0 lg:mx-10 shadow-xl space-y-5 h-[calc(100vh-125px)] md:max-h-[calc(100vh-141px)] lg:max-h-[calc(100vh-137px)]`}
       >
         <div className="overflow-auto h-full max-h-[100%] scrollbar-transparent">
           {tabContent[activeTab]}

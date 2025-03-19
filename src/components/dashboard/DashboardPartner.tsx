@@ -5,6 +5,7 @@ import { Task } from "../../types";
 import { useAuth } from "../../context/AuthContext";
 import { useTasks } from "../../hooks/useTasks";
 import { createPartnerTask, NewTask } from "../../utils/taskOperations";
+import { TabsComponent } from "../TabsComponent";
 
 interface DashboardPartnerProps {
   onUpdateTask: (task: Task) => void;
@@ -14,10 +15,8 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
   onUpdateTask,
 }) => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isCreatingTask, setIsCreatingTask] = useState(false);
-  const { handleAddTask } = useTasks();
+  const [activeTab, setActiveTab] = useState("todo");
   const [newTask, setNewTask] = useState<NewTask>({
     title: "",
     description: "",
@@ -29,12 +28,75 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
     type: "success" | "error";
     text: string;
   } | null>(null);
-
+  const { handleAddTask } = useTasks();
   const { userData } = useAuth();
   const { toDoTasks, inProgressTasks, doneTasks, loading } = useTasks(
     userData?.partnerId
   );
 
+  // -----------------------------TABS COMPONENT-----------------------------
+  const taskTabs = [
+    { id: "todo", label: "To-Do", color: "red-200" },
+    { id: "inProgress", label: "In Progress", color: "yellow-100" },
+    { id: "done", label: "Done", color: "green-200" },
+  ];
+
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+  };
+
+  const activeTabColor =
+    taskTabs.find((tab) => tab.id === activeTab)?.color || "red-300";
+
+  const tabsContent = {
+    todo: (
+      <div className="py-2 overflow-y-auto space-y-3 px-1">
+        {toDoTasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            task={task}
+            onClick={() => setSelectedTask(task)}
+            onUpdateTask={onUpdateTask}
+            hideActions
+          />
+        ))}
+      </div>
+    ),
+    inProgress: (
+      <div className="py-2 overflow-y-auto space-y-3 px-1">
+        {inProgressTasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            task={task}
+            onClick={() => {
+              console.log("Selected task ID:", task.id);
+              setSelectedTask(task);
+            }}
+            onUpdateTask={onUpdateTask}
+            hideActions
+          />
+        ))}
+      </div>
+    ),
+    done: (
+      <div className="py-2 overflow-y-auto space-y-3 px-1">
+        {doneTasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            task={task}
+            onClick={() => {
+              console.log("Selected task ID:", task.id);
+              setSelectedTask(task);
+            }}
+            onUpdateTask={onUpdateTask}
+            hideActions
+          />
+        ))}
+      </div>
+    ),
+  };
+
+  // -----------------------------CREATE NEW TASK-----------------------------
   const handleCreateTask = async () => {
     const result = await createPartnerTask(newTask, handleAddTask);
     setMessage({
@@ -55,31 +117,12 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
     }
   };
 
-  const renderTaskColumn = (title: string, tasks: Task[], bgColor: string) => (
-    <div
-      className={`w-full md:w-1/3 ${bgColor} p-5 bg-opacity-40 rounded-lg overflow-auto max-h-[100%] scrollbar-transparent`}
-    >
-      <h2 className="text-2xl font-semibold text-gray-700 mb-4">{title}</h2>
-      <div className="py-2 overflow-y-auto space-y-3 pr-2">
-        {tasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onClick={() => setSelectedTask(task)}
-            onUpdateTask={onUpdateTask}
-            hideActions
-          />
-        ))}
-      </div>
-    </div>
-  );
-
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="h-full w-full bg-gradient-to-t from-calm-n-cool-5 to-calm-n-cool-1 p-2 xl:p-6">
+    <div className="h-full w-full bg-gradient-to-t from-calm-n-cool-5 to-calm-n-cool-1 p-2 md:p-6 lg:px-0  max-h-[calc(100%-0px)]">
       <div className="relative flex justify-between items-center mb-6 ">
-        <h1 className="text-xl text-calm-n-cool-6 text-center flex-1">
+        <h1 className="text-xl sm:text-2xl md:text-3xl text-calm-n-cool-6 text-center flex-1">
           Partner's Task Board
         </h1>
         <button //Create new task
@@ -90,18 +133,27 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
         </button>
         <button //Create new task mobile
           onClick={() => setIsCreatingTask(true)}
-          className="lg:hidden  bg-calm-n-cool-4 text-white px-4 py-2 rounded hover:bg-calm-n-cool-5 active:bg-calm-n-cool-6 transition-all duration-200"
+          className="lg:hidden absolute top-0 right-0  bg-calm-n-cool-5 text-white py-[4px] px-[11px] md:p-2 md:px-[14px] rounded-md hover:bg-calm-n-cool-5 active:bg-calm-n-cool-6 transition-all duration-200"
         >
           <i className="fa-solid fa-plus" />
         </button>
       </div>
-
-      <div className="relative flex flex-col md:flex-row space-x-1 xl:space-x-2 space-y-6 md:space-y-0 max-h-[calc(100%-43px)]">
-        {renderTaskColumn("To Do", toDoTasks, "bg-yellow-100")}
-        {renderTaskColumn("In Progress", inProgressTasks, "bg-cyan-100")}
-        {renderTaskColumn("Done", doneTasks, "bg-green-100")}
+      <div //Tabs Component
+        className="relative h-[calc(100vh-100px)]"
+      >
+        <button //Create new task button
+          onClick={() => setIsCreatingTask(true)}
+          className={`hidden lg:block  absolute top-0 right-[40px] rounded-t-xl text-calm-n-cool-5 bg-${activeTabColor} bg-opacity-50 px-4 py-2 hover:-translate-y-2 hover:shadow-xl hover:rounded-b-xl hover:bg-opacity-90 transition-all duration-200`}
+        >
+          <i className="fa-solid fa-plus mr-2"></i> Create New Task
+        </button>
+        <TabsComponent
+          tabs={taskTabs}
+          tabContent={tabsContent}
+          defaultTab="todo"
+          onTabChange={handleTabChange}
+        />
       </div>
-
       {selectedTask && (
         <TaskDetails
           task={selectedTask}
@@ -116,9 +168,11 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
             <h3 className="text-xl font-bold text-gray-800 mb-4">
               Create New Task
             </h3>
-            {error && <div className="text-red-500 mb-4">{error}</div>}
-            {successMessage && (
-              <div className="text-green-500 mb-4">{successMessage}</div>
+            {message?.type === "error" && (
+              <div className="text-red-500 mb-4">{message.text}</div>
+            )}
+            {message?.type === "success" && (
+              <div className="text-green-500 mb-4">{message.text}</div>
             )}
             <div className="space-y-4">
               <input

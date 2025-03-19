@@ -17,6 +17,7 @@ export const useTasks = (userId?: string | null) => {
   const [error, setError] = useState<string | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
+  // -------------------------------FETCH TASKS-------------------------------
   useEffect(() => {
     if (!userId) {
       setLoading(false);
@@ -49,6 +50,7 @@ export const useTasks = (userId?: string | null) => {
     return () => unsubscribe();
   }, [userId]);
 
+  // -------------------------------ADD TASK-------------------------------
   const handleAddTask = (newTask: Task) => {
     // Prevent duplicates by checking if task already exists (based on Firestore ID)
     if (!tasks.some((task) => task.id === newTask.id)) {
@@ -56,7 +58,7 @@ export const useTasks = (userId?: string | null) => {
     }
   };
 
-  // DELETE A TASK
+  // -------------------------------DELETE TASK-------------------------------
   const handleDelete = async (taskId: string) => {
     try {
       if (!taskId) {
@@ -79,7 +81,7 @@ export const useTasks = (userId?: string | null) => {
     }
   };
 
-  // DECLINE A TASK
+  // -------------------------------DECLINE TASK-------------------------------
   const handleDecline = async (taskId: string, declineMessage: string) => {
     try {
       if (!taskId) {
@@ -114,6 +116,7 @@ export const useTasks = (userId?: string | null) => {
     }
   };
 
+  // -------------------------------FILTERING TASKS-------------------------------
   const toDoTasks = tasks.filter(
     (task) => task.status === "To Do" && task.declined !== true
   );
