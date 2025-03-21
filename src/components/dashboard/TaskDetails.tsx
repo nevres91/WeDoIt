@@ -4,6 +4,7 @@ import { db } from "../../services/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { useTasks } from "../../hooks/useTasks";
 import { useDashboard } from "../../context/DashboardContext";
+import { getRemainingTime } from "../../utils/helperFunctions";
 
 const TaskDetails: React.FC<{
   task: Task;
@@ -76,6 +77,8 @@ const TaskDetails: React.FC<{
     }
   };
 
+  const remainingTime = task.dueDate ? getRemainingTime(task.dueDate) : null;
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-20">
       <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
@@ -102,7 +105,9 @@ const TaskDetails: React.FC<{
             <div className="space-y-3 text-gray-700">
               <p>
                 <span className="font-semibold">Description:</span>{" "}
-                <span className="block">{taskState.description}</span>
+                <span className="block bg-gray-200 p-2">
+                  {taskState.description}
+                </span>
               </p>
               <p>
                 <span className="font-semibold">Priority:</span>{" "}
@@ -144,7 +149,11 @@ const TaskDetails: React.FC<{
               <button
                 onClick={() => handleStatusChange("In Progress")}
                 className={`flex-1 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 active:bg-yellow-700 transition-all duration-200 ${
-                  activeTab === "partner" || task.declined ? "hidden" : ""
+                  activeTab === "partner" ||
+                  task.declined ||
+                  remainingTime?.text === "Expired"
+                    ? "hidden"
+                    : ""
                 }`}
               >
                 Start
@@ -154,7 +163,11 @@ const TaskDetails: React.FC<{
               <button
                 onClick={() => handleStatusChange("Done")}
                 className={`flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 active:bg-green-700 transition-all duration-200 ${
-                  activeTab === "partner" || task.declined ? "hidden" : ""
+                  activeTab === "partner" ||
+                  task.declined ||
+                  remainingTime?.text === "Expired"
+                    ? "hidden"
+                    : ""
                 }`}
               >
                 Finish
@@ -164,7 +177,11 @@ const TaskDetails: React.FC<{
               <button
                 onClick={() => handleStatusChange("To Do")}
                 className={`flex-1 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 active:bg-gray-700 transition-all duration-200 ${
-                  activeTab === "partner" || task.declined ? "hidden" : ""
+                  activeTab === "partner" ||
+                  task.declined ||
+                  remainingTime?.text === "Expired"
+                    ? "hidden"
+                    : ""
                 }`}
               >
                 Restart
@@ -177,23 +194,33 @@ const TaskDetails: React.FC<{
                 onClick={onDecline}
                 disabled={!declineMessage.trim()}
                 className={`flex-1 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 active:bg-red-700 disabled:bg-red-300 transition-all duration-200 ${
-                  activeTab === "partner" ? "hidden" : ""
+                  activeTab === "partner" || remainingTime?.text === "Expired"
+                    ? "hidden"
+                    : ""
                 }`}
               >
                 Decline
               </button>
             </div>
           )}
-          {!isEditing && task.creator === "partner" && !taskState.declined && (
-            <textarea
-              value={declineMessage}
-              onChange={(e) => setDeclineMessage(e.target.value)}
-              placeholder="Reason for declining..."
-              className="w-full p-2 border rounded text-gray-700"
-              rows={2}
-            />
-          )}
-          <div className="flex space-x-2">
+          {!isEditing &&
+            task.creator === "partner" &&
+            activeTab === "Partner" &&
+            !taskState.declined &&
+            remainingTime?.text !== "Expired" && (
+              <textarea
+                value={declineMessage}
+                onChange={(e) => setDeclineMessage(e.target.value)}
+                placeholder="Reason for declining..."
+                className="w-full p-2 border rounded text-gray-700"
+                rows={2}
+              />
+            )}
+          <div
+            className={`flex  ${
+              remainingTime?.text === "Expired" ? "space-x-0" : "space-x-2"
+            } `}
+          >
             {isEditing ? (
               <>
                 <button
@@ -214,7 +241,9 @@ const TaskDetails: React.FC<{
                 <button
                   onClick={() => setIsEditing(true)}
                   className={`flex-1 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 active:bg-yellow-700 transition-all duration-200 ${
-                    activeTab === "partner" ? "hidden" : ""
+                    activeTab === "partner" || remainingTime?.text === "Expired"
+                      ? "hidden"
+                      : ""
                   }`}
                 >
                   Edit

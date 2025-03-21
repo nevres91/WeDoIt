@@ -154,7 +154,7 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onUpdateTask }) => {
         />
       )}
       {isCreatingTask && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-40">
           <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
             <h3 className="text-xl font-bold text-gray-800 mb-4">
               Create New Task

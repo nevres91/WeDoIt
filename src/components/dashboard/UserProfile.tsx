@@ -13,7 +13,17 @@ export const UserProfile = ({
   const { userData } = useAuth();
   const { setActiveTab } = useDashboard();
   const { firstName, lastName, email, role } = userData || {};
-  const { inProgressTasks, doneTasks } = useTasks(auth.currentUser?.uid);
+  const { inProgressTasks, doneTasks, expiredTasks } = useTasks(
+    auth.currentUser?.uid
+  );
+
+  // Filter out expired tasks from inProgressTasks
+  const activeInProgressTasks = inProgressTasks.filter((task) => {
+    if (!task.dueDate) return true; // Keep tasks without dueDate
+    const dueDate = new Date(task.dueDate);
+    const now = new Date();
+    return dueDate >= now; // Keep only non-expired tasks
+  });
   return (
     <>
       <div // Container
@@ -103,12 +113,12 @@ export const UserProfile = ({
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
                 <p className="w-[90px]">Ongoing:</p>{" "}
                 <span className="font-light ml-4">
-                  {inProgressTasks.length}
+                  {activeInProgressTasks.length}
                 </span>
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
                 <p className="w-[90px]">Expired:</p>{" "}
-                <span className="font-light ml-4">3</span>
+                <span className="font-light ml-4">{expiredTasks.length}</span>
               </li>
             </ul>
           </div>

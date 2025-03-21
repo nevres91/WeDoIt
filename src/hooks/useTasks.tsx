@@ -120,6 +120,7 @@ export const useTasks = (userId?: string | null) => {
   };
 
   // -------------------------------FILTERING TASKS-------------------------------
+
   const toDoTasks = tasks.filter(
     (task) => task.status === "To Do" && task.declined !== true
   );
@@ -130,6 +131,15 @@ export const useTasks = (userId?: string | null) => {
     (task) => task.status === "Done" && task.declined !== true
   );
   const declinedTasks = tasks.filter((task) => task.declined === true);
+
+  const expiredTasks = tasks.filter((task) => {
+    if (!task.dueDate || task.declined === true || task.status === "Done") {
+      return false;
+    }
+    const dueDate = new Date(task.dueDate);
+    const now = new Date();
+    return dueDate < now;
+  });
 
   return {
     tasks,
@@ -145,5 +155,6 @@ export const useTasks = (userId?: string | null) => {
     setSelectedTask,
     handleDecline,
     declinedTasks,
+    expiredTasks,
   };
 };
