@@ -37,7 +37,7 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onUpdateTask }) => {
 
   // -----------------------------TABS COMPONENT-----------------------------
   const taskTabs = [
-    { id: "todo", label: "To-Do", color: "red-200" },
+    { id: "todo", label: "To-Do", color: "red-300" },
     { id: "inProgress", label: "In Progress", color: "yellow-200" },
     { id: "done", label: "Done", color: "green-200" },
   ];

@@ -3,7 +3,6 @@ import { useDashboard } from "../../context/DashboardContext";
 import { useAuth } from "../../context/AuthContext";
 import { useTasks } from "../../hooks/useTasks";
 import { auth } from "../../services/firebase";
-import { EditProfile } from "../EditProfile";
 
 export const UserProfile = ({
   setSidebar,
@@ -11,7 +10,6 @@ export const UserProfile = ({
   setSidebar: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
-  const [showEditProfile, setShowEditProfile] = useState<boolean>(false);
   const { userData } = useAuth();
   const { setActiveTab } = useDashboard();
   const { firstName, lastName, email, role, height, job, weight, birthday } =
@@ -25,18 +23,16 @@ export const UserProfile = ({
     if (!task.dueDate) return true; // Keep tasks without dueDate
     const dueDate = new Date(task.dueDate);
     const now = new Date();
-    return dueDate >= now; // Keep only non-expired tasks
+    return dueDate >= now;
   });
 
-  const profileData = {
-    firstName: firstName || "",
-    lastName: lastName || "",
-    role: role || "",
-    age: 0,
-    job: job,
-    height: height,
-    weight: "Unknown",
-  };
+  //Age
+  const age = birthday
+    ? Math.floor(
+        (new Date().getTime() - new Date(birthday).getTime()) /
+          (1000 * 60 * 60 * 24 * 365.25) // Account for leap years
+      )
+    : "Unknown";
   return (
     <>
       <div // Container
@@ -106,7 +102,7 @@ export const UserProfile = ({
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
                 <p className="w-[90px]">Age:</p>{" "}
-                <span className="font-light ml-4">33</span>
+                <span className="font-light ml-4">{age}</span>
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
                 <p className="w-[90px]">Job:</p>{" "}

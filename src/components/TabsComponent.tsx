@@ -43,7 +43,7 @@ export function TabsComponent({
             className={`px-4 py-2 font-semibold transition-all ease-in-out duration-200 ${
               activeTab === tab.id
                 ? `text-calm-n-cool-5 bg-${tab.color} bg-opacity-50 rounded-t-xl`
-                : `text-gray-500`
+                : `text-gray-500 hover:text-calm-n-cool-5`
             }`}
             onClick={() => handleTabClick(tab.id)}
           >
