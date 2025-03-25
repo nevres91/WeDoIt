@@ -7,7 +7,7 @@ import {
 } from "react";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { auth, db } from "../services/firebase";
-import { onSnapshot, doc } from "firebase/firestore";
+import { onSnapshot, doc, updateDoc, setDoc } from "firebase/firestore";
 import { UserData } from "../types";
 
 interface AuthContextType {
@@ -15,6 +15,7 @@ interface AuthContextType {
   userData: UserData;
   setUserData: React.Dispatch<SetStateAction<UserData>>; //Check if error appears
   logout: () => Promise<void>;
+  updateUserData: (newData: Partial<UserData>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -82,12 +83,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
+  const updateUserData = async (newData: Partial<UserData>) => {
+    if (!user) {
+      throw new Error("No authenticated user found");
+    }
+
+    const userRef = doc(db, "users", user.uid);
+    try {
+      await setDoc(userRef, newData, { merge: true }); // Use setDoc with merge
+      // The onSnapshot listener will automatically update userData state
+    } catch (error) {
+      console.error("Error updating user data:", error);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     await signOut(auth);
   };
 
   return (
-    <AuthContext.Provider value={{ user, userData, logout, setUserData }}>
+    <AuthContext.Provider
+      value={{ user, userData, logout, setUserData, updateUserData }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -69,7 +69,32 @@ const TaskCard: React.FC<{
       >
         <div className="flex justify-between items-start">
           <p //title
-            className={`text-calm-n-cool-6 text-sm font-semibold mr-2 `}
+            className={`text-sm font-semibold mr-2 ${
+              remainingTime?.text === "Expired" &&
+              task.status !== "Done" &&
+              task.declined !== true
+                ? "text-gray-900"
+                : activeTab === "declined" && userData?.role === "husband"
+                ? "text-blue-900"
+                : activeTab === "declined" && userData?.role === "wife"
+                ? "text-pink-800"
+                : activeTab === "partner" && task.creator === "self"
+                ? userData?.role === "wife"
+                  ? "text-blue-900"
+                  : "text-pink-800"
+                : activeTab === "partner" && task.creator === "partner"
+                ? userData?.role === "wife"
+                  ? "text-pink-800"
+                  : "text-blue-900"
+                : activeTab === "home" && task.creator === "self"
+                ? userData?.role === "wife"
+                  ? "text-pink-800"
+                  : "text-blue-900"
+                : userData?.role === "wife"
+                ? "text-blue-900"
+                : "text-pink-800"
+            }
+             `}
           >
             {task.title}
           </p>

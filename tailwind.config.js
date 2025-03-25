@@ -32,6 +32,7 @@ export default {
         profile: `url('src/assets/profile_picture.jpg')`,
         findPartner: `url('src/assets/find_partner_2.png')`,
         cupid: `url('src/assets/cupid.png')`,
+        edit_profile: `url('src/assets/edit_profile.svg')`,
       },
       fontFamily: {
         montserrat: ["montserrat", "sans-serif"],

@@ -14,6 +14,11 @@ export interface UserData {
   partnerId: string | null;
   role: "husband" | "wife";
   invitations: string[];
+  job?: string;
+  height?: string;
+  weight?: string;
+  birthday?: string;
+  [key: string]: any; // Allows additional fields
 }
 
 export interface Invitation {

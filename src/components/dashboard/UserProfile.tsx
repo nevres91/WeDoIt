@@ -3,6 +3,7 @@ import { useDashboard } from "../../context/DashboardContext";
 import { useAuth } from "../../context/AuthContext";
 import { useTasks } from "../../hooks/useTasks";
 import { auth } from "../../services/firebase";
+import { EditProfile } from "../EditProfile";
 
 export const UserProfile = ({
   setSidebar,
@@ -10,9 +11,11 @@ export const UserProfile = ({
   setSidebar: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [showEditProfile, setShowEditProfile] = useState<boolean>(false);
   const { userData } = useAuth();
   const { setActiveTab } = useDashboard();
-  const { firstName, lastName, email, role } = userData || {};
+  const { firstName, lastName, email, role, height, job, weight, birthday } =
+    userData || {};
   const { inProgressTasks, doneTasks, expiredTasks } = useTasks(
     auth.currentUser?.uid
   );
@@ -24,6 +27,16 @@ export const UserProfile = ({
     const now = new Date();
     return dueDate >= now; // Keep only non-expired tasks
   });
+
+  const profileData = {
+    firstName: firstName || "",
+    lastName: lastName || "",
+    role: role || "",
+    age: 0,
+    job: job,
+    height: height,
+    weight: "Unknown",
+  };
   return (
     <>
       <div // Container
@@ -35,6 +48,10 @@ export const UserProfile = ({
           className="mb-9" // BUTTONS
         >
           <div // Button-left
+            onClick={() => {
+              setActiveTab("edit-profile");
+              setSidebar(false);
+            }}
             className="flex items-center content-center text-center bg-calm-n-cool-1 h-[40px] absolute  left-0 w-[50%] rounded-md hover:bg-calm-n-cool-4 transition-all duration-150 cursor-pointer p-1 text-calm-n-cool-6 hover:text-calm-n-cool-1"
           >
             <i className=" fa-solid fa-user-pen fa-lg  ml-[calc(50%-25%)]"></i>
@@ -89,19 +106,23 @@ export const UserProfile = ({
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
                 <p className="w-[90px]">Age:</p>{" "}
-                <span className="font-light ml-4">34</span>
+                <span className="font-light ml-4">33</span>
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
                 <p className="w-[90px]">Job:</p>{" "}
-                <span className="font-light ml-4">Unemployed</span>
+                <span className="font-light ml-4">{job ? job : "Unknown"}</span>
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
                 <p className="w-[90px]">Height:</p>{" "}
-                <span className="font-light ml-4">186 cm</span>
+                <span className="font-light ml-4">
+                  {height ? height + " cm" : "Unknown"}
+                </span>
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
                 <p className="w-[90px]">Weight:</p>{" "}
-                <span className="font-light ml-4">94 kg</span>
+                <span className="font-light ml-4">
+                  {weight ? weight + " kg" : "Unknown"}
+                </span>
               </li>
             </ul>
             <p className="ml-1 mt-2 text-sm">Task Overview</p>
@@ -124,12 +145,6 @@ export const UserProfile = ({
           </div>
         </div>
       </div>
-      {/* <div className="bg-calm-n-cool-1 p-2 w-[calc(100%-12px)] text-sm text-calm-n-cool-6  min-w-[220px] rounded-md ">
-        <p className=" font-bold">Partner Data:</p>
-        <p>Sex: Male</p>
-        <p>Height: 186cm</p>
-        <p>Weight: 94kg</p>
-      </div> */}
     </>
   );
 };
