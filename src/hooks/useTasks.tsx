@@ -119,6 +119,42 @@ export const useTasks = (userId?: string | null) => {
     }
   };
 
+  // -------------------------------REACTIVATE TASK-------------------------------
+  const reactivateTask = async (taskId: string) => {
+    try {
+      if (!taskId) {
+        throw new Error("Task ID is missing");
+      }
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const taskRef = doc(db, "tasks", taskId);
+      const updatedTaskData = {
+        declined: false,
+        declineMessage: "", // Reset decline message
+        status: "To Do" as const, // Reset status to To Do (or whatever default you prefer)
+        dueDate: tomorrow.toISOString(),
+      };
+
+      await updateDoc(taskRef, updatedTaskData);
+
+      // Update local tasks state
+      setTasks(
+        tasks.map((t) => (t.id === taskId ? { ...t, ...updatedTaskData } : t))
+      );
+
+      // Update selectedTask if it matches
+      if (selectedTask?.id === taskId) {
+        setSelectedTask({ ...selectedTask, ...updatedTaskData });
+      }
+      setError(null);
+      return true; // Indicate success
+    } catch (err: any) {
+      setError("Failed to reactivate task: " + err.message);
+      console.error("Reactivate error:", err);
+      return false; // Indicate failure
+    }
+  };
+
   // -------------------------------FILTERING TASKS-------------------------------
 
   const toDoTasks = tasks.filter(
@@ -156,5 +192,6 @@ export const useTasks = (userId?: string | null) => {
     handleDecline,
     declinedTasks,
     expiredTasks,
+    reactivateTask,
   };
 };

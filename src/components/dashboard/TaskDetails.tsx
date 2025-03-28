@@ -10,7 +10,8 @@ const TaskDetails: React.FC<{
   task: Task;
   onClose: () => void;
   onUpdateTask?: (task: Task) => void;
-}> = ({ task, onClose, onUpdateTask }) => {
+  onReactivate?: (taskId: string) => void;
+}> = ({ task, onClose, onUpdateTask, onReactivate }) => {
   const [declineMessage, setDeclineMessage] = useState(
     task.declineMessage || ""
   );
@@ -21,6 +22,7 @@ const TaskDetails: React.FC<{
   const [error, setError] = useState<string | null>(null);
   const { handleDelete, handleDecline } = useTasks();
   const { activeTab } = useDashboard();
+  const [showDeclineConfirm, setShowDeclineConfirm] = useState(false);
 
   const onDecline = async () => {
     const success = await handleDecline(task.id, declineMessage);
@@ -35,8 +37,11 @@ const TaskDetails: React.FC<{
         onUpdateTask(updatedTask);
       }
       setError(null);
+      setShowDeclineConfirm(false); // Close modal on success
+      onClose(); // Optionally close the task details after declining
     } else {
-      setError("Failed to decline task"); // Error is already set in useTasks, but you can customize this
+      setError("Failed to decline task");
+      setShowDeclineConfirm(false); // Close modal on failure
     }
   };
 
@@ -46,11 +51,13 @@ const TaskDetails: React.FC<{
         ...taskState,
         title: editedTitle,
         description: editedDescription,
+        edited: true,
       };
       const taskRef = doc(db, "tasks", task.id);
       await updateDoc(taskRef, {
         title: editedTitle,
         description: editedDescription,
+        edited: true,
       });
       setTaskState(updatedTask);
       if (onUpdateTask) {
@@ -78,6 +85,8 @@ const TaskDetails: React.FC<{
   };
 
   const remainingTime = task.dueDate ? getRemainingTime(task.dueDate) : null;
+  const isHiddenFull =
+    activeTab === "partner" || remainingTime?.text === "Expired";
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-20">
@@ -145,7 +154,7 @@ const TaskDetails: React.FC<{
         )}
         <div className="mt-4 space-y-3">
           <div className="flex space-x-2">
-            {taskState.status === "To Do" && (
+            {!isEditing && taskState.status === "To Do" && (
               <button
                 onClick={() => handleStatusChange("In Progress")}
                 className={`flex-1 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 active:bg-yellow-700 transition-all duration-200 ${
@@ -159,7 +168,7 @@ const TaskDetails: React.FC<{
                 Start
               </button>
             )}
-            {taskState.status === "In Progress" && (
+            {!isEditing && taskState.status === "In Progress" && (
               <button
                 onClick={() => handleStatusChange("Done")}
                 className={`flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 active:bg-green-700 transition-all duration-200 ${
@@ -173,7 +182,7 @@ const TaskDetails: React.FC<{
                 Finish
               </button>
             )}
-            {taskState.status === "Done" && (
+            {!isEditing && taskState.status === "Done" && (
               <button
                 onClick={() => handleStatusChange("To Do")}
                 className={`flex-1 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 active:bg-gray-700 transition-all duration-200 ${
@@ -188,76 +197,87 @@ const TaskDetails: React.FC<{
               </button>
             )}
           </div>
-          {!isEditing && !taskState.declined && task.creator === "partner" && (
-            <div className="flex space-x-2">
-              <button
-                onClick={onDecline}
-                disabled={!declineMessage.trim()}
-                className={`flex-1 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 active:bg-red-700 disabled:bg-red-300 transition-all duration-200 ${
-                  activeTab === "partner" || remainingTime?.text === "Expired"
-                    ? "hidden"
-                    : ""
-                }`}
-              >
-                Decline
-              </button>
-            </div>
-          )}
           {!isEditing &&
+            activeTab !== "partner" &&
             task.creator === "partner" &&
-            activeTab === "Partner" &&
+            task.status !== "Done" &&
             !taskState.declined &&
             remainingTime?.text !== "Expired" && (
-              <textarea
-                value={declineMessage}
-                onChange={(e) => setDeclineMessage(e.target.value)}
-                placeholder="Reason for declining..."
-                className="w-full p-2 border rounded text-gray-700"
-                rows={2}
-              />
+              <>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setShowDeclineConfirm(true)}
+                    disabled={!declineMessage.trim()}
+                    className={`flex-1 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 active:bg-red-700 disabled:bg-red-300 transition-all duration-200 ${
+                      isHiddenFull ? "hidden" : ""
+                    }`}
+                  >
+                    Decline
+                  </button>
+                </div>
+                <textarea
+                  value={declineMessage}
+                  onChange={(e) => setDeclineMessage(e.target.value)}
+                  placeholder="Reason for declining..."
+                  className={`w-full p-2 border rounded text-gray-700`}
+                  rows={2}
+                />
+              </>
             )}
           <div
             className={`flex  ${
-              remainingTime?.text === "Expired" ? "space-x-0" : "space-x-2"
+              remainingTime?.text === "Expired" && activeTab !== "declined"
+                ? "space-x-0"
+                : "space-x-2"
             } `}
           >
             {isEditing ? (
               <>
-                <button
-                  onClick={handleSaveEdit}
-                  className="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 active:bg-blue-700 transition-all duration-200"
-                >
-                  Save
-                </button>
                 <button
                   onClick={() => setIsEditing(false)}
                   className="flex-1 bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 active:bg-gray-500 transition-all duration-200"
                 >
                   Cancel
                 </button>
-              </>
-            ) : (
-              taskState.creator === "self" && (
                 <button
-                  onClick={() => setIsEditing(true)}
-                  className={`flex-1 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 active:bg-yellow-700 transition-all duration-200 ${
-                    activeTab === "partner" || remainingTime?.text === "Expired"
-                      ? "hidden"
-                      : ""
-                  }`}
+                  onClick={handleSaveEdit}
+                  className="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 active:bg-blue-700 transition-all duration-200"
                 >
-                  Edit
+                  Save
                 </button>
-              )
-            )}
+              </>
+            ) : (activeTab === "home" && task.creator === "self") ||
+              (activeTab === "partner" && task.creator === "partner") ? (
+              <button
+                onClick={() => setIsEditing(true)}
+                className={`flex-1 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 active:bg-yellow-700 transition-all duration-200 ${
+                  remainingTime?.text === "Expired" || task.status === "Done"
+                    ? "hidden"
+                    : ""
+                }`}
+              >
+                Edit
+              </button>
+            ) : null}
             <button
               onClick={() => handleDelete(task.id)}
               className={`flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 active:bg-red-800 transition-all duration-200 ${
-                activeTab === "partner" ? "hidden" : ""
+                (activeTab === "partner" && task.creator === "self") ||
+                isEditing
+                  ? "hidden"
+                  : ""
               }`}
             >
               Delete
             </button>
+            {onReactivate && (
+              <button
+                onClick={() => onReactivate(task.id)}
+                className="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                Reactivate Task
+              </button>
+            )}
           </div>
           <button
             onClick={onClose}
@@ -266,6 +286,30 @@ const TaskDetails: React.FC<{
             Close
           </button>
         </div>
+        {showDeclineConfirm && (
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
+            <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+              <p className="text-gray-800 mb-4">
+                The task will be moved to your partner's Declined Tasks section,
+                and you won't be able to see it anymore. Do you want to proceed?
+              </p>
+              <div className="flex space-x-2">
+                <button
+                  onClick={onDecline}
+                  className="flex-1 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 active:bg-red-700 transition-all duration-200"
+                >
+                  Yes
+                </button>
+                <button
+                  onClick={() => setShowDeclineConfirm(false)}
+                  className="flex-1 bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 active:bg-gray-500 transition-all duration-200"
+                >
+                  No
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

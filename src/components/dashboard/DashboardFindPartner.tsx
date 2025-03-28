@@ -13,76 +13,132 @@ import { db } from "../../services/firebase";
 
 export const DashboardFindPartner = () => {
   const { user } = useAuth();
-  const [message, setMessage] = useState("");
+  // Update message state to an object with text and type
+  const [message, setMessage] = useState({ text: "", type: "" });
   const [partnerEmail, setPartnerEmail] = useState("");
 
   const handleFindPartner = async () => {
-    if (!partnerEmail) return setMessage("Enter an email!");
-    if (!user) return setMessage("You must be logged in!");
-    if (partnerEmail === user?.email) {
-      return setMessage("You cannot link to yourself.");
+    setMessage({ text: "", type: "" });
+
+    if (!partnerEmail) {
+      setMessage({ text: "Enter an email!", type: "error" });
+      setTimeout(() => setMessage({ text: "", type: "" }), 3000);
+      return;
     }
+    if (!user) {
+      setMessage({ text: "You must be logged in!", type: "error" });
+      setTimeout(() => setMessage({ text: "", type: "" }), 3000);
+      return;
+    }
+    if (partnerEmail === user?.email) {
+      setMessage({ text: "You cannot link to yourself.", type: "error" });
+      setTimeout(() => setMessage({ text: "", type: "" }), 3000);
+      return;
+    }
+
     const userDoc = await getDoc(doc(db, "users", user!.uid));
     const userData = userDoc.data();
 
     if (userData?.partnerId) {
-      setMessage("You are already linked to a partner. Please unlink first.");
+      setMessage({
+        text: "You are already linked to a partner.",
+        type: "error",
+      });
+      setTimeout(() => setMessage({ text: "", type: "" }), 3000);
       return;
     }
 
     try {
-      // Query Firestore for a user with the provided email
       const usersRef = collection(db, "users");
       const q = query(usersRef, where("email", "==", partnerEmail));
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
-        return setMessage("Partner not found in the database.");
+        setMessage({
+          text: "Partner not found in the database.",
+          type: "error",
+        });
+        setTimeout(() => setMessage({ text: "", type: "" }), 3000);
+        return;
       }
 
-      // Get the first matched document
       const partnerDoc = querySnapshot.docs[0];
-      const partnerId = partnerDoc.id; // This is the unique Firebase UID
+      const partnerId = partnerDoc.id;
       const partnerData = partnerDoc.data();
 
       if (!partnerData) {
-        return setMessage("Partner data not found.");
+        setMessage({ text: "Partner data not found.", type: "error" });
+        setTimeout(() => setMessage({ text: "", type: "" }), 3000);
+        return;
       }
-      //   Prevent linking two accounts with the same role.
       if (userData?.role === partnerData?.role) {
-        return setMessage("You can only link with the opposite role.");
+        setMessage({
+          text: "You can only link with the opposite role.",
+          type: "error",
+        });
+        setTimeout(() => setMessage({ text: "", type: "" }), 3000);
+        setPartnerEmail("");
+        return;
       }
-      //Prevent duplicate invitations.
       if (partnerData.invitations?.includes(user?.uid)) {
-        return setMessage("You have already sent invitation to this user.");
+        setMessage({
+          text: "You have already sent an invitation to this user.",
+          type: "error",
+        });
+        setTimeout(() => setMessage({ text: "", type: "" }), 3000);
+        setPartnerEmail("");
+        return;
       }
 
-      // Update both users' profiles to link them as partners
+      // Update partner's invitations
       await updateDoc(doc(db, "users", partnerId), {
         invitations: [...(partnerData.invitations || []), user!.uid],
       });
-      setMessage("Partner invitation was sent successfully.");
+      setMessage({
+        text: "Partner invitation was sent successfully.",
+        type: "success",
+      });
+      setTimeout(() => {
+        setMessage({ text: "", type: "" });
+        setPartnerEmail("");
+      }, 3000);
     } catch (error) {
       console.error("Error finding partner:", error);
-      setMessage("Error linking partner.");
+      setMessage({ text: "Error linking partner.", type: "error" });
+      setTimeout(() => setMessage({ text: "", type: "" }), 3000);
     }
   };
 
   return (
     <>
-      <div // Container
-        className="w-full h-[100%] absolute top-0 left-0 flex justify-center bg-findPartner bg-no-repeat bg-cover  bg-center "
+      <div //Container
+        className="w-full h-[100%] absolute top-0 left-0 flex justify-center bg-findPartner bg-no-repeat bg-cover bg-center"
       >
-        <div className="absolute top-0 left-0 w-full h-full bg-cupid bg-no-repeat bg-contain bg-center  opacity-40" />
-        <div className="w-[500px] h-[220px] min-w-[280px] ml-2 mr-2 p-6 translate-y-[100%] bg-calm-n-cool-2 backdrop-blur-[2px] shadow-[0px_0px_10px_0px_rgba(0,0,0,0.75)] bg-opacity-15 rounded-md flex flex-col items-center">
-          <div className="max-w-md mx-auto ">
+        <div // Background overlay
+          className="absolute top-0 left-0 w-full h-full bg-cupid bg-no-repeat bg-contain bg-center opacity-40"
+        />
+        <div // Form
+          className={`w-[500px] min-h-[220px] min-w-[280px] self-start ml-2 mr-2 p-6 mt-[30vh] landscape:mt-[20vh] bg-calm-n-cool-2 backdrop-blur-[2px] bg-opacity-15 rounded-md flex flex-col  ${
+            message.type === "success"
+              ? "shadow-[0px_0px_10px_0px_rgba(2,184,2,0.75)]"
+              : message.type === "error"
+              ? "shadow-[0px_0px_10px_0px_rgba(250,0,0,0.75)]"
+              : "shadow-[0px_0px_10px_0px_rgba(0,0,0,0.75)]"
+          } `}
+        >
+          <div className="max-w-md mx-auto">
             <h2 className="text-2xl text-calm-n-cool-5 font-bold my-4 text-center">
               Find Your Partner
             </h2>
-            {message && (
-              <div className="text-red-500 text-center">{message}</div>
+            {message.text && (
+              <div
+                className={`${
+                  message.type === "success" ? "text-green-500" : "text-red-500"
+                }`}
+              >
+                {message.text}
+              </div>
             )}
-
             <input
               type="email"
               placeholder="Enter partner's email"
@@ -92,12 +148,11 @@ export const DashboardFindPartner = () => {
             />
             <button
               onClick={handleFindPartner}
-              className="bg-calm-n-cool-5 text-calm-n-cool-1 p-2 rounded w-full hover:bg-calm-n-cool-4  mt-2 transition-all duration-100"
+              className="bg-calm-n-cool-5 text-calm-n-cool-1 p-2 rounded w-full hover:bg-calm-n-cool-4 mt-2 transition-all duration-100"
             >
               Link Partner
             </button>
           </div>
-          {/* <Partner /> */}
         </div>
       </div>
     </>

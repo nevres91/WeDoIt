@@ -40,4 +40,5 @@ export interface Task {
   declined?: boolean;
   declineMessage?: string;
   userId: string;
+  edited?: boolean;
 }

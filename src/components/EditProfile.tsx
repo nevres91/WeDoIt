@@ -120,7 +120,6 @@ export const EditProfile = () => {
               >
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
-                <option value="Other">Other</option>
               </select>
               {userData?.partnerId && (
                 <span className="text-red-600 text-xs mt-1 block ml-1">

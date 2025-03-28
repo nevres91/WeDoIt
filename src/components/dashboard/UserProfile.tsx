@@ -36,9 +36,7 @@ export const UserProfile = ({
   return (
     <>
       <div // Container
-        className={`relative w-[calc(100%-12px)] min-w-[220px] ${
-          isExpanded ? "" : " "
-        } flex flex-col items-center  gap-2 my-3 rounded-md mt-[6%] transition-all duration-200 z-40`}
+        className={`relative w-[calc(100%-12px)] min-w-[220px] flex flex-col items-center  gap-2 my-3 rounded-md mt-[6%] transition-all duration-200 z-40`}
       >
         <div
           className="mb-9" // BUTTONS

@@ -9,7 +9,22 @@ import { TabsComponent } from "../TabsComponent";
 const DeclinedTasks: React.FC = () => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const { userData } = useAuth();
-  const { declinedTasks, loading } = useTasks(userData?.partnerId);
+  const { declinedTasks, loading, reactivateTask } = useTasks(
+    userData?.partnerId
+  );
+
+  // Handle task reactivation
+  const handleReactivateTask = async (taskId: string) => {
+    try {
+      if (reactivateTask) {
+        await reactivateTask(taskId);
+        setSelectedTask(null); // Close the details view after reactivation
+      }
+    } catch (error) {
+      console.error("Failed to reactivate task:", error);
+      // You might want to add error handling UI here
+    }
+  };
 
   // -----------------------------TABS COMPONENT-----------------------------
   const taskTabs = [
@@ -55,6 +70,7 @@ const DeclinedTasks: React.FC = () => {
         <TaskDetails
           task={selectedTask}
           onClose={() => setSelectedTask(null)}
+          onReactivate={handleReactivateTask}
         />
       )}
     </div>

@@ -31,7 +31,7 @@ export default {
         man: `url('src/assets/man.png')`,
         profile: `url('src/assets/profile_picture.jpg')`,
         findPartner: `url('src/assets/find_partner_2.png')`,
-        cupid: `url('src/assets/cupid.png')`,
+        cupid: `url('src/assets/cupid_2.png')`,
         edit_profile: `url('src/assets/edit_profile.svg')`,
       },
       fontFamily: {

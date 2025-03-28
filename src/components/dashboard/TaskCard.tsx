@@ -173,6 +173,13 @@ const TaskCard: React.FC<{
               {remainingTime.text}
             </span>
           )}
+          {task.edited && (
+            <span
+              className={`text-xs font-semibold px-2 py-1 rounded-full bg-gray-200 text-gray-700`}
+            >
+              <i className="fa-solid fa-user-pen"></i> Edited
+            </span>
+          )}
         </div>
       </div>
       <div
