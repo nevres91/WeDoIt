@@ -51,47 +51,60 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
   const tabsContent = {
     todo: (
       <div className="py-2 overflow-y-auto space-y-3 px-1">
-        {toDoTasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onClick={() => setSelectedTask(task)}
-            onUpdateTask={onUpdateTask}
-            hideActions
-          />
-        ))}
+        {[...toDoTasks]
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+          .map((task) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onClick={() => setSelectedTask(task)}
+              onUpdateTask={onUpdateTask}
+              hideActions
+            />
+          ))}
       </div>
     ),
     inProgress: (
       <div className="py-2 overflow-y-auto space-y-3 px-1">
-        {inProgressTasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onClick={() => {
-              console.log("Selected task ID:", task.id);
-              setSelectedTask(task);
-            }}
-            onUpdateTask={onUpdateTask}
-            hideActions
-          />
-        ))}
+        {[...inProgressTasks]
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+          .map((task) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onClick={() => {
+                setSelectedTask(task);
+              }}
+              onUpdateTask={onUpdateTask}
+              hideActions
+            />
+          ))}
       </div>
     ),
     done: (
       <div className="py-2 overflow-y-auto space-y-3 px-1">
-        {doneTasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onClick={() => {
-              console.log("Selected task ID:", task.id);
-              setSelectedTask(task);
-            }}
-            onUpdateTask={onUpdateTask}
-            hideActions
-          />
-        ))}
+        {[...doneTasks]
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+          .map((task) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onClick={() => {
+                setSelectedTask(task);
+              }}
+              onUpdateTask={onUpdateTask}
+              hideActions
+            />
+          ))}
       </div>
     ),
   };
@@ -113,7 +126,6 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
         priority: "Medium",
       });
       setTimeout(() => setIsCreatingTask(false), 1000);
-      console.log("new partner task created");
     }
   };
 

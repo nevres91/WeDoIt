@@ -52,44 +52,57 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onUpdateTask }) => {
   const tabsContent = {
     todo: (
       <div className="py-2 overflow-y-auto space-y-3 px-1">
-        {toDoTasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onClick={() => setSelectedTask(task)}
-            onUpdateTask={onUpdateTask}
-          />
-        ))}
+        {[...toDoTasks]
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+          .map((task) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onClick={() => setSelectedTask(task)}
+              onUpdateTask={onUpdateTask}
+            />
+          ))}
       </div>
     ),
     inProgress: (
       <div className="py-2 overflow-y-auto space-y-3 px-1">
-        {inProgressTasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onClick={() => {
-              console.log("Selected task ID:", task.id);
-              setSelectedTask(task);
-            }}
-            onUpdateTask={onUpdateTask}
-          />
-        ))}
+        {[...inProgressTasks]
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+          .map((task) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onClick={() => {
+                setSelectedTask(task);
+              }}
+              onUpdateTask={onUpdateTask}
+            />
+          ))}
       </div>
     ),
     done: (
       <div className="py-2 overflow-y-auto space-y-3 px-1">
-        {doneTasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onClick={() => {
-              console.log("Selected task ID:", task.id);
-              setSelectedTask(task);
-            }}
-            onUpdateTask={onUpdateTask}
-          />
-        ))}
+        {[...doneTasks]
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+          .map((task) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onClick={() => {
+                setSelectedTask(task);
+              }}
+              onUpdateTask={onUpdateTask}
+            />
+          ))}
       </div>
     ),
   };

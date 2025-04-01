@@ -1,24 +1,44 @@
+import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useDashboard } from "../../context/DashboardContext";
 import { Task } from "../../types";
 import { getRemainingTime } from "../../utils/helperFunctions";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../services/firebase";
 
 const TaskCard: React.FC<{
   task: Task;
   onClick: () => void;
   onUpdateTask?: (task: Task) => void;
   hideActions?: boolean;
-}> = ({ task, onClick, hideActions }) => {
+}> = ({ task, onClick, hideActions, onUpdateTask }) => {
   const priorityColor = {
     Low: "bg-gray-200 text-gray-800",
     Medium: "bg-yellow-200 text-yellow-800",
     High: "bg-red-200 text-red-800",
   };
+  const [taskState, setTaskState] = useState(task);
+  const [error, setError] = useState<string | null>(null);
   const { userData } = useAuth();
   const { activeTab } = useDashboard();
 
   // Calculate remaining time if dueDate exists
   const remainingTime = task.dueDate ? getRemainingTime(task.dueDate) : null;
+
+  const handleStatusChange = async (newStatus: Task["status"]) => {
+    try {
+      const updatedTask = { ...taskState, status: newStatus };
+      const taskRef = doc(db, "tasks", task.id);
+      await updateDoc(taskRef, { status: newStatus });
+      setTaskState(updatedTask);
+      if (onUpdateTask) {
+        onUpdateTask(updatedTask);
+      }
+      setError(null);
+    } catch (err: any) {
+      setError("Failed to update status: " + err.message);
+    }
+  };
 
   return (
     <div //container
@@ -155,8 +175,8 @@ const TaskCard: React.FC<{
                 : "From Wife"
               : activeTab === "partner" && task.creator === "partner"
               ? userData?.role === "wife"
-                ? "From Wife"
-                : "From You"
+                ? "From You"
+                : "From Husband"
               : task.creator === "self"
               ? "From You"
               : userData?.role === "wife"
@@ -184,12 +204,21 @@ const TaskCard: React.FC<{
       </div>
       <div
         className={`w-[18%] max-w-[80px] h-full rounded-lg p-2 font-normal min-w-[75px] ${
-          remainingTime?.text === "Expired" && task.status !== "Done"
+          remainingTime?.text === "Expired" || task.status === "Done"
             ? "hidden"
             : ""
         }`}
       >
         <button
+          onClick={() => {
+            const nextStatus =
+              task.status === "To Do"
+                ? "In Progress"
+                : task.status === "In Progress"
+                ? "Done"
+                : "To Do";
+            handleStatusChange(nextStatus);
+          }}
           className={`w-full text-xs px-2 py-1 rounded-full bg-green-200 text-green-700 my-1 hover:bg-green-400 hover:text-white transition-all duration-100 ${
             hideActions ? "hidden" : ""
           }`}

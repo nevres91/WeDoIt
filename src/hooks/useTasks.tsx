@@ -71,7 +71,6 @@ export const useTasks = (userId?: string | null) => {
       console.log("Attempting to delete task with ID:", taskId);
       const taskRef = doc(db, "tasks", taskId);
       await deleteDoc(taskRef);
-      console.log(`Task ${taskId} deleted from Firestore`);
       // Update local tasks state to remove the deleted task
       setTasks(tasks.filter((t) => t.id !== taskId));
       if (selectedTask?.id === taskId) {

@@ -19,10 +19,14 @@ const TaskDetails: React.FC<{
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(task.title);
   const [editedDescription, setEditedDescription] = useState(task.description);
+  const [editedDueDate, setEditedDueDate] = useState(task.dueDate);
   const [error, setError] = useState<string | null>(null);
   const { handleDelete, handleDecline } = useTasks();
   const { activeTab } = useDashboard();
   const [showDeclineConfirm, setShowDeclineConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showRestartConfirm, setShowRestartConfirm] = useState(false);
+  const [newDueDate, setNewDueDate] = useState("");
 
   const onDecline = async () => {
     const success = await handleDecline(task.id, declineMessage);
@@ -51,12 +55,14 @@ const TaskDetails: React.FC<{
         ...taskState,
         title: editedTitle,
         description: editedDescription,
+        dueDate: editedDueDate,
         edited: true,
       };
       const taskRef = doc(db, "tasks", task.id);
       await updateDoc(taskRef, {
         title: editedTitle,
         description: editedDescription,
+        dueDate: editedDueDate,
         edited: true,
       });
       setTaskState(updatedTask);
@@ -69,16 +75,26 @@ const TaskDetails: React.FC<{
       setError("Failed to save edits: " + err.message);
     }
   };
-  const handleStatusChange = async (newStatus: Task["status"]) => {
+  const handleStatusChange = async (
+    newStatus: Task["status"],
+    dueDate?: string
+  ) => {
     try {
-      const updatedTask = { ...taskState, status: newStatus };
+      const updatedTask = {
+        ...taskState,
+        status: newStatus,
+        ...(dueDate && { dueDate }),
+      };
       const taskRef = doc(db, "tasks", task.id);
-      await updateDoc(taskRef, { status: newStatus });
+      await updateDoc(taskRef, {
+        status: newStatus,
+        ...(dueDate && { dueDate }),
+      });
       setTaskState(updatedTask);
-      if (onUpdateTask) {
-        onUpdateTask(updatedTask);
-      }
+      if (onUpdateTask) onUpdateTask(updatedTask);
       setError(null);
+      if (newStatus === "To Do" && dueDate) setShowRestartConfirm(false);
+      onClose();
     } catch (err: any) {
       setError("Failed to update status: " + err.message);
     }
@@ -104,6 +120,13 @@ const TaskDetails: React.FC<{
               onChange={(e) => setEditedDescription(e.target.value)}
               className="w-full p-2 border rounded text-gray-700"
               rows={4}
+            />
+            <input
+              type="date"
+              value={editedDueDate}
+              onChange={(e) => setEditedDueDate(e.target.value)}
+              className="w-full p-2 mb-2 border rounded text-gray-700"
+              min={new Date().toISOString().split("T")[0]}
             />
           </>
         ) : (
@@ -156,7 +179,10 @@ const TaskDetails: React.FC<{
           <div className="flex space-x-2">
             {!isEditing && taskState.status === "To Do" && (
               <button
-                onClick={() => handleStatusChange("In Progress")}
+                onClick={() => {
+                  handleStatusChange("In Progress");
+                  onClose();
+                }}
                 className={`flex-1 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 active:bg-yellow-700 transition-all duration-200 ${
                   activeTab === "partner" ||
                   task.declined ||
@@ -170,7 +196,10 @@ const TaskDetails: React.FC<{
             )}
             {!isEditing && taskState.status === "In Progress" && (
               <button
-                onClick={() => handleStatusChange("Done")}
+                onClick={() => {
+                  handleStatusChange("Done");
+                  onClose();
+                }}
                 className={`flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 active:bg-green-700 transition-all duration-200 ${
                   activeTab === "partner" ||
                   task.declined ||
@@ -184,11 +213,11 @@ const TaskDetails: React.FC<{
             )}
             {!isEditing && taskState.status === "Done" && (
               <button
-                onClick={() => handleStatusChange("To Do")}
+                onClick={() => setShowRestartConfirm(true)}
                 className={`flex-1 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 active:bg-gray-700 transition-all duration-200 ${
                   activeTab === "partner" ||
                   task.declined ||
-                  remainingTime?.text === "Expired"
+                  task.creator === "partner"
                     ? "hidden"
                     : ""
                 }`}
@@ -226,7 +255,8 @@ const TaskDetails: React.FC<{
             )}
           <div
             className={`flex  ${
-              remainingTime?.text === "Expired" && activeTab !== "declined"
+              (remainingTime?.text === "Expired" && activeTab !== "declined") ||
+              task.status === "Done"
                 ? "space-x-0"
                 : "space-x-2"
             } `}
@@ -250,17 +280,17 @@ const TaskDetails: React.FC<{
               (activeTab === "partner" && task.creator === "partner") ? (
               <button
                 onClick={() => setIsEditing(true)}
-                className={`flex-1 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 active:bg-yellow-700 transition-all duration-200 ${
-                  remainingTime?.text === "Expired" || task.status === "Done"
-                    ? "hidden"
-                    : ""
+                className={`flex-1 bg-yellow-500 text-white mr-1 px-4 py-2 rounded hover:bg-yellow-600 active:bg-yellow-700 transition-all duration-200 ${
+                  task.status === "Done" ? "hidden" : ""
                 }`}
               >
                 Edit
               </button>
             ) : null}
             <button
-              onClick={() => handleDelete(task.id)}
+              onClick={() => {
+                setShowDeleteConfirm(true);
+              }}
               className={`flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 active:bg-red-800 transition-all duration-200 ${
                 (activeTab === "partner" && task.creator === "self") ||
                 isEditing
@@ -305,6 +335,72 @@ const TaskDetails: React.FC<{
                   className="flex-1 bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 active:bg-gray-500 transition-all duration-200"
                 >
                   No
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {showDeleteConfirm && (
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
+            <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+              <p className="text-gray-800 mb-4">
+                Are you sure that you want to delete selected task?
+              </p>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => {
+                    handleDelete(task.id);
+                    onClose();
+                  }}
+                  className="flex-1 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 active:bg-red-700 transition-all duration-200"
+                >
+                  Yes
+                </button>
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="flex-1 bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 active:bg-gray-500 transition-all duration-200"
+                >
+                  No
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {showRestartConfirm && (
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
+            <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+              <p className="text-gray-800 mb-4">
+                Please enter a new due date to restart the task:
+              </p>
+              <input
+                type="date"
+                value={newDueDate}
+                onChange={(e) => setNewDueDate(e.target.value)}
+                className="w-full p-2 mb-4 border rounded text-gray-700"
+                min={new Date().toISOString().split("T")[0]} // Prevent past dates
+              />
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => {
+                    if (newDueDate) {
+                      handleStatusChange("To Do", newDueDate); // Pass new dueDate
+                    } else {
+                      setError("Please select a due date");
+                    }
+                  }}
+                  disabled={!newDueDate}
+                  className="flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 active:bg-green-700 transition-all duration-200 disabled:bg-gray-300"
+                >
+                  Confirm
+                </button>
+                <button
+                  onClick={() => {
+                    setShowRestartConfirm(false);
+                    setNewDueDate(""); // Reset due date on cancel
+                  }}
+                  className="flex-1 bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 active:bg-gray-500 transition-all duration-200"
+                >
+                  Cancel
                 </button>
               </div>
             </div>
