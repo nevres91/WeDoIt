@@ -5,7 +5,6 @@ import Navbar from "./Navbar";
 import { ToDo } from "./ToDo";
 import { YourTasks } from "./YourTasks";
 import { Calendar } from "./Calendar";
-import { DashboardPartnersTasks } from "./DashboardPartnersTasks";
 import DashboardHome from "./DashboardHome";
 import { auth } from "../../services/firebase";
 import DashboardPartner from "./DashboardPartner";
@@ -68,8 +67,6 @@ export const DashboardMiddle: React.FC<DashboardMiddleProps> = ({
           <YourTasks />
         ) : activeTab === "calendar" ? (
           <Calendar />
-        ) : activeTab === "partners-tasks" ? (
-          <DashboardPartnersTasks />
         ) : activeTab === "todo" ? (
           <ToDo />
         ) : activeTab === "find-partner" ? (

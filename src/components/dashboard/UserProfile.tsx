@@ -3,6 +3,7 @@ import { useDashboard } from "../../context/DashboardContext";
 import { useAuth } from "../../context/AuthContext";
 import { useTasks } from "../../hooks/useTasks";
 import { auth } from "../../services/firebase";
+import { useTranslation } from "react-i18next";
 
 export const UserProfile = ({
   setSidebar,
@@ -17,6 +18,7 @@ export const UserProfile = ({
   const { inProgressTasks, doneTasks, expiredTasks } = useTasks(
     auth.currentUser?.uid
   );
+  const { t } = useTranslation();
 
   // Filter out expired tasks from inProgressTasks
   const activeInProgressTasks = inProgressTasks.filter((task) => {
@@ -32,7 +34,7 @@ export const UserProfile = ({
         (new Date().getTime() - new Date(birthday).getTime()) /
           (1000 * 60 * 60 * 24 * 365.25) // Account for leap years
       )
-    : "Unknown";
+    : t("unknown");
   return (
     <>
       <div // Container
@@ -82,57 +84,57 @@ export const UserProfile = ({
               isExpanded ? "opacity-100" : "opacity-0 max-h-0 overflow-hidden"
             }  mt-[20px] flex flex-col transition-all duration-200 text-start z-[100]`}
           >
-            <p className="ml-1 text-sm">Your Information</p>
+            <p className="ml-1 text-sm">{t("your_information")}</p>
             <ul className="text-calm-n-cool-1 text-sm font-semibold w-[97%] m-auto text-start">
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
-                <p className="w-[90px]">First Name:</p>{" "}
+                <p className="w-[90px]">{t("first_name_label")}</p>{" "}
                 <span className="font-light ml-4">{firstName}</span>
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
-                <p className="w-[90px]">Last Name:</p>{" "}
+                <p className="w-[90px]">{t("last_name_label")}</p>{" "}
                 <span className="font-light ml-4">{lastName}</span>
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
-                <p className="w-[90px]">Sex:</p>{" "}
+                <p className="w-[90px]">{t("sex")}</p>{" "}
                 <span className="font-light ml-4">
-                  {role === "wife" ? "Female" : "Male"}
+                  {role === "wife" ? t("female") : t("male")}
                 </span>
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
-                <p className="w-[90px]">Age:</p>{" "}
+                <p className="w-[90px]">{t("age")}</p>{" "}
                 <span className="font-light ml-4">{age}</span>
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
-                <p className="w-[90px]">Job:</p>{" "}
+                <p className="w-[90px]">{t("job")}</p>{" "}
                 <span className="font-light ml-4">{job ? job : "Unknown"}</span>
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
-                <p className="w-[90px]">Height:</p>{" "}
+                <p className="w-[90px]">{t("height")}</p>{" "}
                 <span className="font-light ml-4">
                   {height ? height + " cm" : "Unknown"}
                 </span>
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
-                <p className="w-[90px]">Weight:</p>{" "}
+                <p className="w-[90px]">{t("weight")}</p>{" "}
                 <span className="font-light ml-4">
                   {weight ? weight + " kg" : "Unknown"}
                 </span>
               </li>
             </ul>
-            <p className="ml-1 mt-2 text-sm">Task Overview</p>
+            <p className="ml-1 mt-2 text-sm">{t("task_overview")}</p>
             <ul className="text-calm-n-cool-1 text-sm font-semibold w-[97%] m-auto text-start">
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
-                <p className="w-[90px]">Completed:</p>{" "}
+                <p className="w-[90px]">{t("completed")}</p>{" "}
                 <span className="font-light ml-4">{doneTasks.length}</span>
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
-                <p className="w-[90px]">Ongoing:</p>{" "}
+                <p className="w-[90px]">{t("ongoing")}</p>{" "}
                 <span className="font-light ml-4">
                   {activeInProgressTasks.length}
                 </span>
               </li>
               <li className="flex rounded-md bg-calm-n-cool-5 p-1 pl-3 my-1">
-                <p className="w-[90px]">Expired:</p>{" "}
+                <p className="w-[90px]">{t("expired")}</p>{" "}
                 <span className="font-light ml-4">{expiredTasks.length}</span>
               </li>
             </ul>

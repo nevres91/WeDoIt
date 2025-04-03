@@ -1,5 +1,7 @@
+import { useTranslation } from "react-i18next";
 // ---------------------Calculate task's remaining time---------------------
 export const getRemainingTime = (dueDate: string | Date) => {
+  const { t } = useTranslation();
   const now = new Date();
   const due = new Date(dueDate);
   const diffMs = due.getTime() - now.getTime();
@@ -22,7 +24,7 @@ export const getRemainingTime = (dueDate: string | Date) => {
   }
   if (hours < 24) {
     return {
-      text: `${hours} hrs`,
+      text: `${hours + " " + t("hrs")}`,
       color:
         hours <= 3
           ? "bg-orange-200 text-orange-800"
@@ -30,7 +32,7 @@ export const getRemainingTime = (dueDate: string | Date) => {
     };
   }
   return {
-    text: `${days} days`,
+    text: `${days + " " + t("days")}`,
     color:
       days <= 1
         ? "bg-yellow-200 text-yellow-800"

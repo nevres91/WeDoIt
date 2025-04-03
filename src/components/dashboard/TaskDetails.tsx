@@ -5,6 +5,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { useTasks } from "../../hooks/useTasks";
 import { useDashboard } from "../../context/DashboardContext";
 import { getRemainingTime } from "../../utils/helperFunctions";
+import { useTranslation } from "react-i18next";
 
 const TaskDetails: React.FC<{
   task: Task;
@@ -28,6 +29,8 @@ const TaskDetails: React.FC<{
   const [showRestartConfirm, setShowRestartConfirm] = useState(false);
   const [newDueDate, setNewDueDate] = useState("");
 
+  const { t } = useTranslation();
+
   const onDecline = async () => {
     const success = await handleDecline(task.id, declineMessage);
     if (success) {
@@ -44,7 +47,7 @@ const TaskDetails: React.FC<{
       setShowDeclineConfirm(false); // Close modal on success
       onClose(); // Optionally close the task details after declining
     } else {
-      setError("Failed to decline task");
+      setError(t("failed_to_decline_task"));
       setShowDeclineConfirm(false); // Close modal on failure
     }
   };
@@ -72,7 +75,7 @@ const TaskDetails: React.FC<{
       setIsEditing(false);
       setError(null);
     } catch (err: any) {
-      setError("Failed to save edits: " + err.message);
+      setError(t("failed_to_save_edits") + err.message);
     }
   };
   const handleStatusChange = async (
@@ -96,7 +99,7 @@ const TaskDetails: React.FC<{
       if (newStatus === "To Do" && dueDate) setShowRestartConfirm(false);
       onClose();
     } catch (err: any) {
-      setError("Failed to update status: " + err.message);
+      setError(t("failed_to_update_status") + err.message);
     }
   };
 
@@ -106,7 +109,7 @@ const TaskDetails: React.FC<{
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-20">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-full shadow-lg overflow-auto">
         {error && <div className="text-red-500 mb-4">{error}</div>}
         {isEditing ? (
           <>
@@ -136,38 +139,44 @@ const TaskDetails: React.FC<{
             </h3>
             <div className="space-y-3 text-gray-700">
               <p>
-                <span className="font-semibold">Description:</span>{" "}
-                <span className="block bg-gray-200 p-2">
+                <span className="font-semibold">{t("description")}</span>{" "}
+                <span className="block bg-gray-200 p-2 max-h-[200px] overflow-auto rounded-md">
                   {taskState.description}
                 </span>
               </p>
               <p>
-                <span className="font-semibold">Priority:</span>{" "}
-                {taskState.priority}
+                <span className="font-semibold">{t("priority")}</span>{" "}
+                {taskState.priority === "High"
+                  ? t("high")
+                  : taskState.priority === "Medium"
+                  ? t("medium")
+                  : t("low")}
               </p>
               <p>
-                <span className="font-semibold">Creator:</span>{" "}
-                {taskState.creator === "partner" ? "Partner" : "Self"}
+                <span className="font-semibold">{t("creator")}</span>{" "}
+                {taskState.creator === "partner" ? t("partner") : t("self")}
               </p>
               <p>
-                <span className="font-semibold">Created:</span>{" "}
+                <span className="font-semibold">{t("created")}</span>{" "}
                 {new Date(taskState.createdAt).toLocaleDateString()}
               </p>
               <p>
-                <span className="font-semibold">Due:</span>{" "}
+                <span className="font-semibold">{t("due")}</span>{" "}
                 {new Date(taskState.dueDate).toLocaleDateString()}
               </p>
               {taskState.declined && (
                 <div>
                   <p className="font-semibold">
-                    Status:{" "}
-                    <span className="text-red-600 font-semibold">Declined</span>
+                    {t("status")}{" "}
+                    <span className="text-red-600 font-semibold">
+                      {t("declined")}
+                    </span>
                   </p>
                   <p
                     className="bg-red-100 p-2 w-full text-wrap max-h-44 overflow-y-auto scrollbar-thin scrollable_content"
                     id="scrollable-content"
                   >
-                    <span className="font-semibold">Reason:</span>{" "}
+                    <span className="font-semibold">{t("reason")}</span>{" "}
                     {taskState.declineMessage}
                   </p>
                 </div>
@@ -183,7 +192,7 @@ const TaskDetails: React.FC<{
                   handleStatusChange("In Progress");
                   onClose();
                 }}
-                className={`flex-1 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 active:bg-yellow-700 transition-all duration-200 ${
+                className={`flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 active:bg-yellow-700 transition-all duration-200 ${
                   activeTab === "partner" ||
                   task.declined ||
                   remainingTime?.text === "Expired"
@@ -191,7 +200,7 @@ const TaskDetails: React.FC<{
                     : ""
                 }`}
               >
-                Start
+                {t("start")}
               </button>
             )}
             {!isEditing && taskState.status === "In Progress" && (
@@ -208,7 +217,7 @@ const TaskDetails: React.FC<{
                     : ""
                 }`}
               >
-                Finish
+                {t("finish")}
               </button>
             )}
             {!isEditing && taskState.status === "Done" && (
@@ -222,7 +231,7 @@ const TaskDetails: React.FC<{
                     : ""
                 }`}
               >
-                Restart
+                {t("restart")}
               </button>
             )}
           </div>
@@ -241,13 +250,13 @@ const TaskDetails: React.FC<{
                       isHiddenFull ? "hidden" : ""
                     }`}
                   >
-                    Decline
+                    {t("decline")}
                   </button>
                 </div>
                 <textarea
                   value={declineMessage}
                   onChange={(e) => setDeclineMessage(e.target.value)}
-                  placeholder="Reason for declining..."
+                  placeholder={t("reason_for_declining")}
                   className={`w-full p-2 border rounded text-gray-700`}
                   rows={2}
                 />
@@ -267,13 +276,13 @@ const TaskDetails: React.FC<{
                   onClick={() => setIsEditing(false)}
                   className="flex-1 bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 active:bg-gray-500 transition-all duration-200"
                 >
-                  Cancel
+                  {t("cancel")}
                 </button>
                 <button
                   onClick={handleSaveEdit}
                   className="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 active:bg-blue-700 transition-all duration-200"
                 >
-                  Save
+                  {t("save")}
                 </button>
               </>
             ) : (activeTab === "home" && task.creator === "self") ||
@@ -284,7 +293,7 @@ const TaskDetails: React.FC<{
                   task.status === "Done" ? "hidden" : ""
                 }`}
               >
-                Edit
+                {t("edit")}
               </button>
             ) : null}
             <button
@@ -298,14 +307,14 @@ const TaskDetails: React.FC<{
                   : ""
               }`}
             >
-              Delete
+              {t("delete")}
             </button>
             {onReactivate && (
               <button
                 onClick={() => onReactivate(task.id)}
                 className="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
               >
-                Reactivate Task
+                {t("reactivate_task")}
               </button>
             )}
           </div>
@@ -313,28 +322,27 @@ const TaskDetails: React.FC<{
             onClick={onClose}
             className="w-full bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 active:bg-gray-500 transition-all duration-200"
           >
-            Close
+            {t("close")}
           </button>
         </div>
         {showDeclineConfirm && (
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
               <p className="text-gray-800 mb-4">
-                The task will be moved to your partner's Declined Tasks section,
-                and you won't be able to see it anymore. Do you want to proceed?
+                {t("decline_confirm_message")}
               </p>
               <div className="flex space-x-2">
                 <button
                   onClick={onDecline}
                   className="flex-1 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 active:bg-red-700 transition-all duration-200"
                 >
-                  Yes
+                  {t("yes")}
                 </button>
                 <button
                   onClick={() => setShowDeclineConfirm(false)}
                   className="flex-1 bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 active:bg-gray-500 transition-all duration-200"
                 >
-                  No
+                  {t("no")}
                 </button>
               </div>
             </div>
@@ -344,7 +352,7 @@ const TaskDetails: React.FC<{
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
               <p className="text-gray-800 mb-4">
-                Are you sure that you want to delete selected task?
+                {t("delete_confirm_message")}
               </p>
               <div className="flex space-x-2">
                 <button
@@ -354,13 +362,13 @@ const TaskDetails: React.FC<{
                   }}
                   className="flex-1 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 active:bg-red-700 transition-all duration-200"
                 >
-                  Yes
+                  {t("yes")}
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
                   className="flex-1 bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 active:bg-gray-500 transition-all duration-200"
                 >
-                  No
+                  {t("no")}
                 </button>
               </div>
             </div>
@@ -370,37 +378,37 @@ const TaskDetails: React.FC<{
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
               <p className="text-gray-800 mb-4">
-                Please enter a new due date to restart the task:
+                {t("restart_confirm_message")}
               </p>
               <input
                 type="date"
                 value={newDueDate}
                 onChange={(e) => setNewDueDate(e.target.value)}
                 className="w-full p-2 mb-4 border rounded text-gray-700"
-                min={new Date().toISOString().split("T")[0]} // Prevent past dates
+                min={new Date().toISOString().split("T")[0]}
               />
               <div className="flex space-x-2">
                 <button
                   onClick={() => {
                     if (newDueDate) {
-                      handleStatusChange("To Do", newDueDate); // Pass new dueDate
+                      handleStatusChange("To Do", newDueDate);
                     } else {
-                      setError("Please select a due date");
+                      setError(t("please_select_due_date"));
                     }
                   }}
                   disabled={!newDueDate}
                   className="flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 active:bg-green-700 transition-all duration-200 disabled:bg-gray-300"
                 >
-                  Confirm
+                  {t("confirm")}
                 </button>
                 <button
                   onClick={() => {
                     setShowRestartConfirm(false);
-                    setNewDueDate(""); // Reset due date on cancel
+                    setNewDueDate("");
                   }}
                   className="flex-1 bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 active:bg-gray-500 transition-all duration-200"
                 >
-                  Cancel
+                  {t("cancel")}
                 </button>
               </div>
             </div>

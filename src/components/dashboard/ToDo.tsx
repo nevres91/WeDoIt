@@ -1,3 +1,7 @@
 export const ToDo = () => {
-  return <div>ToDo</div>;
+  return (
+    <div>
+      <header className="p-4">TO-DO</header>
+    </div>
+  );
 };

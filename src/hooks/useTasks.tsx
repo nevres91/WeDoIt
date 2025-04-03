@@ -67,8 +67,6 @@ export const useTasks = (userId?: string | null) => {
       if (!taskId) {
         throw new Error("Task ID is missing");
       }
-
-      console.log("Attempting to delete task with ID:", taskId);
       const taskRef = doc(db, "tasks", taskId);
       await deleteDoc(taskRef);
       // Update local tasks state to remove the deleted task

@@ -7,6 +7,7 @@ interface ProfileUpdateData {
   firstName?: string;
   lastName?: string;
   role?: "husband" | "wife"; // Match UserData's role type
+  language: "en" | "bs";
   job?: string;
   height?: string;
   weight?: string;
@@ -25,6 +26,7 @@ export const EditProfile = () => {
     firstName: userData?.firstName || "",
     lastName: userData?.lastName || "",
     sex: userData?.role === "wife" ? "Female" : "Male", // Infer sex from role initially
+    language: userData?.language || "",
     birthday: userData?.birthday || "",
     job: userData?.job || "",
     height: userData?.height || "",
@@ -47,9 +49,8 @@ export const EditProfile = () => {
       const updatedData: ProfileUpdateData = {
         firstName: formData.firstName,
         lastName: formData.lastName,
-
         role: formData.sex === "Female" ? "wife" : "husband",
-
+        language: formData.language,
         job: formData.job,
         height: formData.height,
         weight: formData.weight,
@@ -108,6 +109,18 @@ export const EditProfile = () => {
                 onChange={handleChange}
                 className="w-full p-2 rounded-md bg-gray-200 hover:bg-gray-100 transition-all ease-in-out duration-100 text-calm-n-cool-5 bg-opacity-70"
               />
+            </div>
+            <div>
+              <label className="block text-sm">Language</label>
+              <select
+                name="language"
+                value={formData.language}
+                onChange={handleChange}
+                className="w-full p-2 rounded-md bg-gray-200 hover:bg-gray-100 transition-all ease-in-out duration-100 text-calm-n-cool-5 bg-opacity-70"
+              >
+                <option value="en">English</option>
+                <option value="bs">Bosanski</option>
+              </select>
             </div>
             <div>
               <label className="block text-sm">Sex</label>

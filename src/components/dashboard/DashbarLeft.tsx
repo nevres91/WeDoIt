@@ -4,7 +4,8 @@ import { leavePartner } from "../../utils/PartnerService";
 import { PartnershipInvitations } from "./PartnershipInvitations";
 import { SidebarMenu } from "./SidebarMenu";
 import { UserProfile } from "./UserProfile";
-
+import { useTranslation } from "react-i18next";
+import { useLanguage } from "../../hooks/useLanguage";
 interface DashbarLeftProps {
   logout: () => void;
   role: string;
@@ -22,6 +23,8 @@ const DashbarLeft: React.FC<DashbarLeftProps> = ({
   sidebar,
   setSidebar,
 }) => {
+  const { t } = useTranslation();
+  useLanguage();
   const handleLeave = () => {
     if (userId && userData?.partnerId) {
       leavePartner(userId, userData.partnerId);
@@ -52,13 +55,13 @@ const DashbarLeft: React.FC<DashbarLeftProps> = ({
               isLeaveDisabled ? "hidden" : ""
             }`}
           >
-            Leave your partner
+            {t("leave_your_partner")}
           </button>
           <button // Logout Button
             onClick={logout}
             className="z-40 bg-calm-n-cool-4 font-light hover:bg-calm-n-cool-1 hover:text-calm-n-cool-6 text-white p-2  rounded-md w-[calc(100%-12px)]  transition-all duration-100 disabled:opacity-50 m-auto"
           >
-            Logout
+            {t("logout")}
           </button>
         </div>
       </div>

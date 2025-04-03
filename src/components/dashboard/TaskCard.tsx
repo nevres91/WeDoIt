@@ -5,6 +5,7 @@ import { Task } from "../../types";
 import { getRemainingTime } from "../../utils/helperFunctions";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../services/firebase";
+import { useTranslation } from "react-i18next";
 
 const TaskCard: React.FC<{
   task: Task;
@@ -12,6 +13,7 @@ const TaskCard: React.FC<{
   onUpdateTask?: (task: Task) => void;
   hideActions?: boolean;
 }> = ({ task, onClick, hideActions, onUpdateTask }) => {
+  const { t } = useTranslation(); // Add translation hook
   const priorityColor = {
     Low: "bg-gray-200 text-gray-800",
     Medium: "bg-yellow-200 text-yellow-800",
@@ -22,7 +24,6 @@ const TaskCard: React.FC<{
   const { userData } = useAuth();
   const { activeTab } = useDashboard();
 
-  // Calculate remaining time if dueDate exists
   const remainingTime = task.dueDate ? getRemainingTime(task.dueDate) : null;
 
   const handleStatusChange = async (newStatus: Task["status"]) => {
@@ -36,13 +37,13 @@ const TaskCard: React.FC<{
       }
       setError(null);
     } catch (err: any) {
-      setError("Failed to update status: " + err.message);
+      setError(t("failed_to_update_status") + err.message);
     }
   };
 
   return (
-    <div //container
-      className={`flex relative overflow-hidden justify-between w-full xs:w-[45%] lg:w-full min-w-[200px] rounded-lg shadow-md hover:shadow-lg transition-all duration-100 h-[110px]  ${
+    <div
+      className={`flex relative overflow-hidden justify-between w-full xs:w-[45%] lg:w-full min-w-[200px] rounded-lg shadow-md hover:shadow-lg transition-all duration-100 h-[110px] ${
         remainingTime?.text === "Expired" &&
         task.status !== "Done" &&
         task.declined !== true
@@ -66,11 +67,9 @@ const TaskCard: React.FC<{
           : userData?.role === "wife"
           ? "bg-blue-50 border-l-4 border-blue-400 hover:bg-blue-100"
           : "bg-pink-50 border-l-4 border-pink-400 hover:bg-pink-100"
-      } ${
-        remainingTime?.text === "Expired" && task.status !== "Done" ? "" : ""
       }`}
     >
-      <div // DECLINED / Expired OVERLAY
+      <div
         className={`w-full h-full bg-red-200 absolute top-0 left-0 bg-opacity-30 flex items-center justify-center cursor-pointer ${
           task.declined ||
           (remainingTime?.text === "Expired" && task.status !== "Done")
@@ -80,15 +79,15 @@ const TaskCard: React.FC<{
         onClick={onClick}
       >
         <p className="font-bold text-2xl text-red-600 z-10 opacity-70 absolute bottom-1 right-3">
-          {task.declined ? "DECLINED" : "EXPIRED"}
+          {task.declined ? t("declined") : t("expired")}
         </p>
       </div>
-      <div //content
+      <div
         onClick={onClick}
         className="flex flex-col cursor-pointer rounded-lg p-2 h-full w-[82%]"
       >
         <div className="flex justify-between items-start">
-          <p //title
+          <p
             className={`text-sm font-semibold mr-2 ${
               remainingTime?.text === "Expired" &&
               task.status !== "Done" &&
@@ -113,15 +112,12 @@ const TaskCard: React.FC<{
                 : userData?.role === "wife"
                 ? "text-blue-900"
                 : "text-pink-800"
-            }
-             `}
+            }`}
           >
             {task.title}
           </p>
         </div>
-        <div //Description
-          className="w-full h-[55%] overflow-hidden text-xs"
-        >
+        <div className="w-full h-[55%] overflow-hidden text-xs">
           <p
             className="line-clamp-3"
             style={{
@@ -133,15 +129,13 @@ const TaskCard: React.FC<{
             {task.description}
           </p>
         </div>
-        <div //Status container
-          className="flex items-center space-x-2 absolute bottom-1 left-1"
-        >
-          <span //Priority
+        <div className="flex items-center space-x-2 absolute bottom-1 left-1">
+          <span
             className={`text-xs font-semibold px-2 py-1 rounded-full ${
               priorityColor[task.priority]
             }`}
           >
-            {task.priority}
+            {t(task.priority.toLowerCase())} {/* Translate priority */}
           </span>
           <span
             className={`text-xs font-semibold px-2 py-1 rounded-full 
@@ -168,20 +162,20 @@ const TaskCard: React.FC<{
               }`}
           >
             {activeTab === "declined"
-              ? "From You"
+              ? t("from_you")
               : activeTab === "partner" && task.creator === "self"
               ? userData?.role === "wife"
-                ? "From Husband"
-                : "From Wife"
+                ? t("from_husband")
+                : t("from_wife")
               : activeTab === "partner" && task.creator === "partner"
               ? userData?.role === "wife"
-                ? "From You"
-                : "From Husband"
+                ? t("from_you")
+                : t("from_husband")
               : task.creator === "self"
-              ? "From You"
+              ? t("from_you")
               : userData?.role === "wife"
-              ? "From Husband"
-              : "From Wife"}
+              ? t("from_husband")
+              : t("from_wife")}
           </span>
           {remainingTime && (
             <span
@@ -190,14 +184,15 @@ const TaskCard: React.FC<{
               } ${task.status === "Done" ? "hidden" : ""}`}
             >
               <i className="fa-solid fa-hourglass-start"></i>{" "}
-              {remainingTime.text}
+              {remainingTime.text}{" "}
+              {/* Note: This might need separate handling */}
             </span>
           )}
           {task.edited && (
             <span
               className={`text-xs font-semibold px-2 py-1 rounded-full bg-gray-200 text-gray-700`}
             >
-              <i className="fa-solid fa-user-pen"></i> Edited
+              <i className="fa-solid fa-user-pen"></i> {t("edited")}
             </span>
           )}
         </div>
@@ -224,24 +219,24 @@ const TaskCard: React.FC<{
           }`}
         >
           {task.status === "To Do"
-            ? "Accept"
+            ? t("accept")
             : task.status === "In Progress"
-            ? "Finish"
-            : "Restart"}
+            ? t("finish")
+            : t("restart")}
         </button>
         <button
           className={`w-full text-xs px-2 py-1 rounded-full bg-red-200 text-red-700 my-1 hover:bg-red-400 hover:text-white transition-all duration-100 ${
             hideActions ? "hidden" : ""
           }`}
         >
-          Reject
+          {t("reject")}
         </button>
         <button
           className={`w-full text-xs px-2 py-1 rounded-full bg-red-400 text-white my-1 hover:bg-red-500 hover:text-white transition-all duration-100 ${
             hideActions ? "hidden" : ""
           }`}
         >
-          Delete
+          {t("delete")}
         </button>
       </div>
     </div>

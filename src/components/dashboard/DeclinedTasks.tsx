@@ -5,6 +5,7 @@ import { Task } from "../../types";
 import { useAuth } from "../../context/AuthContext";
 import { useTasks } from "../../hooks/useTasks";
 import { TabsComponent } from "../TabsComponent";
+import { useTranslation } from "react-i18next";
 
 const DeclinedTasks: React.FC = () => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -12,6 +13,8 @@ const DeclinedTasks: React.FC = () => {
   const { declinedTasks, loading, reactivateTask } = useTasks(
     userData?.partnerId
   );
+
+  const { t } = useTranslation();
 
   // Handle task reactivation
   const handleReactivateTask = async (taskId: string) => {
@@ -28,7 +31,7 @@ const DeclinedTasks: React.FC = () => {
 
   // -----------------------------TABS COMPONENT-----------------------------
   const taskTabs = [
-    { id: "declined", label: "Declined Tasks", color: "blue-300" },
+    { id: "declined", label: t("declined_tasks"), color: "blue-300" },
   ];
   const tabsContent = {
     declined: (
@@ -45,14 +48,14 @@ const DeclinedTasks: React.FC = () => {
     ),
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>{t("loading")}</div>;
 
   return (
     <div className="h-full w-full bg-gradient-to-t from-calm-n-cool-5 to-calm-n-cool-1 p-1 sm:p-2 md:p-6 lg:px-0  max-h-[calc(100%-0px)]">
       <div className="relative flex justify-between items-center mb-6">
         <div className="w-[30px]"></div>
         <h1 className="text-xl lg:text-3xl text-calm-n-cool-6 text-center flex-1">
-          Tasks that your partner declined
+          {t("tasks_that_partner_declined")}
         </h1>
       </div>
 
