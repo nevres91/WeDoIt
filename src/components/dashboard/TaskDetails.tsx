@@ -1,11 +1,19 @@
 import { useState } from "react";
 import { Task } from "../../types";
 import { db } from "../../services/firebase";
-import { doc, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  arrayRemove,
+  arrayUnion,
+  collection,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { useTasks } from "../../hooks/useTasks";
 import { useDashboard } from "../../context/DashboardContext";
 import { getRemainingTime } from "../../utils/helperFunctions";
 import { useTranslation } from "react-i18next";
+import ReactLinkify from "react-linkify";
 
 const TaskDetails: React.FC<{
   task: Task;
@@ -30,6 +38,38 @@ const TaskDetails: React.FC<{
   const [newDueDate, setNewDueDate] = useState("");
 
   const { t } = useTranslation();
+
+  // Function to send a notification to the partner
+  const sendNotificationToPartner = async (
+    taskId: string,
+    message: string,
+    taskTitle: string
+  ) => {
+    try {
+      if (!taskState.partnerId) {
+        throw new Error("Partner ID is missing; cannot send notification.");
+      }
+
+      const notification = {
+        taskId,
+        taskTitle,
+        message,
+        recipient: taskState.partnerId,
+        createdAt: new Date().toISOString(),
+        read: false,
+      };
+      await addDoc(collection(db, "notifications"), notification);
+
+      // Update partner's user data with pending approvals
+      const partnerRef = doc(db, "users", taskState.partnerId); // TypeScript now knows partnerId is string
+      await updateDoc(partnerRef, {
+        pendingTaskApprovals: arrayUnion(taskId),
+      });
+    } catch (err: any) {
+      setError(t("failed_to_send_notification") + err.message);
+      console.log(err.message);
+    }
+  };
 
   const onDecline = async () => {
     const success = await handleDecline(task.id, declineMessage);
@@ -83,16 +123,31 @@ const TaskDetails: React.FC<{
     dueDate?: string
   ) => {
     try {
-      const updatedTask = {
+      let updatedTask = {
         ...taskState,
         status: newStatus,
         ...(dueDate && { dueDate }),
       };
+
+      if (
+        taskState.creator === "partner" &&
+        newStatus === "Done" &&
+        activeTab !== "partner"
+      ) {
+        updatedTask.status = "Pending Approval";
+        await sendNotificationToPartner(
+          task.id,
+          t("task_pending_approval_message", { title: task.title }),
+          task.title
+        );
+      }
+
       const taskRef = doc(db, "tasks", task.id);
       await updateDoc(taskRef, {
-        status: newStatus,
+        status: updatedTask.status,
         ...(dueDate && { dueDate }),
       });
+
       setTaskState(updatedTask);
       if (onUpdateTask) onUpdateTask(updatedTask);
       setError(null);
@@ -100,6 +155,32 @@ const TaskDetails: React.FC<{
       onClose();
     } catch (err: any) {
       setError(t("failed_to_update_status") + err.message);
+    }
+  };
+
+  const handlePartnerApproval = async (approved: boolean) => {
+    try {
+      if (!taskState.partnerId) {
+        throw new Error("Partner ID is missing; cannot process approval.");
+      }
+
+      const newStatus: Task["status"] = approved ? "Done" : "In Progress";
+      const taskRef = doc(db, "tasks", task.id);
+      await updateDoc(taskRef, { status: newStatus });
+
+      const updatedTask: Task = { ...taskState, status: newStatus };
+      setTaskState(updatedTask);
+      if (onUpdateTask) onUpdateTask(updatedTask);
+
+      const partnerRef = doc(db, "users", taskState.partnerId);
+      await updateDoc(partnerRef, {
+        pendingTaskApprovals: arrayRemove(task.id),
+      });
+
+      setError(null);
+      onClose();
+    } catch (err: any) {
+      setError(t("failed_to_approve_task") + err.message);
     }
   };
 
@@ -134,14 +215,35 @@ const TaskDetails: React.FC<{
           </>
         ) : (
           <>
-            <h3 className="text-xl font-bold text-gray-800 mb-4">
+            <h2
+              className={`text-2xl font-bold text-calm-n-cool-5 mb-4 ${
+                task.status !== "Pending Approval" ? "hidden" : ""
+              }`}
+            >
+              Task Finished <i className="fa-solid fa-check-double"></i>
+            </h2>
+            <h3 className="bg-calm-n-cool-5 p-1 px-2  rounded-tl-lg rounded-r-3xl text-xl font-bold text-calm-n-cool-1 mb-4">
               {taskState.title}
             </h3>
-            <div className="space-y-3 text-gray-700">
+            <div className="space-y-3 text-calm-n-cool-5">
               <p>
                 <span className="font-semibold">{t("description")}</span>{" "}
                 <span className="block bg-gray-200 p-2 max-h-[200px] overflow-auto rounded-md">
-                  {taskState.description}
+                  <ReactLinkify
+                    componentDecorator={(decoratedHref, decoratedText, key) => (
+                      <a
+                        href={decoratedHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                        key={key}
+                      >
+                        {decoratedText}
+                      </a>
+                    )}
+                  >
+                    {taskState.description}
+                  </ReactLinkify>
                 </span>
               </p>
               <p>
@@ -158,11 +260,19 @@ const TaskDetails: React.FC<{
               </p>
               <p>
                 <span className="font-semibold">{t("created")}</span>{" "}
-                {new Date(taskState.createdAt).toLocaleDateString()}
+                {new Date(taskState.createdAt).toLocaleDateString("de-DE", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                })}
               </p>
               <p>
                 <span className="font-semibold">{t("due")}</span>{" "}
-                {new Date(taskState.dueDate).toLocaleDateString()}
+                {new Date(taskState.dueDate).toLocaleDateString("de-DE", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                })}
               </p>
               {taskState.declined && (
                 <div>
@@ -220,6 +330,26 @@ const TaskDetails: React.FC<{
                 {t("finish")}
               </button>
             )}
+            {!isEditing &&
+              taskState.status === "Pending Approval" &&
+              activeTab === "partner" && (
+                <>
+                  <button
+                    onClick={() => handlePartnerApproval(true)}
+                    className="relative flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 active:bg-green-700 transition-all duration-200"
+                  >
+                    <i className="fa-solid fa-thumbs-up  fa-xl absolute top-5 left-2"></i>{" "}
+                    {t("approve")}
+                  </button>
+                  <button
+                    onClick={() => handlePartnerApproval(false)}
+                    className="relative flex-1 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 active:bg-red-700 disabled:bg-red-300 transition-all duration-200"
+                  >
+                    <i className="fa-solid fa-thumbs-down fa-xl absolute top-5 left-2"></i>{" "}
+                    {t("reject")}
+                  </button>
+                </>
+              )}
             {!isEditing && taskState.status === "Done" && (
               <button
                 onClick={() => setShowRestartConfirm(true)}
@@ -290,7 +420,9 @@ const TaskDetails: React.FC<{
               <button
                 onClick={() => setIsEditing(true)}
                 className={`flex-1 bg-yellow-500 text-white mr-1 px-4 py-2 rounded hover:bg-yellow-600 active:bg-yellow-700 transition-all duration-200 ${
-                  task.status === "Done" ? "hidden" : ""
+                  task.status === "Done" || task.status === "Pending Approval"
+                    ? "hidden"
+                    : ""
                 }`}
               >
                 {t("edit")}
@@ -302,7 +434,8 @@ const TaskDetails: React.FC<{
               }}
               className={`flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 active:bg-red-800 transition-all duration-200 ${
                 (activeTab === "partner" && task.creator === "self") ||
-                isEditing
+                isEditing ||
+                task.status === "Pending Approval"
                   ? "hidden"
                   : ""
               }`}

@@ -11,6 +11,7 @@ import DashboardPartner from "./DashboardPartner";
 import { useTasks } from "../../hooks/useTasks";
 import DeclinedTasks from "./DeclinedTasks";
 import { EditProfile } from "../EditProfile";
+import { Notifications } from "./Notifications";
 
 interface DashboardMiddleProps {
   visible: boolean;
@@ -75,6 +76,8 @@ export const DashboardMiddle: React.FC<DashboardMiddleProps> = ({
           <DeclinedTasks />
         ) : activeTab === "edit-profile" ? (
           <EditProfile />
+        ) : activeTab === "notifications" ? (
+          <Notifications />
         ) : (
           ""
         )}

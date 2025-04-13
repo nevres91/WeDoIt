@@ -24,7 +24,7 @@ const Home = () => {
   }, [user]);
   return (
     <>
-      <div
+      <div //BG image
         className="px-2 min-w-[380px]"
         style={{
           backgroundImage: `url('src/assets/LoginPage.jpg')`,

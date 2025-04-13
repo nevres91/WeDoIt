@@ -157,6 +157,7 @@ export const EditProfile = () => {
                 name="job"
                 value={formData.job}
                 onChange={handleChange}
+                maxLength={50}
                 className="w-full p-2 rounded-md bg-gray-200 hover:bg-gray-100 transition-all ease-in-out duration-100 text-calm-n-cool-5 bg-opacity-70 "
               />
             </div>

@@ -10,12 +10,15 @@ import {
 } from "firebase/firestore";
 import { useAuth } from "../../context/AuthContext";
 import { db } from "../../services/firebase";
+import { useTranslation } from "react-i18next";
 
 export const DashboardFindPartner = () => {
   const { user } = useAuth();
   // Update message state to an object with text and type
   const [message, setMessage] = useState({ text: "", type: "" });
   const [partnerEmail, setPartnerEmail] = useState("");
+
+  const { t } = useTranslation();
 
   const handleFindPartner = async () => {
     setMessage({ text: "", type: "" });
@@ -128,7 +131,8 @@ export const DashboardFindPartner = () => {
         >
           <div className="max-w-md mx-auto">
             <h2 className="text-2xl text-calm-n-cool-5 font-bold my-4 text-center">
-              Find Your Partner
+              <i className="fa-solid fa-heart-pulse fa-xl"></i>{" "}
+              {t("find_your_partner")}
             </h2>
             {message.text && (
               <div
@@ -141,7 +145,7 @@ export const DashboardFindPartner = () => {
             )}
             <input
               type="email"
-              placeholder="Enter partner's email"
+              placeholder={t("enter_partners_email")}
               value={partnerEmail}
               onChange={(e) => setPartnerEmail(e.target.value)}
               className="border p-2 w-full rounded"
@@ -150,7 +154,7 @@ export const DashboardFindPartner = () => {
               onClick={handleFindPartner}
               className="bg-calm-n-cool-5 text-calm-n-cool-1 p-2 rounded w-full hover:bg-calm-n-cool-4 mt-2 transition-all duration-100"
             >
-              Link Partner
+              {t("link_partner")}
             </button>
           </div>
         </div>

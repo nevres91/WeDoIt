@@ -40,9 +40,33 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onUpdateTask }) => {
 
   // -----------------------------TABS COMPONENT-----------------------------
   const taskTabs = [
-    { id: "todo", label: t("to_do"), color: "red-300" },
-    { id: "inProgress", label: t("in_progress"), color: "yellow-200" },
-    { id: "done", label: t("done"), color: "green-200" },
+    {
+      id: "todo",
+      label: (
+        <>
+          <i className="fa-solid fa-list fa-lg"></i> {t("to_do")}
+        </>
+      ),
+      color: "red-300",
+    },
+    {
+      id: "inProgress",
+      label: (
+        <>
+          <i className="fa-solid fa-list-check fa-lg"></i> {t("in_progress")}
+        </>
+      ),
+      color: "yellow-200",
+    },
+    {
+      id: "done",
+      label: (
+        <>
+          <i className="fa-solid fa-check-double fa-lg"></i> {t("done")}
+        </>
+      ),
+      color: "green-200",
+    },
   ];
 
   const handleTabChange = (tabId: string) => {
@@ -136,7 +160,7 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onUpdateTask }) => {
     <div className="h-full w-full bg-gradient-to-t from-calm-n-cool-5 to-calm-n-cool-1 p-1 sm:p-2 md:p-6 lg:px-0  max-h-[calc(100%-0px)]">
       <div className="relative flex justify-between items-center mb-6">
         <h1 className="text-xl md:text-3xl text-calm-n-cool-6 text-center flex-1">
-          {t("your_task_board")}
+          <i className="fa-solid fa-list-check"></i> {t("your_task_board")}
         </h1>
 
         <button //Create new task mobile button

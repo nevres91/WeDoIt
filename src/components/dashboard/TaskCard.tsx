@@ -3,7 +3,13 @@ import { useAuth } from "../../context/AuthContext";
 import { useDashboard } from "../../context/DashboardContext";
 import { Task } from "../../types";
 import { getRemainingTime } from "../../utils/helperFunctions";
-import { doc, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  arrayUnion,
+  collection,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../services/firebase";
 import { useTranslation } from "react-i18next";
 
@@ -26,15 +32,70 @@ const TaskCard: React.FC<{
 
   const remainingTime = task.dueDate ? getRemainingTime(task.dueDate) : null;
 
-  const handleStatusChange = async (newStatus: Task["status"]) => {
+  // Function to send a notification to the partner
+  const sendNotificationToPartner = async (
+    taskId: string,
+    message: string,
+    taskTitle: string
+  ) => {
     try {
-      const updatedTask = { ...taskState, status: newStatus };
-      const taskRef = doc(db, "tasks", task.id);
-      await updateDoc(taskRef, { status: newStatus });
-      setTaskState(updatedTask);
-      if (onUpdateTask) {
-        onUpdateTask(updatedTask);
+      if (!taskState.partnerId) {
+        throw new Error("Partner ID is missing; cannot send notification.");
       }
+
+      const notification = {
+        taskId,
+        taskTitle,
+        message,
+        recipient: taskState.partnerId,
+        createdAt: new Date().toISOString(),
+        read: false,
+      };
+      await addDoc(collection(db, "notifications"), notification);
+
+      // Update partner's user data with pending approvals
+      const partnerRef = doc(db, "users", taskState.partnerId); // TypeScript now knows partnerId is string
+      await updateDoc(partnerRef, {
+        pendingTaskApprovals: arrayUnion(taskId),
+      });
+    } catch (err: any) {
+      setError(t("failed_to_send_notification") + err.message);
+      console.log(err.message);
+    }
+  };
+
+  const handleStatusChange = async (
+    newStatus: Task["status"],
+    dueDate?: string
+  ) => {
+    try {
+      let updatedTask = {
+        ...taskState,
+        status: newStatus,
+        ...(dueDate && { dueDate }),
+      };
+
+      if (
+        taskState.creator === "partner" &&
+        newStatus === "Done" &&
+        activeTab !== "partner"
+      ) {
+        updatedTask.status = "Pending Approval";
+        await sendNotificationToPartner(
+          task.id,
+          t("task_pending_approval_message", { title: task.title }),
+          task.title
+        );
+      }
+
+      const taskRef = doc(db, "tasks", task.id);
+      await updateDoc(taskRef, {
+        status: updatedTask.status,
+        ...(dueDate && { dueDate }),
+      });
+
+      setTaskState(updatedTask);
+      if (onUpdateTask) onUpdateTask(updatedTask);
       setError(null);
     } catch (err: any) {
       setError(t("failed_to_update_status") + err.message);
@@ -69,7 +130,7 @@ const TaskCard: React.FC<{
           : "bg-pink-50 border-l-4 border-pink-400 hover:bg-pink-100"
       }`}
     >
-      <div
+      <div //Expired overlay
         className={`w-full h-full bg-red-200 absolute top-0 left-0 bg-opacity-30 flex items-center justify-center cursor-pointer ${
           task.declined ||
           (remainingTime?.text === "Expired" && task.status !== "Done")
@@ -84,7 +145,11 @@ const TaskCard: React.FC<{
       </div>
       <div
         onClick={onClick}
-        className="flex flex-col cursor-pointer rounded-lg p-2 h-full w-[82%]"
+        className={`flex flex-col cursor-pointer rounded-lg p-2 h-full ${
+          remainingTime?.text === "Expired" || task.status === "Done"
+            ? "w-full"
+            : "w-[82%]"
+        }`}
       >
         <div className="flex justify-between items-start">
           <p
@@ -135,7 +200,8 @@ const TaskCard: React.FC<{
               priorityColor[task.priority]
             }`}
           >
-            {t(task.priority.toLowerCase())} {/* Translate priority */}
+            <i className="fa-solid fa-triangle-exclamation"></i>{" "}
+            {t(task.priority.toLowerCase())}
           </span>
           <span
             className={`text-xs font-semibold px-2 py-1 rounded-full 
@@ -161,21 +227,43 @@ const TaskCard: React.FC<{
                   : "bg-pink-200 text-pink-800"
               }`}
           >
-            {activeTab === "declined"
-              ? t("from_you")
-              : activeTab === "partner" && task.creator === "self"
-              ? userData?.role === "wife"
-                ? t("from_husband")
-                : t("from_wife")
-              : activeTab === "partner" && task.creator === "partner"
-              ? userData?.role === "wife"
-                ? t("from_you")
-                : t("from_husband")
-              : task.creator === "self"
-              ? t("from_you")
-              : userData?.role === "wife"
-              ? t("from_husband")
-              : t("from_wife")}
+            {activeTab === "declined" ? (
+              <div>
+                <i className="fa-solid fa-mars"></i> {t("from_you")}
+              </div>
+            ) : activeTab === "partner" && task.creator === "self" ? (
+              userData?.role === "wife" ? (
+                <div>
+                  <i className="fa-solid fa-mars"></i> {t("from_husband")}
+                </div>
+              ) : (
+                <div>
+                  <i className="fa-solid fa-venus"></i> {t("from_wife")}
+                </div>
+              )
+            ) : activeTab === "partner" && task.creator === "partner" ? (
+              userData?.role === "wife" ? (
+                <div>
+                  <i className="fa-solid fa-mars"></i> {t("from_you")}
+                </div>
+              ) : (
+                <div>
+                  <i className="fa-solid fa-mars"></i> {t("from_husband")}
+                </div>
+              )
+            ) : task.creator === "self" ? (
+              <div>
+                <i className="fa-solid fa-mars"></i> {t("from_you")}
+              </div>
+            ) : userData?.role === "wife" ? (
+              <div>
+                <i className="fa-solid fa-mars"></i> {t("from_husband")}
+              </div>
+            ) : (
+              <div>
+                <i className="fa-solid fa-venus"></i> {t("from_wife")}
+              </div>
+            )}
           </span>
           {remainingTime && (
             <span
@@ -192,15 +280,15 @@ const TaskCard: React.FC<{
             <span
               className={`text-xs font-semibold px-2 py-1 rounded-full bg-gray-200 text-gray-700`}
             >
-              <i className="fa-solid fa-user-pen"></i> {t("edited")}
+              <i className="fa-solid fa-file-pen"></i> {t("edited")}
             </span>
           )}
         </div>
       </div>
-      <div
+      <div //Buttons
         className={`w-[18%] max-w-[80px] h-full rounded-lg p-2 font-normal min-w-[75px] ${
           remainingTime?.text === "Expired" || task.status === "Done"
-            ? "hidden"
+            ? "hidden w-0"
             : ""
         }`}
       >

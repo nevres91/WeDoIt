@@ -58,7 +58,13 @@ export const createPartnerTask = async (
       };
     }
 
-    const task = { ...taskBase, userId: partnerId };
+    const task = {
+      ...taskBase,
+      userId: partnerId, // The partner who will work on the task
+      partnerId: partnerId, // Explicitly store partnerId for approval workflow
+      creatorId: currentUser.uid, // Track who created the task (optional but useful)
+      creator: "partner" as const, // Assuming this indicates a partner-related task
+    };
     const docRef = await addDoc(tasksCollection, task);
     onAddTask({ ...task, id: docRef.id });
     return { success: true, message: "Task created for your partner!" };
@@ -67,7 +73,6 @@ export const createPartnerTask = async (
     return { success: false, message: err.message || "Failed to create task" };
   }
 };
-
 // ------------------------------CREATE TASK FOR SELF OR PARTNER------------------------------
 export const createTask = async (
   newTask: NewTask,

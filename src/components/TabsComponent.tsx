@@ -3,7 +3,7 @@ import { useState } from "react";
 type TabId = string;
 export interface Tab {
   id: TabId;
-  label: string;
+  label: string | JSX.Element;
   color?: string;
 }
 export interface TabContent {

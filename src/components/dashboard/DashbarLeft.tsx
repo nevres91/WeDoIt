@@ -26,7 +26,9 @@ const DashbarLeft: React.FC<DashbarLeftProps> = ({
   const { t } = useTranslation();
   useLanguage();
   const handleLeave = () => {
-    if (userId && userData?.partnerId) {
+    // Show confirmation dialog
+    const confirmLeave = window.confirm(t("leaving_partner_warning"));
+    if (confirmLeave && userId && userData?.partnerId) {
       leavePartner(userId, userData.partnerId);
     }
   };
@@ -51,16 +53,18 @@ const DashbarLeft: React.FC<DashbarLeftProps> = ({
         <div className="bg-calm-n-cool-6 w-full flex flex-col mt-auto pt-8 pb-2 rounded-b-md  ">
           <button //Leave Partner Button
             onClick={handleLeave}
-            className={`mb-2 z-40 bg-red-500 font-light  hover:bg-red-600 hover:text-calm-n-cool-1 text-white p-2  rounded-md w-[calc(100%-12px)]  transition-all duration-100 disabled:bg-red-600 disabled:opacity-50 m-auto ${
+            className={`group relative mb-2 z-40 bg-red-500 font-light  hover:bg-calm-n-cool-1 hover:text-red-600 hover:font-normal text-white p-2  rounded-md w-[calc(100%-12px)]  transition-all duration-100 disabled:bg-red-600 disabled:opacity-50 m-auto ${
               isLeaveDisabled ? "hidden" : ""
             }`}
           >
+            <i className="fa-solid fa-heart-crack fa-xl absolute left-2 top-5 group-hover:rotate-[15deg]"></i>{" "}
             {t("leave_your_partner")}
           </button>
           <button // Logout Button
             onClick={logout}
-            className="z-40 bg-calm-n-cool-4 font-light hover:bg-calm-n-cool-1 hover:text-calm-n-cool-6 text-white p-2  rounded-md w-[calc(100%-12px)]  transition-all duration-100 disabled:opacity-50 m-auto"
+            className="group relative z-40 bg-calm-n-cool-4 font-light hover:bg-calm-n-cool-1 hover:text-calm-n-cool-6 text-white p-2  rounded-md w-[calc(100%-12px)]  transition-all duration-100 disabled:opacity-50 m-auto"
           >
+            <i className="fa-solid fa-right-from-bracket fa-xl absolute left-2 top-5 group-hover:translate-x-[2px]"></i>{" "}
             {t("logout")}
           </button>
         </div>

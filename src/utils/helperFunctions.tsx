@@ -11,7 +11,7 @@ export const getRemainingTime = (dueDate: string | Date) => {
   const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
   if (diffMs <= 0) {
-    return { text: "Expired", color: "bg-transparent text-transparent" };
+    return { text: "Expired", color: "hidden" };
   }
   if (minutes < 60) {
     return {

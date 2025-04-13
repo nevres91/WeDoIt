@@ -32,8 +32,10 @@ export interface Task {
   id: string;
   title: string;
   description: string;
-  status: "To Do" | "In Progress" | "Done";
+  status: "To Do" | "In Progress" | "Done" | "Pending Approval";
   creator: "self" | "partner";
+  partnerId?: string;
+  creatorId?: string;
   createdAt: string; // ISO date string, e.g., '2025-02-23'
   dueDate: string; // ISO date string, e.g., '2025-02-25'
   priority: "Low" | "Medium" | "High";

@@ -160,6 +160,9 @@ export const useTasks = (userId?: string | null) => {
   const inProgressTasks = tasks.filter(
     (task) => task.status === "In Progress" && task.declined !== true
   );
+  const pendingApprovalTasks = tasks.filter(
+    (task) => task.status === "Pending Approval" && task.declined !== true
+  );
   const doneTasks = tasks.filter(
     (task) => task.status === "Done" && task.declined !== true
   );
@@ -190,5 +193,6 @@ export const useTasks = (userId?: string | null) => {
     declinedTasks,
     expiredTasks,
     reactivateTask,
+    pendingApprovalTasks,
   };
 };

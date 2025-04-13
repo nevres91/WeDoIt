@@ -114,6 +114,7 @@ i18n
           declined_tasks: "Declined Tasks",
           to_do: "To Do",
           calendar: "Calendar",
+          notifications: "Notifications",
 
           //DashboardHome component
           your_task_board: "Your Task Board",
@@ -180,6 +181,24 @@ i18n
           edited: "Edited",
           days: "days",
           hrs: "hrs",
+
+          leaving_partner_warning:
+            "Please be advised: Leaving your partner will result in the permanent deletion of all tasks assigned by your partner, as well as those assigned to them by you. This action cannot be undone. Do you wish to proceed?",
+          find_your_partner: "Find Your Partner",
+          enter_partners_email: "Enter partner's email",
+          link_partner: "Link Partner",
+
+          task_pending_approval_message:
+            "Partner must aproove your task completion.",
+          pending_approvals: "Pending Approvals",
+          failed_to_send_notification:
+            "Failed to send a notification to your partner.",
+          approve: "Approve",
+          no_notifications: "You don't have any notifications.",
+          task_notification:
+            "task is finished, please approve it in your partner's taskboard.",
+          new: "NEW",
+          delete_notification: "Delete Notification?",
         },
       },
       // Bosnian
@@ -219,7 +238,7 @@ i18n
           signing_up: "Registracija...",
 
           //DashboardLeft component
-          leave_your_partner: "Napusti svog partnera.",
+          leave_your_partner: "Napusti partnera.",
           logout: "Odjava",
 
           //UserProfile component
@@ -244,8 +263,9 @@ i18n
           link_a_partner: "Poveži se sa partnerom",
           partners_tasks: "Partnerovi zadatci",
           declined_tasks: "Odbijeni zadatci",
-          to_do: "Za uraditi",
+          to_do: "Uraditi",
           calendar: "Kalendar",
+          notifications: "Notifikacije",
 
           //DashboardHome component
           your_task_board: "Tvoja Tabla Zadataka",
@@ -260,7 +280,7 @@ i18n
           high: "Visok",
           create: "Kreiraj",
           cancel: "Odustani",
-          in_progress: "Odrađuju Se",
+          in_progress: "U Toku",
           done: "Završeni",
 
           partners_task_board: "Partnerova Tabla Zadataka",
@@ -312,6 +332,26 @@ i18n
           edited: "Uređeno",
           days: "dana",
           hrs: "sati",
+
+          leaving_partner_warning:
+            "Upozorenje: Napuštanjem vašeg partnera trajno će se izbrisati svi zadaci koje vam je partner dodijelio, kao i oni koje ste vi dodijelili njemu/njoj. Ova radnja se ne može poništiti. Želite li nastaviti?",
+
+          find_your_partner: "Pronađi Svog Partnera",
+          enter_partners_email: "Upiši partnerov email",
+          link_partner: "Povežite se",
+
+          task_pending_approval_message:
+            "Partner mora potvrditi da ste uspješno završili zadatak",
+          pending_approvals: "Za Potvrditi",
+
+          failed_to_send_notification:
+            "Slanje notifikacije partneru nije uspjelo.",
+          approve: "Potvrdi",
+          no_notifications: "Nemate novih notifikacija.",
+          task_notification:
+            "zadatak je završen, potrebno je da ga potvrdite u partnerovoj tabli zadataka.",
+          new: "NOVO",
+          delete_notification: "Izbriši Notifikaciju?",
         },
       },
     },
