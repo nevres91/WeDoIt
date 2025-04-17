@@ -108,7 +108,7 @@ export const Notifications = () => {
       </h1>
       {error && <div className="text-red-500 mb-4">{error}</div>}
       {notifications.length === 0 ? (
-        <p className="text-gray-500 m-auto">{t("no_notifications")}</p>
+        <p className="text-gray-500 text-center">{t("no_notifications")}</p>
       ) : (
         <ul className="space-y-2 max-w-[700px] mx-auto">
           {notifications.map((notification) => (

@@ -7,6 +7,7 @@ export interface PartnerData {
 }
 
 export interface UserData {
+  photoURL?: string;
   createdAt: Timestamp;
   email: string;
   firstName: string;

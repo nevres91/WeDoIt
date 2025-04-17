@@ -434,6 +434,7 @@ const TaskDetails: React.FC<{
               }}
               className={`flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 active:bg-red-800 transition-all duration-200 ${
                 (activeTab === "partner" && task.creator === "self") ||
+                (activeTab === "partner" && task.status === "Done") ||
                 isEditing ||
                 task.status === "Pending Approval"
                   ? "hidden"

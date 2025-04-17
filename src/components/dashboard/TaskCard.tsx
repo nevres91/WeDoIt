@@ -148,7 +148,7 @@ const TaskCard: React.FC<{
         className={`flex flex-col cursor-pointer rounded-lg p-2 h-full ${
           remainingTime?.text === "Expired" || task.status === "Done"
             ? "w-full"
-            : "w-[82%]"
+            : "w-[81%]"
         }`}
       >
         <div className="flex justify-between items-start">
@@ -286,7 +286,7 @@ const TaskCard: React.FC<{
         </div>
       </div>
       <div //Buttons
-        className={`w-[18%] max-w-[80px] h-full rounded-lg p-2 font-normal min-w-[75px] ${
+        className={`w-[19%] max-w-[85px] h-full rounded-lg p-2 font-normal min-w-[75px] ${
           remainingTime?.text === "Expired" || task.status === "Done"
             ? "hidden w-0"
             : ""

@@ -199,6 +199,10 @@ i18n
             "task is finished, please approve it in your partner's taskboard.",
           new: "NEW",
           delete_notification: "Delete Notification?",
+          not_authenticated: "You must be signed in to upload a picture.",
+          upload_error: "Failed to upload profile picture. Please try again.",
+          image_too_large:
+            "Image is too large (max 750 KB). Try a smaller image.",
         },
       },
       // Bosnian
@@ -294,7 +298,7 @@ i18n
           reason: "Razlog:",
           start: "Započni",
           finish: "Završi",
-          restart: "Ponovo pokreni",
+          restart: "Restartuj",
           decline: "Odbij",
           edit: "Uredi",
           delete: "Izbriši",
@@ -352,6 +356,12 @@ i18n
             "zadatak je završen, potrebno je da ga potvrdite u partnerovoj tabli zadataka.",
           new: "NOVO",
           delete_notification: "Izbriši Notifikaciju?",
+          not_authenticated:
+            "Moraš biti prijavljen da promijeniš profilnu fotografiju.",
+          upload_error:
+            "Neuspješno postavljanje profilne fotografije, pokušajte ponovo.",
+          image_too_large:
+            "Fotografija je prevelika, (max 750kb), koristite manju fotografiju.",
         },
       },
     },

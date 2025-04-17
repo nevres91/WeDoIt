@@ -1,9 +1,11 @@
-import { SetStateAction, useState } from "react";
+import { SetStateAction, useRef, useState } from "react";
 import { useDashboard } from "../../context/DashboardContext";
 import { useAuth } from "../../context/AuthContext";
 import { useTasks } from "../../hooks/useTasks";
-import { auth } from "../../services/firebase";
+import { auth, storage } from "../../services/firebase";
 import { useTranslation } from "react-i18next";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import imageCompression from "browser-image-compression";
 
 export const UserProfile = ({
   setSidebar,
@@ -11,14 +13,25 @@ export const UserProfile = ({
   setSidebar: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
-  const { userData } = useAuth();
+  const [uploading, setUploading] = useState<boolean>(false); // Track upload state
+  const { userData, updateUserData } = useAuth();
   const { setActiveTab } = useDashboard();
-  const { firstName, lastName, email, role, height, job, weight, birthday } =
-    userData || {};
+  const {
+    firstName,
+    lastName,
+    email,
+    role,
+    height,
+    job,
+    weight,
+    birthday,
+    photoURL,
+  } = userData || {};
   const { inProgressTasks, doneTasks, expiredTasks } = useTasks(
     auth.currentUser?.uid
   );
   const { t } = useTranslation();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Filter out expired tasks from inProgressTasks
   const activeInProgressTasks = inProgressTasks.filter((task) => {
@@ -35,6 +48,64 @@ export const UserProfile = ({
           (1000 * 60 * 60 * 24 * 365.25) // Account for leap years
       )
     : t("unknown");
+
+  // Handle profile picture click to trigger file input
+  const handleProfilePictureClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  // Handle file selection and upload
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!auth.currentUser) {
+      alert(
+        t("not_authenticated") || "You must be signed in to upload a picture."
+      );
+      return;
+    }
+
+    setUploading(true);
+    try {
+      // Compress image
+      const options = {
+        maxSizeMB: 0.2, // Target 200 KB
+        maxWidthOrHeight: 400, // Decent resolution for profile pics
+        useWebWorker: true,
+      };
+      const compressedFile = await imageCompression(file, options);
+
+      // Convert to base64
+      const reader = new FileReader();
+      const base64Promise = new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(compressedFile);
+      });
+      const base64String = await base64Promise;
+
+      // Validate size (Firestore limit ~1 MB)
+      if (base64String.length > 1_000_000) {
+        throw new Error(
+          t("image_too_large") || "Image is too large (max 750 KB)"
+        );
+      }
+      // Update user data
+      await updateUserData({ photoURL: base64String });
+    } catch (error: any) {
+      console.error("Upload error:", {
+        message: error.message,
+        code: error.code,
+        details: error,
+      });
+      alert(t("upload_error") || `Failed to upload: ${error.message}`);
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
   return (
     <>
       <div // Container
@@ -62,8 +133,35 @@ export const UserProfile = ({
             <i className=" fa-solid fa-house fa-lg  ml-[calc(50%+5%)]"></i>
           </div>
         </div>
-        <div // Profile Picture
-          className=" bg-profile bg-contain  rounded-full w-[100px] h-[100px] mt-3 absolute -top-6 border-4 border-calm-n-cool-6 z-50"
+        <div
+          className={`rounded-full w-[100px] h-[100px] mt-3 absolute -top-6 border-4 border-calm-n-cool-6 z-50 cursor-pointer group transition-all duration-200 ${
+            uploading ? "opacity-50" : "hover:opacity-80"
+          }`}
+          onClick={handleProfilePictureClick}
+        >
+          <div
+            className={`w-full h-full rounded-full bg-cover bg-center ${
+              photoURL ? "" : "bg-profile bg-contain"
+            }`}
+            style={{
+              backgroundImage: photoURL ? `url(${photoURL})` : undefined,
+            }}
+          />
+          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <i className="fa-solid fa-camera text-white fa-lg"></i>
+          </div>
+          {uploading && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-8 h-8 border-4 border-t-transparent border-calm-n-cool-6 rounded-full animate-spin"></div>
+            </div>
+          )}
+        </div>
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          className="hidden"
+          onChange={handleFileChange}
         />
         <div //TEXT container
           className={`z-40 text-calm-n-cool-6 font-semibold text-xl text-center rounded-md bg-calm-n-cool-1 w-full h-full`}
