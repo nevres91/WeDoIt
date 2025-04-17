@@ -10,8 +10,6 @@ const Dashboard = () => {
   const [partnerLink, setPartnerLink] = useState<boolean>(false);
   const { userData, logout, user } = useAuth();
   const [role, setRole] = useState<string>("");
-  // const { invitations, handleAccept, handleReject, invitationsMessage } =
-  //   useInvitations();
   const { partnerData, loading } = usePartnerData() || {
     partnerData: null,
   };

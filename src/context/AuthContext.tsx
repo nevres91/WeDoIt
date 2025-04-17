@@ -7,7 +7,7 @@ import {
 } from "react";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { auth, db } from "../services/firebase";
-import { onSnapshot, doc, updateDoc, setDoc } from "firebase/firestore";
+import { onSnapshot, doc, setDoc } from "firebase/firestore";
 import { UserData } from "../types";
 
 interface AuthContextType {

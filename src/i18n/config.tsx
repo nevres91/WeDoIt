@@ -203,6 +203,7 @@ i18n
           upload_error: "Failed to upload profile picture. Please try again.",
           image_too_large:
             "Image is too large (max 750 KB). Try a smaller image.",
+          error_leaving_partner: "Failed to leave partner. Please try again.",
         },
       },
       // Bosnian
@@ -362,6 +363,7 @@ i18n
             "Neuspješno postavljanje profilne fotografije, pokušajte ponovo.",
           image_too_large:
             "Fotografija je prevelika, (max 750kb), koristite manju fotografiju.",
+          error_leaving_partner: "Failed to leave partner. Please try again.",
         },
       },
     },

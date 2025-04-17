@@ -25,11 +25,15 @@ const DashbarLeft: React.FC<DashbarLeftProps> = ({
 }) => {
   const { t } = useTranslation();
   useLanguage();
-  const handleLeave = () => {
-    // Show confirmation dialog
-    const confirmLeave = window.confirm(t("leaving_partner_warning"));
-    if (confirmLeave && userId && userData?.partnerId) {
-      leavePartner(userId, userData.partnerId);
+  const handleLeave = async () => {
+    if (!window.confirm(t("leaving_partner_warning"))) return;
+    if (!userId || !userData?.partnerId) return;
+
+    try {
+      await leavePartner(userId, userData.partnerId);
+      window.location.reload();
+    } catch (error) {
+      alert(t("error_leaving_partner"));
     }
   };
   const isLeaveDisabled = !userId || !userData?.partnerId;

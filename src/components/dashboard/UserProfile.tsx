@@ -2,9 +2,8 @@ import { SetStateAction, useRef, useState } from "react";
 import { useDashboard } from "../../context/DashboardContext";
 import { useAuth } from "../../context/AuthContext";
 import { useTasks } from "../../hooks/useTasks";
-import { auth, storage } from "../../services/firebase";
+import { auth } from "../../services/firebase";
 import { useTranslation } from "react-i18next";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import imageCompression from "browser-image-compression";
 
 export const UserProfile = ({
