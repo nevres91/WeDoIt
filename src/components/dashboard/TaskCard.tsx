@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../services/firebase";
 import { useTranslation } from "react-i18next";
+import { useTasks } from "../../hooks/useTasks";
 
 const TaskCard: React.FC<{
   task: Task;
@@ -27,8 +28,13 @@ const TaskCard: React.FC<{
   };
   const [taskState, setTaskState] = useState(task);
   const [error, setError] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
   const { userData } = useAuth();
   const { activeTab } = useDashboard();
+  const { handleDelete } = useTasks();
+
+  const isSmallScreen = window.innerWidth < 640;
 
   const remainingTime = task.dueDate ? getRemainingTime(task.dueDate) : null;
 
@@ -103,108 +109,109 @@ const TaskCard: React.FC<{
   };
 
   return (
-    <div
-      className={`flex relative overflow-hidden justify-between w-full xs:w-[45%] lg:w-full min-w-[200px] rounded-lg shadow-md hover:shadow-lg transition-all duration-100 h-[110px] ${
-        remainingTime?.text === "Expired" &&
-        task.status !== "Done" &&
-        task.declined !== true
-          ? "bg-gray-300 border-l-4 border-gray-500 hover:bg-gray-200"
-          : activeTab === "declined" && userData?.role === "husband"
-          ? "bg-blue-50 border-l-4 border-blue-400 hover:bg-blue-100"
-          : activeTab === "declined" && userData?.role === "wife"
-          ? "bg-pink-50 border-l-4 border-pink-400 hover:bg-pink-100"
-          : activeTab === "partner" && task.creator === "self"
-          ? userData?.role === "wife"
+    <>
+      <div
+        className={`flex relative overflow-hidden justify-between w-full xs:w-[45%] lg:w-full min-w-[200px] rounded-lg shadow-md hover:shadow-lg transition-all duration-100 h-[110px] ${
+          remainingTime?.text === "Expired" &&
+          task.status !== "Done" &&
+          task.declined !== true
+            ? "bg-gray-300 border-l-4 border-gray-500 hover:bg-gray-200"
+            : activeTab === "declined" && userData?.role === "husband"
+            ? "bg-blue-50 border-l-4 border-blue-400 hover:bg-blue-100"
+            : activeTab === "declined" && userData?.role === "wife"
+            ? "bg-pink-50 border-l-4 border-pink-400 hover:bg-pink-100"
+            : activeTab === "partner" && task.creator === "self"
+            ? userData?.role === "wife"
+              ? "bg-blue-50 border-l-4 border-blue-400 hover:bg-blue-100"
+              : "bg-pink-50 border-l-4 border-pink-400 hover:bg-pink-100"
+            : activeTab === "partner" && task.creator === "partner"
+            ? userData?.role === "wife"
+              ? "bg-pink-50 border-l-4 border-pink-400 hover:bg-pink-100"
+              : "bg-blue-50 border-l-4 border-blue-400 hover:bg-blue-100"
+            : activeTab === "home" && task.creator === "self"
+            ? userData?.role === "wife"
+              ? "bg-pink-50 border-l-4 border-pink-400 hover:bg-pink-100"
+              : "bg-blue-50 border-l-4 border-blue-400 hover:bg-blue-100"
+            : userData?.role === "wife"
             ? "bg-blue-50 border-l-4 border-blue-400 hover:bg-blue-100"
             : "bg-pink-50 border-l-4 border-pink-400 hover:bg-pink-100"
-          : activeTab === "partner" && task.creator === "partner"
-          ? userData?.role === "wife"
-            ? "bg-pink-50 border-l-4 border-pink-400 hover:bg-pink-100"
-            : "bg-blue-50 border-l-4 border-blue-400 hover:bg-blue-100"
-          : activeTab === "home" && task.creator === "self"
-          ? userData?.role === "wife"
-            ? "bg-pink-50 border-l-4 border-pink-400 hover:bg-pink-100"
-            : "bg-blue-50 border-l-4 border-blue-400 hover:bg-blue-100"
-          : userData?.role === "wife"
-          ? "bg-blue-50 border-l-4 border-blue-400 hover:bg-blue-100"
-          : "bg-pink-50 border-l-4 border-pink-400 hover:bg-pink-100"
-      }`}
-    >
-      <div //Expired overlay
-        className={`w-full h-full bg-red-200 absolute top-0 left-0 bg-opacity-30 flex items-center justify-center cursor-pointer ${
-          task.declined ||
-          (remainingTime?.text === "Expired" && task.status !== "Done")
-            ? ""
-            : "hidden"
-        }`}
-        onClick={onClick}
-      >
-        <p className="font-bold text-2xl text-red-600 z-10 opacity-70 absolute bottom-1 right-3">
-          {task.declined ? t("declined") : t("expired")}
-        </p>
-      </div>
-      <div
-        onClick={onClick}
-        className={`flex flex-col cursor-pointer rounded-lg p-2 h-full ${
-          remainingTime?.text === "Expired" || task.status === "Done"
-            ? "w-full"
-            : "w-[81%]"
         }`}
       >
-        <div className="flex justify-between items-start">
-          <p
-            className={`text-sm font-semibold mr-2 ${
-              remainingTime?.text === "Expired" &&
-              task.status !== "Done" &&
-              task.declined !== true
-                ? "text-gray-900"
-                : activeTab === "declined" && userData?.role === "husband"
-                ? "text-blue-900"
-                : activeTab === "declined" && userData?.role === "wife"
-                ? "text-pink-800"
-                : activeTab === "partner" && task.creator === "self"
-                ? userData?.role === "wife"
+        <div //Expired overlay
+          className={`w-full h-full bg-red-200 absolute top-0 left-0 bg-opacity-30 flex items-center justify-center cursor-pointer ${
+            task.declined ||
+            (remainingTime?.text === "Expired" && task.status !== "Done")
+              ? ""
+              : "hidden"
+          }`}
+          onClick={onClick}
+        >
+          <p className="font-bold text-2xl text-red-600 z-10 opacity-70 absolute bottom-1 right-3">
+            {task.declined ? t("declined") : t("expired")}
+          </p>
+        </div>
+        <div
+          onClick={onClick}
+          className={`flex flex-col cursor-pointer rounded-lg p-2 h-full ${
+            remainingTime?.text === "Expired" || task.status === "Done"
+              ? "w-full"
+              : "w-[81%]"
+          }`}
+        >
+          <div className="flex justify-between items-start">
+            <p
+              className={`text-sm font-semibold mr-2 ${
+                remainingTime?.text === "Expired" &&
+                task.status !== "Done" &&
+                task.declined !== true
+                  ? "text-gray-900"
+                  : activeTab === "declined" && userData?.role === "husband"
+                  ? "text-blue-900"
+                  : activeTab === "declined" && userData?.role === "wife"
+                  ? "text-pink-800"
+                  : activeTab === "partner" && task.creator === "self"
+                  ? userData?.role === "wife"
+                    ? "text-blue-900"
+                    : "text-pink-800"
+                  : activeTab === "partner" && task.creator === "partner"
+                  ? userData?.role === "wife"
+                    ? "text-pink-800"
+                    : "text-blue-900"
+                  : activeTab === "home" && task.creator === "self"
+                  ? userData?.role === "wife"
+                    ? "text-pink-800"
+                    : "text-blue-900"
+                  : userData?.role === "wife"
                   ? "text-blue-900"
                   : "text-pink-800"
-                : activeTab === "partner" && task.creator === "partner"
-                ? userData?.role === "wife"
-                  ? "text-pink-800"
-                  : "text-blue-900"
-                : activeTab === "home" && task.creator === "self"
-                ? userData?.role === "wife"
-                  ? "text-pink-800"
-                  : "text-blue-900"
-                : userData?.role === "wife"
-                ? "text-blue-900"
-                : "text-pink-800"
-            }`}
-          >
-            {task.title}
-          </p>
-        </div>
-        <div className="w-full h-[55%] overflow-hidden text-xs">
-          <p
-            className="line-clamp-3"
-            style={{
-              display: "-webkit-box",
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: "vertical",
-            }}
-          >
-            {task.description}
-          </p>
-        </div>
-        <div className="flex items-center space-x-2 absolute bottom-1 left-1">
-          <span
-            className={`text-xs font-semibold px-2 py-1 rounded-full ${
-              priorityColor[task.priority]
-            }`}
-          >
-            <i className="fa-solid fa-triangle-exclamation"></i>{" "}
-            {t(task.priority.toLowerCase())}
-          </span>
-          <span
-            className={`text-xs font-semibold px-2 py-1 rounded-full 
+              }`}
+            >
+              {task.title}
+            </p>
+          </div>
+          <div className="w-full h-[55%] overflow-hidden text-xs">
+            <p
+              className="line-clamp-3"
+              style={{
+                display: "-webkit-box",
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: "vertical",
+              }}
+            >
+              {task.description}
+            </p>
+          </div>
+          <div className="flex items-center space-x-2 absolute bottom-1 left-1">
+            <span
+              className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                priorityColor[task.priority]
+              }`}
+            >
+              <i className="fa-solid fa-triangle-exclamation"></i>{" "}
+              {t(task.priority.toLowerCase())}
+            </span>
+            <span
+              className={`text-xs font-semibold px-2 py-1 rounded-full 
               ${
                 activeTab === "declined" && userData?.role === "husband"
                   ? "bg-blue-200 text-blue-800"
@@ -226,13 +233,36 @@ const TaskCard: React.FC<{
                   ? "bg-blue-200 text-blue-800"
                   : "bg-pink-200 text-pink-800"
               }`}
-          >
-            {activeTab === "declined" ? (
-              <div>
-                <i className="fa-solid fa-mars"></i> {t("from_you")}
-              </div>
-            ) : activeTab === "partner" && task.creator === "self" ? (
-              userData?.role === "wife" ? (
+            >
+              {activeTab === "declined" ? (
+                <div>
+                  <i className="fa-solid fa-mars"></i> {t("from_you")}
+                </div>
+              ) : activeTab === "partner" && task.creator === "self" ? (
+                userData?.role === "wife" ? (
+                  <div>
+                    <i className="fa-solid fa-mars"></i> {t("from_husband")}
+                  </div>
+                ) : (
+                  <div>
+                    <i className="fa-solid fa-venus"></i> {t("from_wife")}
+                  </div>
+                )
+              ) : activeTab === "partner" && task.creator === "partner" ? (
+                userData?.role === "wife" ? (
+                  <div>
+                    <i className="fa-solid fa-mars"></i> {t("from_you")}
+                  </div>
+                ) : (
+                  <div>
+                    <i className="fa-solid fa-mars"></i> {t("from_husband")}
+                  </div>
+                )
+              ) : task.creator === "self" ? (
+                <div>
+                  <i className="fa-solid fa-mars"></i> {t("from_you")}
+                </div>
+              ) : userData?.role === "wife" ? (
                 <div>
                   <i className="fa-solid fa-mars"></i> {t("from_husband")}
                 </div>
@@ -240,94 +270,119 @@ const TaskCard: React.FC<{
                 <div>
                   <i className="fa-solid fa-venus"></i> {t("from_wife")}
                 </div>
-              )
-            ) : activeTab === "partner" && task.creator === "partner" ? (
-              userData?.role === "wife" ? (
-                <div>
-                  <i className="fa-solid fa-mars"></i> {t("from_you")}
-                </div>
-              ) : (
-                <div>
-                  <i className="fa-solid fa-mars"></i> {t("from_husband")}
-                </div>
-              )
-            ) : task.creator === "self" ? (
-              <div>
-                <i className="fa-solid fa-mars"></i> {t("from_you")}
-              </div>
-            ) : userData?.role === "wife" ? (
-              <div>
-                <i className="fa-solid fa-mars"></i> {t("from_husband")}
-              </div>
-            ) : (
-              <div>
-                <i className="fa-solid fa-venus"></i> {t("from_wife")}
-              </div>
+              )}
+            </span>
+            {remainingTime && (
+              <span
+                className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                  remainingTime.color
+                } ${task.status === "Done" ? "hidden" : ""}`}
+              >
+                <i className="fa-solid fa-hourglass-start"></i>{" "}
+                {remainingTime.text}{" "}
+                {/* Note: This might need separate handling */}
+              </span>
             )}
-          </span>
-          {remainingTime && (
-            <span
-              className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                remainingTime.color
-              } ${task.status === "Done" ? "hidden" : ""}`}
-            >
-              <i className="fa-solid fa-hourglass-start"></i>{" "}
-              {remainingTime.text}{" "}
-              {/* Note: This might need separate handling */}
-            </span>
-          )}
-          {task.edited && (
-            <span
-              className={`text-xs font-semibold px-2 py-1 rounded-full bg-gray-200 text-gray-700`}
-            >
-              <i className="fa-solid fa-file-pen"></i> {t("edited")}
-            </span>
-          )}
+            {task.edited && (
+              <span
+                className={`text-xs font-semibold px-2 py-1 rounded-full bg-gray-200 text-gray-700`}
+              >
+                <i className="fa-solid fa-file-pen"></i> {t("edited")}
+              </span>
+            )}
+          </div>
+        </div>
+        <div //Buttons
+          className={`relative w-[19%] max-w-[150px] flex h-full p-1  font-normal min-w-[75px]${
+            remainingTime?.text === "Expired" || task.status === "Done"
+              ? "hidden w-0"
+              : ""
+          }`}
+        >
+          <button
+            onClick={() => {
+              const nextStatus =
+                task.status === "To Do"
+                  ? "In Progress"
+                  : task.status === "In Progress"
+                  ? "Done"
+                  : "To Do";
+              handleStatusChange(nextStatus);
+            }}
+            className={`absolute max-h-[25px]  h-[20] w-[47%] text-xs px-2 py-1 bg-green-200 text-green-700 hover:bg-green-400 hover:text-white transition-all duration-100 ${
+              hideActions ? "hidden" : ""
+            } ${
+              task.creator === "partner"
+                ? "rounded-md right-1"
+                : "rounded-l-md left-0"
+            } ${
+              remainingTime?.text === "Expired" || task.status === "Done"
+                ? "hidden w-0"
+                : ""
+            }`}
+          >
+            {isSmallScreen ? (
+              task.status === "To Do" ? (
+                <i className="fa-solid fa-check fa-lg"></i>
+              ) : task.status === "In Progress" ? (
+                <i className="fa-solid fa-check-double"></i>
+              ) : (
+                <i className="fa-solid fa-undo"></i>
+              )
+            ) : task.status === "To Do" ? (
+              t("start")
+            ) : task.status === "In Progress" ? (
+              t("finish")
+            ) : (
+              t("restart")
+            )}
+          </button>
+          <button
+            onClick={() => {
+              setShowDeleteConfirm(true);
+            }}
+            className={`absolute max-h-[25px] right-1 h-] w-[47%] h-[20] text-xs px-2 py-1  bg-red-400 text-white hover:bg-red-500 hover:text-white transition-all duration-100 ${
+              hideActions || task.creator === "partner"
+                ? "hidden"
+                : "rounded-r-md"
+            } ${
+              remainingTime?.text === "Expired" || task.status === "Done"
+                ? "hidden w-0"
+                : ""
+            }`}
+          >
+            {isSmallScreen ? (
+              <i className="fa-solid fa-trash"></i>
+            ) : (
+              t("delete")
+            )}
+          </button>
         </div>
       </div>
-      <div //Buttons
-        className={`w-[19%] max-w-[85px] h-full rounded-lg p-2 font-normal min-w-[75px] ${
-          remainingTime?.text === "Expired" || task.status === "Done"
-            ? "hidden w-0"
-            : ""
-        }`}
-      >
-        <button
-          onClick={() => {
-            const nextStatus =
-              task.status === "To Do"
-                ? "In Progress"
-                : task.status === "In Progress"
-                ? "Done"
-                : "To Do";
-            handleStatusChange(nextStatus);
-          }}
-          className={`w-full text-xs px-2 py-1 rounded-full bg-green-200 text-green-700 my-1 hover:bg-green-400 hover:text-white transition-all duration-100 ${
-            hideActions ? "hidden" : ""
-          }`}
-        >
-          {task.status === "To Do"
-            ? t("accept")
-            : task.status === "In Progress"
-            ? t("finish")
-            : t("restart")}
-        </button>
-        <button
-          className={`w-full text-xs px-2 py-1 rounded-full bg-red-200 text-red-700 my-1 hover:bg-red-400 hover:text-white transition-all duration-100 ${
-            hideActions ? "hidden" : ""
-          }`}
-        >
-          {t("reject")}
-        </button>
-        <button
-          className={`w-full text-xs px-2 py-1 rounded-full bg-red-400 text-white my-1 hover:bg-red-500 hover:text-white transition-all duration-100 ${
-            hideActions ? "hidden" : ""
-          }`}
-        >
-          {t("delete")}
-        </button>
-      </div>
-    </div>
+      {showDeleteConfirm && (
+        <div className="absolute inset-0   bg-opacity-50 flex items-center justify-center rounded-lg z-50">
+          <div className="bg-white p-6  rounded-lg max-w-sm w-full shadow-[0px_0px_400px_200px_rgba(0,0,0,0.75)]">
+            <p className="text-gray-800 mb-4">{t("delete_confirm_message")}</p>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => {
+                  handleDelete(task.id);
+                }}
+                className="flex-1 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 active:bg-red-700 transition-all duration-200"
+              >
+                {t("yes")}
+              </button>
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="flex-1 bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 active:bg-gray-500 transition-all duration-200"
+              >
+                {t("no")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
