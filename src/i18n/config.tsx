@@ -168,7 +168,7 @@ i18n
           failed_to_update_status: "Failed to update status: ",
           please_select_due_date: "Please select a due date",
 
-          //Delined tasks
+          //Declined tasks
           loading: "Loading...",
           tasks_that_partner_declined: "Tasks that your partner declined",
 
@@ -208,6 +208,9 @@ i18n
           image_too_large:
             "Image is too large (max 750 KB). Try a smaller image.",
           error_leaving_partner: "Failed to leave partner. Please try again.",
+          invitation_rejected_message:
+            "Your invitation to {{name}} was rejected.",
+          invitation: "Invitation",
 
           // INITIAL TAsk
           initial_task_1_title: "Welcome to weDoIt!",
@@ -393,6 +396,8 @@ i18n
           image_too_large:
             "Fotografija je prevelika, (max 750kb), koristite manju fotografiju.",
           error_leaving_partner: "Failed to leave partner. Please try again.",
+          invitation_rejected_message: "{{name}} je odbio tvoj zahtjev.",
+          invitation: "Zahtjev",
 
           // INITIAL TAsk
           initial_task_1_title: "Dobro došli.",

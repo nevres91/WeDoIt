@@ -4,6 +4,8 @@ import { db } from "../services/firebase";
 import { acceptInvitation, rejectInvitation } from "../utils/PartnerService";
 import { useAuth } from "../context/AuthContext";
 import { Invitation } from "../types";
+import { sendNotification } from "../utils/sendNotification";
+import { useTranslation } from "react-i18next";
 
 export const useInvitations = () => {
   const { user, userData } = useAuth();
@@ -11,6 +13,8 @@ export const useInvitations = () => {
   const [invitationsMessage, setInvitationsMessage] = useState<string | null>(
     null
   );
+
+  const { t } = useTranslation();
   useEffect(() => {
     const fetchInvitations = async () => {
       if (!user?.uid || !userData?.invitations?.length) {
@@ -89,6 +93,11 @@ export const useInvitations = () => {
     if (!user?.uid) return;
     try {
       await rejectInvitation(user.uid, inviterId);
+      const message = t("invitation_rejected_message", {
+        name: userData.firstName,
+      });
+      await sendNotification(inviterId, message, "invitation");
+      console.log("inviter id", inviterId);
       setInvitations((prevInvitations) =>
         prevInvitations.filter((inviter) => inviter.senderId !== inviterId)
       );

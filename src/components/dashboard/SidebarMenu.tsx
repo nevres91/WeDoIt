@@ -1,9 +1,8 @@
-import { SetStateAction, useEffect, useState } from "react";
+import { SetStateAction } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useDashboard } from "../../context/DashboardContext";
 import { useTranslation } from "react-i18next";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
-import { db } from "../../services/firebase";
+import useUnreadNotifications from "../../hooks/useUnreadNotifications";
 
 export const SidebarMenu = ({
   setSidebar,
@@ -13,24 +12,9 @@ export const SidebarMenu = ({
   const { setActiveTab } = useDashboard();
   const { userData, user } = useAuth();
   const { t } = useTranslation();
-  const [unreadCount, setUnreadCount] = useState<number>(0);
   const buttonClassses =
     "mb-1 bg-calm-n-cool-1 w-full rounded-md p-1 text-calm-n-cool-6 hover:text-calm-n-cool-1 hover:bg-calm-n-cool-4 hover:cursor-pointer transition-all duration-100 ";
-  // Fetch unread notification count
-  useEffect(() => {
-    if (!user?.uid || !userData?.partnerId) return;
-
-    const q = query(
-      collection(db, "notifications"),
-      where("recipient", "==", userData.partnerId),
-      where("read", "==", false)
-    );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setUnreadCount(snapshot.size); // Number of unread notifications
-    });
-
-    return () => unsubscribe(); // Cleanup subscription on unmount
-  }, [user?.uid, userData?.partnerId]);
+  const { unreadCount } = useUnreadNotifications();
   return (
     <>
       <div className="  w-[calc(100%-12px)] min-w-[220px] z-[10] bg-calm-n-cool-6">

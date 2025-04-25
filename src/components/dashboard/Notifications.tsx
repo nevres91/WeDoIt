@@ -11,22 +11,29 @@ import {
   updateDoc,
   deleteDoc,
 } from "firebase/firestore";
-import "../../Index.css"; // Add this import
+import "../../Index.css";
 
 interface Notification {
   id: string;
-  taskId: string;
   message: string;
   recipient: string;
   createdAt: string;
   read: boolean;
-  taskTitle: string;
+  type: string; // e.g., "task", "invitation"
+  taskId?: string; // Optional for task notifications
+  taskTitle?: string; // Optional for task notifications
+  relatedId?: string; // Optional for other notification types (e.g., invitation ID)
 }
 
 export const Notifications = () => {
   const { userData, user } = useAuth();
   const { t } = useTranslation();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [taskNotifications, setTaskNotifications] = useState<Notification[]>(
+    []
+  );
+  const [otherNotifications, setOtherNotifications] = useState<Notification[]>(
+    []
+  );
   const [error, setError] = useState<string | null>(null);
   const [deletePromptId, setDeletePromptId] = useState<string | null>(null);
 
@@ -36,40 +43,65 @@ export const Notifications = () => {
       return;
     }
 
-    const q = query(
+    // Query 1: Task notifications (recipient == userData?.partnerId)
+    const taskQuery = query(
       collection(db, "notifications"),
-      where("recipient", "==", userData?.partnerId)
+      where("recipient", "==", userData?.partnerId),
+      where("type", "==", "task") // Ensure only task notifications
     );
 
-    const unsubscribe = onSnapshot(
-      q,
+    const taskUnsubscribe = onSnapshot(
+      taskQuery,
       (snapshot) => {
         const fetchedNotifications = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         })) as Notification[];
-        setNotifications(fetchedNotifications);
+        setTaskNotifications(fetchedNotifications);
       },
       (err) => {
         setError(t("failed_to_fetch_notifications") + err.message);
       }
     );
 
-    return () => unsubscribe();
-  }, [user?.uid, t]);
+    // Query 2: Other notifications (recipient == user?.uid)
+    const otherQuery = query(
+      collection(db, "notifications"),
+      where("recipient", "==", user?.uid),
+      where("type", "==", "invitation")
+    );
+
+    const otherUnsubscribe = onSnapshot(
+      otherQuery,
+      (snapshot) => {
+        const fetchedNotifications = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Notification[];
+        setOtherNotifications(fetchedNotifications);
+      },
+      (err) => {
+        setError(t("failed_to_fetch_notifications") + err.message);
+      }
+    );
+
+    return () => {
+      taskUnsubscribe();
+      otherUnsubscribe();
+    };
+  }, [user?.uid, userData?.partnerId, t]);
 
   const markAsRead = async (notificationId: string) => {
     try {
       console.log(
         "Attempting to mark as read notification with ID:",
         notificationId
-      ); // Debugging
+      );
       const notificationRef = doc(db, "notifications", notificationId);
       await updateDoc(notificationRef, { read: true });
-      console.log("Notification marked as read:", notificationId); // Debugging
+      console.log("Notification marked as read:", notificationId);
     } catch (err: any) {
       console.error("Mark as read error:", err);
-      // Ignore not-found errors or permission errors for deleted documents
       if (err.code !== "not-found" && err.code !== "permission-denied") {
         setError(t("failed_to_update_notification") + ": " + err.message);
       }
@@ -83,7 +115,12 @@ export const Notifications = () => {
         throw new Error("Invalid notification ID");
       }
       // Optimistically update UI
-      setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
+      setTaskNotifications((prev) =>
+        prev.filter((n) => n.id !== notificationId)
+      );
+      setOtherNotifications((prev) =>
+        prev.filter((n) => n.id !== notificationId)
+      );
       const notificationRef = doc(db, "notifications", notificationId);
       await deleteDoc(notificationRef);
       console.log("Notification deleted successfully:", notificationId);
@@ -93,30 +130,69 @@ export const Notifications = () => {
       console.error("Delete error:", err);
       setError(t("failed_to_delete_notification") + ": " + err.message);
       // Revert optimistic update if deletion fails
-      setNotifications((prev) => [...prev]); // Trigger re-render if needed
+      setTaskNotifications((prev) => [...prev]);
+      setOtherNotifications((prev) => [...prev]);
+    }
+  };
+
+  // Combine and sort notifications by createdAt (newest first)
+  const allNotifications = [...taskNotifications, ...otherNotifications].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
+  // Helper to render notification content based on type
+  const renderNotificationContent = (notification: Notification) => {
+    switch (notification.type) {
+      case "task":
+        return (
+          <p>
+            <span
+              className={`${
+                notification.read
+                  ? "bg-calm-n-cool-4 text-calm-n-cool-1"
+                  : "bg-calm-n-cool-1 text-calm-n-cool-4"
+              } bg-calm-n-cool-1 p-1 px-2 rounded-tl-md rounded-r-xl `}
+            >
+              {notification.taskTitle || t("unknown_task")}
+            </span>{" "}
+            {t("task_notification")}
+          </p>
+        );
+      case "invitation":
+        return (
+          <p>
+            <span
+              className={`${
+                notification.read
+                  ? "bg-calm-n-cool-4 text-calm-n-cool-1"
+                  : "bg-calm-n-cool-1 text-calm-n-cool-4"
+              } bg-calm-n-cool-1 p-1 px-2 rounded-tl-md rounded-r-xl `}
+            >
+              {t("invitation")}
+            </span>{" "}
+            {notification.message}
+          </p>
+        );
+      default:
+        return <p>{notification.message}</p>;
     }
   };
 
   return (
-    <div // Background
-      className="h-full w-full bg-gradient-to-t from-calm-n-cool-5 to-calm-n-cool-1 p-1 sm:p-2 md:p-6 lg:px-0 max-h-[calc(100%-0px)] overflow-hidden"
-    >
-      <h1 // Page Title
-        className="text-3xl text-calm-n-cool-6 text-center flex-1 mb-10  md:mt-7"
-      >
+    <div className="h-full w-full bg-gradient-to-t from-calm-n-cool-5 to-calm-n-cool-1 p-1 sm:p-2 md:p-6 lg:px-0 max-h-[calc(100%-0px)] overflow-hidden">
+      <h1 className="text-3xl text-calm-n-cool-6 text-center flex-1 mb-10 md:mt-7">
         <i className="fa-solid fa-bell"></i> {t("notifications")}
       </h1>
       {error && <div className="text-red-500 mb-4">{error}</div>}
-      {notifications.length === 0 ? (
+      {allNotifications.length === 0 ? (
         <p className="text-gray-500 text-center">{t("no_notifications")}</p>
       ) : (
         <ul className="space-y-2 max-w-[700px] mx-auto">
-          {notifications.map((notification) => (
+          {allNotifications.map((notification) => (
             <li
               key={notification.id}
               onClick={() => {
                 if (!deletePromptId) {
-                  // Only allow markAsRead if no delete prompt is open
                   markAsRead(notification.id);
                 }
               }}
@@ -126,20 +202,9 @@ export const Notifications = () => {
                   : "bg-calm-n-cool-5 bg-opacity-50 text-calm-n-cool-1 hover:bg-opacity-70"
               }${deletePromptId ? "pointer-events-none opacity-100" : ""}`}
             >
-              <p>
-                <span
-                  className={`${
-                    notification.read
-                      ? "bg-calm-n-cool-4 text-calm-n-cool-1"
-                      : "bg-calm-n-cool-1 text-calm-n-cool-4"
-                  } bg-calm-n-cool-1 p-1 px-2 rounded-tl-md rounded-r-xl `}
-                >
-                  {notification.taskTitle}
-                </span>{" "}
-                {t("task_notification")}
-              </p>
+              {renderNotificationContent(notification)}
               <p
-                className={`text-sm  mt-1 ${
+                className={`text-sm mt-1 ${
                   notification.read
                     ? "text-calm-n-cool-4"
                     : "text-calm-n-cool-1"
@@ -157,12 +222,12 @@ export const Notifications = () => {
                   minute: "2-digit",
                 })}
               </p>
-              <button // Delete Button
+              <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setDeletePromptId(notification.id);
                 }}
-                className={`text-red-500 hover:text-red-600  transition-colors absolute top-0 right-0 ${
+                className={`text-red-500 hover:text-red-600 transition-colors absolute top-0 right-0 ${
                   notification.read
                     ? "bg-calm-n-cool-4 hover:bg-calm-n-cool-5"
                     : "bg-calm-n-cool-1 hover:bg-calm-n-cool-1-hover"
@@ -171,14 +236,14 @@ export const Notifications = () => {
               >
                 <i className="fa-solid fa-trash"></i>
               </button>
-              <div //NEW
+              <div
                 className={`w-[10px] h-[10px] absolute bottom-3.5 ${
-                  userData.language === "en" ? "right-[55px]" : "right-[63px]"
+                  userData?.language === "en" ? "right-[55px]" : "right-[63px]"
                 } rounded-full ${notification.read ? "hidden" : ""}`}
               >
                 {t("new")}
               </div>
-              <div //Glowing circle
+              <div
                 className={`w-[10px] h-[10px] absolute bottom-2 right-2 rounded-full ${
                   notification.read ? "bg-gray-400" : "bg-green-500 glow"
                 }`}
@@ -186,15 +251,15 @@ export const Notifications = () => {
 
               {/* DELETE PROMPT */}
               {deletePromptId === notification.id && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center  justify-center">
-                  <div className="w-[400px] h-[200px] bg-white rounded-xl flex flex-col p-5 py-10 items-center justify-between ">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                  <div className="w-[400px] h-[200px] bg-white rounded-xl flex flex-col p-5 py-10 items-center justify-between">
                     <h3 className="text-calm-n-cool-5 text-xl">
                       {t("delete_notification")}
                     </h3>
                     <div className="flex w-full space-x-2">
                       <button
                         className="flex-1 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 active:bg-gray-700 transition-all duration-200"
-                        onClick={() => setDeletePromptId(null)} // Close prompt
+                        onClick={() => setDeletePromptId(null)}
                       >
                         {t("cancel")}
                       </button>

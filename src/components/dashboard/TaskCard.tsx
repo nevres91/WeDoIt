@@ -56,6 +56,7 @@ const TaskCard: React.FC<{
         recipient: taskState.partnerId,
         createdAt: new Date().toISOString(),
         read: false,
+        type: "task",
       };
       await addDoc(collection(db, "notifications"), notification);
 
