@@ -76,7 +76,7 @@ export const DashboardFindPartner = () => {
       }
       if (userData?.role === partnerData?.role) {
         setMessage({
-          text: "You can only link with the opposite role.",
+          text: t("only_oposite_role"),
           type: "error",
         });
         setTimeout(() => setMessage({ text: "", type: "" }), 3000);
@@ -85,7 +85,7 @@ export const DashboardFindPartner = () => {
       }
       if (partnerData.invitations?.includes(user?.uid)) {
         setMessage({
-          text: "You have already sent an invitation to this user.",
+          text: t("invitation_already_sent"),
           type: "error",
         });
         setTimeout(() => setMessage({ text: "", type: "" }), 3000);
@@ -98,7 +98,7 @@ export const DashboardFindPartner = () => {
         invitations: [...(partnerData.invitations || []), user!.uid],
       });
       setMessage({
-        text: "Partner invitation was sent successfully.",
+        text: t("partner_invitation_success"),
         type: "success",
       });
       setTimeout(() => {

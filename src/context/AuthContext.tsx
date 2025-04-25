@@ -16,6 +16,7 @@ interface AuthContextType {
   setUserData: React.Dispatch<SetStateAction<UserData>>; //Check if error appears
   logout: () => Promise<void>;
   updateUserData: (newData: Partial<UserData>) => Promise<void>;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -23,11 +24,13 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let unsubscribeUser: (() => void) | null = null;
 
     const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
+      setLoading(true);
       setUser(firebaseUser);
 
       if (unsubscribeUser) {
@@ -46,6 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       } else {
         setUserData(null);
       }
+      setLoading(false);
     });
 
     return () => {
@@ -77,7 +81,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, userData, logout, setUserData, updateUserData }}
+      value={{ user, userData, logout, setUserData, updateUserData, loading }}
     >
       {children}
     </AuthContext.Provider>

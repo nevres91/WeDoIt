@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useDashboard } from "../context/DashboardContext";
+import { useTranslation } from "react-i18next";
 
 // Define the type for updatedData to align with UserData
 interface ProfileUpdateData {
@@ -32,6 +33,8 @@ export const EditProfile = () => {
     height: userData?.height || "",
     weight: userData?.weight || "",
   });
+
+  const { t } = useTranslation();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -86,12 +89,12 @@ export const EditProfile = () => {
           className="text-xl font-semibold mb-4"
           style={{ fontFamily: "montserrat" }}
         >
-          <i className="fa-solid fa-user-pen"></i> Edit Profile
+          <i className="fa-solid fa-user-pen"></i> {t("edit_profile")}
         </h2>
         <div className="w-full overflow-auto scrollbar-transparent">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm">First Name</label>
+              <label className="block text-sm">{t("first_name")}</label>
               <input
                 type="text"
                 name="firstName"
@@ -101,7 +104,7 @@ export const EditProfile = () => {
               />
             </div>
             <div>
-              <label className="block text-sm">Last Name</label>
+              <label className="block text-sm">{t("last_name")}</label>
               <input
                 type="text"
                 name="lastName"
@@ -111,7 +114,7 @@ export const EditProfile = () => {
               />
             </div>
             <div>
-              <label className="block text-sm">Language</label>
+              <label className="block text-sm">{t("language")}</label>
               <select
                 name="language"
                 value={formData.language}
@@ -123,7 +126,7 @@ export const EditProfile = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm">Sex</label>
+              <label className="block text-sm">{t("sex")}</label>
               <select
                 name="sex"
                 value={formData.sex}
@@ -131,17 +134,17 @@ export const EditProfile = () => {
                 className="w-full p-2 rounded-md bg-gray-200 hover:bg-gray-100 transition-all ease-in-out duration-100 text-calm-n-cool-5 bg-opacity-70"
                 disabled={userData?.partnerId ? true : false} // Simplified to userData?.partnerId
               >
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
+                <option value="Male">{t("male")}</option>
+                <option value="Female">{t("female")}</option>
               </select>
               {userData?.partnerId && (
                 <span className="text-red-600 text-xs mt-1 block ml-1">
-                  Sex change not allowed if linked with a partner.
+                  {t("sex_change")}
                 </span>
               )}
             </div>
             <div>
-              <label className="block text-sm">Birthday</label>
+              <label className="block text-sm">{t("birthday")}</label>
               <input
                 type="date"
                 name="birthday"
@@ -151,7 +154,7 @@ export const EditProfile = () => {
               />
             </div>
             <div>
-              <label className="block text-sm">Job</label>
+              <label className="block text-sm">{t("job")}</label>
               <input
                 type="text"
                 name="job"
@@ -162,7 +165,7 @@ export const EditProfile = () => {
               />
             </div>
             <div>
-              <label className="block text-sm">Height (cm)</label>
+              <label className="block text-sm">{t("height")} (cm)</label>
               <input
                 type="number"
                 name="height"
@@ -172,7 +175,7 @@ export const EditProfile = () => {
               />
             </div>
             <div>
-              <label className="block text-sm">Weight (kg)</label>
+              <label className="block text-sm">{t("weight")} (kg)</label>
               <input
                 type="number"
                 name="weight"
@@ -187,13 +190,13 @@ export const EditProfile = () => {
                 onClick={handleCancel}
                 className="w-[100px] bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 active:bg-gray-500 transition-all duration-200"
               >
-                Cancel
+                {t("cancel")}
               </button>
               <button
                 type="submit"
                 className="w-[100px] bg-calm-n-cool-4 text-white px-4 py-2 rounded hover:bg-calm-n-cool-5 active:bg-calm-n-cool-6  transition-all ease-in-out duration-200"
               >
-                Save
+                {t("save")}
               </button>
             </div>
           </form>

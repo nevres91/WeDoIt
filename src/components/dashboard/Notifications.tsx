@@ -102,7 +102,7 @@ export const Notifications = () => {
       className="h-full w-full bg-gradient-to-t from-calm-n-cool-5 to-calm-n-cool-1 p-1 sm:p-2 md:p-6 lg:px-0 max-h-[calc(100%-0px)] overflow-hidden"
     >
       <h1 // Page Title
-        className="text-xl sm:text-3xl text-calm-n-cool-6 text-center flex-1 mb-10 mt-2 md:mt-7"
+        className="text-3xl text-calm-n-cool-6 text-center flex-1 mb-10  md:mt-7"
       >
         <i className="fa-solid fa-bell"></i> {t("notifications")}
       </h1>

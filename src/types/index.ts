@@ -4,6 +4,16 @@ export interface PartnerData {
   id: string;
   firstName: string;
   lastName: string;
+  photoURL: string;
+  createdAt: string | number | Date;
+  role: "husband" | "wife";
+  email: string;
+  partnerId: string | null;
+  birthday: string;
+  height: string;
+  job: string;
+  location: string;
+  weight: string;
 }
 
 export interface UserData {

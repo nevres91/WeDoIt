@@ -187,6 +187,10 @@ i18n
           find_your_partner: "Find Your Partner",
           enter_partners_email: "Enter partner's email",
           link_partner: "Link Partner",
+          partner_invitation_success: "Partner invitation was sent.",
+          invitation_already_sent:
+            "You have already sent an invitation to this user.",
+          only_oposite_role: "You can only link with the opposite role.",
 
           task_pending_approval_message:
             "Partner must aproove your task completion.",
@@ -214,6 +218,18 @@ i18n
             'By selecting the "Link Partner" option in the left sidebar, you can connect with your spouse by entering their email address and awaiting their acceptance of the invitation. Upon successful linking, additional options will become available in the sidebar menu.',
           set_due_date: "Time limit",
           no_due_date: "No Time Limit.",
+          partners_profile: "Partner's Profile",
+          joined: "Joined",
+          active_tasks: "Active Tasks",
+          pending_approval: "Pending Approval",
+          completed_tasks: "Completed Tasks",
+          informations: "Personal Information",
+          recent_tasks: "Recent Tasks",
+
+          //EDIT PROFILE
+          edit_profile: "Edit Profile",
+          sex_change: "Sex change not allowed if linked with a partner.",
+          birthday: "Birthday",
         },
       },
       // Bosnian
@@ -354,6 +370,9 @@ i18n
           find_your_partner: "Pronađi Svog Partnera",
           enter_partners_email: "Upiši partnerov email",
           link_partner: "Povežite se",
+          partner_invitation_success: "Zahtjev je uspješno poslan.",
+          invitation_already_sent: "Taj korisnik je već primio vaš zahtjev.",
+          only_oposite_role: "Možeš se povezati samo sa suprotnim spolom.",
 
           task_pending_approval_message:
             "Partner mora potvrditi da ste uspješno završili zadatak",
@@ -385,6 +404,19 @@ i18n
 
           set_due_date: "Vremenski limit",
           no_due_date: "Bez ograničenja.",
+          partners_profile: "Partnerov Profil",
+          joined: "Registrovan",
+          active_tasks: "Aktivni Zadatci",
+          pending_approval: "Potrebno Potvrditi",
+          completed_tasks: "Završeni Zadatci",
+          informations: "Lične Informacije",
+          recent_tasks: "Nedavni Zadatci",
+
+          //EDIT PROFILE
+          edit_profile: "Izmijeni Profil",
+          sex_change:
+            "Promjena spola nije moguća ukoliko ste poovezani sa partnerom.",
+          birthday: "Rođendan",
         },
       },
     },

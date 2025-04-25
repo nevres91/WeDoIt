@@ -98,6 +98,17 @@ export const SidebarMenu = ({
             </button>
             <button
               onClick={() => {
+                setActiveTab("partner-profile");
+                setSidebar(false);
+              }}
+              className={`${buttonClassses}, ${
+                !userData?.partnerId ? "hidden" : ""
+              }`}
+            >
+              Partner
+            </button>
+            <button
+              onClick={() => {
                 setActiveTab("notifications");
                 setSidebar(false);
               }}

@@ -5,32 +5,54 @@ import { useAuth } from "../context/AuthContext";
 import { PartnerData } from "../types";
 
 export const usePartnerData = () => {
-  const { userData } = useAuth();
+  const { userData, loading: authLoading } = useAuth();
   const [partnerData, setPartnerData] = useState<PartnerData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchPartnerData = async () => {
-    setLoading(true);
-    if (userData?.partnerId) {
+    if (!userData) {
+      return; // Wait for userData to load
+    }
+
+    if (!userData.partnerId) {
+      setPartnerData(null);
+      setError("No partner ID provided");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
       const partnerRef = doc(db, "users", userData.partnerId);
       const partnerSnap = await getDoc(partnerRef);
       if (partnerSnap.exists()) {
-        setPartnerData(partnerSnap.data() as PartnerData);
+        const data = {
+          id: partnerSnap.id,
+          ...partnerSnap.data(),
+        } as PartnerData;
+        setPartnerData(data);
       } else {
         setPartnerData(null);
+        setError("Partner not found");
       }
-    } else {
+    } catch (err) {
+      setError("Failed to fetch partner data");
       setPartnerData(null);
+      console.error("Error fetching partner data:", err);
+    } finally {
+      setTimeout(() => {
+        setLoading(false);
+      }, 500); // Maintain 500ms delay for UI consistency
     }
-    // Prevent showing any image before partnerData is fetched
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
   };
 
   useEffect(() => {
-    fetchPartnerData();
-  }, [userData?.partnerId]);
+    if (!authLoading) {
+      fetchPartnerData();
+    }
+  }, [userData?.partnerId, authLoading]);
 
-  return { partnerData, loading };
+  return { partnerData, loading, error };
 };
