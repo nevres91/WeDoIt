@@ -83,8 +83,8 @@ const SignUp = () => {
         const tasksCollection = collection(db, "tasks");
         const initialTasks = [
           {
-            title: "Welcome to weDoIt!",
-            description: "Explore your new task board and add some tasks.",
+            title: t("initial_task_1_title"),
+            description: t("initial_task_1_description"),
             status: "To Do",
             creator: "self",
             createdAt: new Date().toISOString(),
@@ -95,8 +95,8 @@ const SignUp = () => {
             userId: user.uid,
           },
           {
-            title: "Invite your partner",
-            description: "Share your partner ID with your spouse to connect.",
+            title: t("initial_task_2_title"),
+            description: t("initial_task_2_description"),
             status: "To Do",
             creator: "self",
             createdAt: new Date().toISOString(),

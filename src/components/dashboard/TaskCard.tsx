@@ -20,7 +20,7 @@ const TaskCard: React.FC<{
   onUpdateTask?: (task: Task) => void;
   hideActions?: boolean;
 }> = ({ task, onClick, hideActions, onUpdateTask }) => {
-  const { t } = useTranslation(); // Add translation hook
+  const { t } = useTranslation();
   const priorityColor = {
     Low: "bg-gray-200 text-gray-800",
     Medium: "bg-yellow-200 text-yellow-800",
@@ -60,7 +60,7 @@ const TaskCard: React.FC<{
       await addDoc(collection(db, "notifications"), notification);
 
       // Update partner's user data with pending approvals
-      const partnerRef = doc(db, "users", taskState.partnerId); // TypeScript now knows partnerId is string
+      const partnerRef = doc(db, "users", taskState.partnerId);
       await updateDoc(partnerRef, {
         pendingTaskApprovals: arrayUnion(taskId),
       });
@@ -155,7 +155,7 @@ const TaskCard: React.FC<{
           className={`flex flex-col cursor-pointer rounded-lg p-2 h-full ${
             remainingTime?.text === "Expired" || task.status === "Done"
               ? "w-full"
-              : "w-[81%]"
+              : "w-[100%]"
           }`}
         >
           <div className="flex justify-between items-start">
@@ -272,7 +272,7 @@ const TaskCard: React.FC<{
                 </div>
               )}
             </span>
-            {remainingTime && (
+            {remainingTime ? (
               <span
                 className={`text-xs font-semibold px-2 py-1 rounded-full ${
                   remainingTime.color
@@ -280,7 +280,15 @@ const TaskCard: React.FC<{
               >
                 <i className="fa-solid fa-hourglass-start"></i>{" "}
                 {remainingTime.text}{" "}
-                {/* Note: This might need separate handling */}
+              </span>
+            ) : (
+              <span
+                className={`text-xs text-green-900 font-semibold px-2 py-1 rounded-full bg-green-300 ${
+                  task.status === "Done" ? "hidden" : ""
+                }`}
+              >
+                <i className="fa-solid fa-hourglass-start"></i>{" "}
+                <i className="fa-solid fa-infinity"></i>{" "}
               </span>
             )}
             {task.edited && (
@@ -293,7 +301,7 @@ const TaskCard: React.FC<{
           </div>
         </div>
         <div //Buttons
-          className={`relative w-[19%] max-w-[150px] flex h-full p-1  font-normal min-w-[75px]${
+          className={`flex items-center justify-end space-x-1 absolute mt-1 right-1 sm:bottom-1 bottom-[calc-(100%-25px )]  w-[19%] max-w-[150px] p-1  font-normal min-w-[125px] h-[25px]${
             remainingTime?.text === "Expired" || task.status === "Done"
               ? "hidden w-0"
               : ""
@@ -309,7 +317,7 @@ const TaskCard: React.FC<{
                   : "To Do";
               handleStatusChange(nextStatus);
             }}
-            className={`absolute max-h-[25px]  h-[20] w-[47%] text-xs px-2 py-1 bg-green-200 text-green-700 hover:bg-green-400 hover:text-white transition-all duration-100 ${
+            className={`max-h-[25px] h-[20] w-[47%] min-w-[60px] text-xs px-2 py-1 bg-green-200 text-green-700 hover:bg-green-400 hover:text-white transition-all duration-100 ${
               hideActions ? "hidden" : ""
             } ${
               task.creator === "partner"
@@ -341,7 +349,7 @@ const TaskCard: React.FC<{
             onClick={() => {
               setShowDeleteConfirm(true);
             }}
-            className={`absolute max-h-[25px] right-1 h-] w-[47%] h-[20] text-xs px-2 py-1  bg-red-400 text-white hover:bg-red-500 hover:text-white transition-all duration-100 ${
+            className={`max-h-[25px] w-[47%] min-w-[60px] h-[20] text-xs px-2 py-1  bg-red-400 text-white hover:bg-red-500 hover:text-white transition-all duration-100 ${
               hideActions || task.creator === "partner"
                 ? "hidden"
                 : "rounded-r-md"

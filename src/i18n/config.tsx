@@ -175,7 +175,7 @@ i18n
           // TaskCard
           accept: "Accept",
           reject: "Reject",
-          from_you: "From You",
+          from_you: "By You",
           from_husband: "From Husband",
           from_wife: "From Wife",
           edited: "Edited",
@@ -190,7 +190,7 @@ i18n
 
           task_pending_approval_message:
             "Partner must aproove your task completion.",
-          pending_approvals: "Pending Approvals",
+          pending_approvals: "Approve",
           failed_to_send_notification:
             "Failed to send a notification to your partner.",
           approve: "Approve",
@@ -204,6 +204,16 @@ i18n
           image_too_large:
             "Image is too large (max 750 KB). Try a smaller image.",
           error_leaving_partner: "Failed to leave partner. Please try again.",
+
+          // INITIAL TAsk
+          initial_task_1_title: "Welcome to weDoIt!",
+          initial_task_2_title: "Link to your partner!",
+          initial_task_1_description:
+            'Familiarize yourself with the "Task Board" and add tasks for yourself or your partner by selecting "Add New Task". The bottom of each task card displays the task\'s priority (e.g., low), the creator (you or your partner), the completion time frame (e.g., 6 days), and whether the task has been edited (Edited).',
+          initial_task_2_description:
+            'By selecting the "Link Partner" option in the left sidebar, you can connect with your spouse by entering their email address and awaiting their acceptance of the invitation. Upon successful linking, additional options will become available in the sidebar menu.',
+          set_due_date: "Time limit",
+          no_due_date: "No Time Limit.",
         },
       },
       // Bosnian
@@ -347,7 +357,7 @@ i18n
 
           task_pending_approval_message:
             "Partner mora potvrditi da ste uspješno završili zadatak",
-          pending_approvals: "Za Potvrditi",
+          pending_approvals: "Potvrdi",
 
           failed_to_send_notification:
             "Slanje notifikacije partneru nije uspjelo.",
@@ -364,6 +374,17 @@ i18n
           image_too_large:
             "Fotografija je prevelika, (max 750kb), koristite manju fotografiju.",
           error_leaving_partner: "Failed to leave partner. Please try again.",
+
+          // INITIAL TAsk
+          initial_task_1_title: "Dobro došli.",
+          initial_task_2_title: "Poveži se sa partnerom.",
+          initial_task_1_description:
+            "Upoznaj svoju Tablu Zadataka i dodaj nekoliko zadataka za svog partnera ili za sebe klikom na Dodaj Novi Zadatak. U donjem dijelu kartice ovog zadatka prikazan je prioritet samog zadatka (nizak), ko je kreirao zadatak, ti ili tvoj partner (od tebe), vremenski period izvršenja zadatka (6 dana), i eventualno ako je zadatak uređen (uređeno).",
+          initial_task_2_description:
+            'Odabirom opcije "Poveži partnera" u lijevoj bočnoj traci, možete se povezati sa svojim supružnikom unosom njihove email adrese i čekanjem da prihvate vaš poziv. Nakon uspješnog povezivanja, dodatne opcije će postati dostupne u meniju bočne trake.',
+
+          set_due_date: "Vremenski limit",
+          no_due_date: "Bez ograničenja.",
         },
       },
     },

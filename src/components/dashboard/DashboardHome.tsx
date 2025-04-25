@@ -16,6 +16,7 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onUpdateTask }) => {
   const userId = auth.currentUser?.uid;
   const [isCreatingTask, setIsCreatingTask] = useState(false);
   const [activeTab, setActiveTab] = useState("todo");
+  const [hasDueDate, setHasDueDate] = useState(true);
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
@@ -136,7 +137,11 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onUpdateTask }) => {
 
   // -----------------------------CREATE NEW TASK-----------------------------
   const handleCreateTask = async () => {
-    const result = await createTask(newTask, handleAddTask);
+    const taskToCreate = {
+      ...newTask,
+      dueDate: hasDueDate ? newTask.dueDate : undefined,
+    };
+    const result = await createTask(taskToCreate, handleAddTask);
     setMessage({
       type: result.success ? "success" : "error",
       text: result.message || "",
@@ -149,15 +154,18 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onUpdateTask }) => {
         dueDate: "",
         priority: "Medium" as "Low" | "Medium" | "High",
       });
+      setHasDueDate(true);
+      console.log("Task created");
       setTimeout(() => {
         setIsCreatingTask(false);
-        setMessage(null); // Clear message when modal closes
+        setMessage(null);
       }, 1000);
     }
   };
 
   return (
-    <div className="h-full w-full bg-gradient-to-t from-calm-n-cool-5 to-calm-n-cool-1 p-1 sm:p-2 md:p-6 lg:px-0  max-h-[calc(100%-0px)]">
+    <div className="h-full w-full   p-1 sm:p-2 md:p-6 lg:px-0 max-w-[1200px]  max-h-[calc(100%-0px)]">
+      <div className="absolute top-0 left-0 bg-gradient-to-t from-calm-n-cool-5 to-calm-n-cool-1 w-full h-full"></div>
       <div className="relative flex justify-between items-center mb-6">
         <h1 className="text-xl md:text-3xl text-calm-n-cool-6 text-center flex-1">
           <i className="fa-solid fa-list-check"></i> {t("your_task_board")}
@@ -237,15 +245,31 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onUpdateTask }) => {
                 <option value="self">{t("for_myself")}</option>
                 <option value="partner">{t("for_partner")}</option>
               </select>
-              <input
-                type="date"
-                value={newTask.dueDate}
-                onChange={(e) =>
-                  setNewTask({ ...newTask, dueDate: e.target.value })
-                }
-                className="w-full p-2 border rounded text-gray-700 mt-3"
-                min={new Date().toISOString().split("T")[0]}
-              />
+              <div className="mt-3 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={hasDueDate}
+                  onChange={(e) => {
+                    setHasDueDate(e.target.checked);
+                    if (!e.target.checked) {
+                      setNewTask({ ...newTask, dueDate: "" });
+                    }
+                  }}
+                  className="mr-2"
+                />
+                <label className="text-gray-700">{t("set_due_date")}</label>
+              </div>
+              {hasDueDate && (
+                <input
+                  type="date"
+                  value={newTask.dueDate}
+                  onChange={(e) =>
+                    setNewTask({ ...newTask, dueDate: e.target.value })
+                  }
+                  className="w-full p-2 border rounded text-gray-700 mt-3"
+                  min={new Date().toISOString().split("T")[0]}
+                />
+              )}
               <p className="mt-3 p-1 text-gray-500">{t("priority")}</p>
               <select
                 value={newTask.priority}
@@ -266,7 +290,7 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ onUpdateTask }) => {
               <button
                 onClick={handleCreateTask}
                 className="flex-1 bg-calm-n-cool-4 text-white px-4 py-2 rounded hover:bg-calm-n-cool-5 active:bg-calm-n-cool-6 transition-all duration-200"
-                disabled={!newTask.title.trim() || !newTask.dueDate}
+                disabled={!newTask.title.trim()}
               >
                 {t("create")}
               </button>

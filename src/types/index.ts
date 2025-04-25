@@ -19,7 +19,7 @@ export interface UserData {
   height?: string;
   weight?: string;
   birthday?: string;
-  [key: string]: any; // Allows additional fields
+  [key: string]: any;
 }
 
 export interface Invitation {
@@ -37,8 +37,8 @@ export interface Task {
   creator: "self" | "partner";
   partnerId?: string;
   creatorId?: string;
-  createdAt: string; // ISO date string, e.g., '2025-02-23'
-  dueDate: string; // ISO date string, e.g., '2025-02-25'
+  createdAt: string;
+  dueDate?: string | null;
   priority: "Low" | "Medium" | "High";
   declined?: boolean;
   declineMessage?: string;

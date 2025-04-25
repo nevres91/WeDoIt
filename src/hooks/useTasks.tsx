@@ -52,7 +52,6 @@ export const useTasks = (userId?: string | null) => {
 
   // -------------------------------ADD TASK-------------------------------
   const handleAddTask = (newTask: Task) => {
-    // Prevent duplicates by checking if task already exists (based on Firestore ID)
     if (
       newTask.userId === userId &&
       !tasks.some((task) => task.id === newTask.id)
@@ -69,10 +68,9 @@ export const useTasks = (userId?: string | null) => {
       }
       const taskRef = doc(db, "tasks", taskId);
       await deleteDoc(taskRef);
-      // Update local tasks state to remove the deleted task
       setTasks(tasks.filter((t) => t.id !== taskId));
       if (selectedTask?.id === taskId) {
-        setSelectedTask(null); // Clear selectedTask if it matches the deleted task
+        setSelectedTask(null);
       }
       setError(null);
     } catch (err: any) {
@@ -98,21 +96,19 @@ export const useTasks = (userId?: string | null) => {
       };
       await updateDoc(taskRef, updatedTaskData);
 
-      // Update local tasks state
       setTasks(
         tasks.map((t) => (t.id === taskId ? { ...t, ...updatedTaskData } : t))
       );
 
-      // Update selectedTask if it matches
       if (selectedTask?.id === taskId) {
         setSelectedTask({ ...selectedTask, ...updatedTaskData });
       }
       setError(null);
-      return true; // Indicate success
+      return true;
     } catch (err: any) {
       setError("Failed to decline task: " + err.message);
       console.error("Decline error:", err);
-      return false; // Indicate failure
+      return false;
     }
   };
 
@@ -127,28 +123,26 @@ export const useTasks = (userId?: string | null) => {
       const taskRef = doc(db, "tasks", taskId);
       const updatedTaskData = {
         declined: false,
-        declineMessage: "", // Reset decline message
-        status: "To Do" as const, // Reset status to To Do (or whatever default you prefer)
+        declineMessage: "",
+        status: "To Do" as const,
         dueDate: tomorrow.toISOString(),
       };
 
       await updateDoc(taskRef, updatedTaskData);
 
-      // Update local tasks state
       setTasks(
         tasks.map((t) => (t.id === taskId ? { ...t, ...updatedTaskData } : t))
       );
 
-      // Update selectedTask if it matches
       if (selectedTask?.id === taskId) {
         setSelectedTask({ ...selectedTask, ...updatedTaskData });
       }
       setError(null);
-      return true; // Indicate success
+      return true;
     } catch (err: any) {
       setError("Failed to reactivate task: " + err.message);
       console.error("Reactivate error:", err);
-      return false; // Indicate failure
+      return false;
     }
   };
 

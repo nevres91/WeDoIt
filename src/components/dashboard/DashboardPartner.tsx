@@ -7,6 +7,7 @@ import { useTasks } from "../../hooks/useTasks";
 import { createPartnerTask, NewTask } from "../../utils/taskOperations";
 import { TabsComponent } from "../TabsComponent";
 import { useTranslation } from "react-i18next";
+import { useIsSmallScreen } from "../../hooks/useIsSmallScreen";
 
 interface DashboardPartnerProps {
   onUpdateTask: (task: Task) => void;
@@ -18,6 +19,7 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isCreatingTask, setIsCreatingTask] = useState(false);
   const [activeTab, setActiveTab] = useState("todo");
+  const [hasDueDate, setHasDueDate] = useState(true);
   const [newTask, setNewTask] = useState<NewTask>({
     title: "",
     description: "",
@@ -40,6 +42,7 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
   } = useTasks(userData?.partnerId);
 
   const { t } = useTranslation();
+  const isSmallScreen = useIsSmallScreen();
 
   // -----------------------------TABS COMPONENT-----------------------------
   const taskTabs = [
@@ -47,7 +50,15 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
       id: "todo",
       label: (
         <>
-          <i className="fa-solid fa-list fa-lg"></i> {t("to_do")}
+          {isSmallScreen ? (
+            <span>
+              <i className="fa-solid fa-list fa-lg"></i>
+            </span>
+          ) : (
+            <span>
+              <i className="fa-solid fa-list fa-lg"></i> {t("to_do")}
+            </span>
+          )}
         </>
       ),
       color: "red-300",
@@ -56,7 +67,16 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
       id: "inProgress",
       label: (
         <>
-          <i className="fa-solid fa-list-check fa-lg"></i> {t("in_progress")}
+          {isSmallScreen ? (
+            <span>
+              <i className="fa-solid fa-list-check fa-lg"></i>
+            </span>
+          ) : (
+            <span>
+              <i className="fa-solid fa-list-check fa-lg"></i>{" "}
+              {t("in_progress")}
+            </span>
+          )}
         </>
       ),
       color: "yellow-200",
@@ -65,8 +85,16 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
       id: "pendingApprovals",
       label: (
         <>
-          <i className="fa-solid fa-list-check fa-lg"></i>{" "}
-          {t("pending_approvals")}
+          {isSmallScreen ? (
+            <span>
+              <i className="fa-solid fa-check fa-lg"></i>
+            </span>
+          ) : (
+            <span>
+              <i className="fa-solid fa-check fa-lg"></i>{" "}
+              {t("pending_approvals")}
+            </span>
+          )}
         </>
       ),
       color: "yellow-500",
@@ -75,7 +103,15 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
       id: "done",
       label: (
         <>
-          <i className="fa-solid fa-check-double fa-lg"></i> {t("done")}
+          {isSmallScreen ? (
+            <span>
+              <i className="fa-solid fa-check-double fa-lg"></i>
+            </span>
+          ) : (
+            <span>
+              <i className="fa-solid fa-check-double fa-lg"></i> {t("done")}
+            </span>
+          )}
         </>
       ),
       color: "green-200",
@@ -171,7 +207,11 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
 
   // -----------------------------CREATE NEW TASK-----------------------------
   const handleCreateTask = async () => {
-    const result = await createPartnerTask(newTask, handleAddTask);
+    const taskToCreate = {
+      ...newTask,
+      dueDate: hasDueDate ? newTask.dueDate : undefined,
+    };
+    const result = await createPartnerTask(taskToCreate, handleAddTask);
     setMessage({
       type: result.success ? "success" : "error",
       text: result.message || "",
@@ -185,6 +225,7 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
         dueDate: "",
         priority: "Medium",
       });
+      setHasDueDate(true);
       setTimeout(() => setIsCreatingTask(false), 1000);
     }
   };
@@ -192,7 +233,8 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="h-full w-full bg-gradient-to-t from-calm-n-cool-5 to-calm-n-cool-1 p-1 sm:p-2 md:p-6 lg:px-0  max-h-[calc(100%-0px)]">
+    <div className="h-full w-full   p-1 sm:p-2 md:p-6 lg:px-0 max-w-[1200px]  max-h-[calc(100%-0px)]">
+      <div className="absolute top-0 left-0 bg-gradient-to-t from-calm-n-cool-5 to-calm-n-cool-1 w-full h-full"></div>
       <div className="relative flex justify-between items-center mb-6 ">
         <h1 className="text-xl md:text-3xl text-calm-n-cool-6 text-center flex-1">
           <i className="fa-solid fa-list-check"></i> {t("partners_task_board")}
@@ -265,15 +307,31 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
                 className="w-full p-2 border rounded text-gray-700 mt-3"
                 rows={3}
               />
-              <input
-                type="date"
-                value={newTask.dueDate}
-                onChange={(e) =>
-                  setNewTask({ ...newTask, dueDate: e.target.value })
-                }
-                className="w-full p-2 border rounded text-gray-700 mt-1"
-                min={new Date().toISOString().split("T")[0]}
-              />
+              <div className="mt-3 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={hasDueDate}
+                  onChange={(e) => {
+                    setHasDueDate(e.target.checked);
+                    if (!e.target.checked) {
+                      setNewTask({ ...newTask, dueDate: "" });
+                    }
+                  }}
+                  className="mr-2"
+                />
+                <label className="text-gray-700">{t("set_due_date")}</label>
+              </div>
+              {hasDueDate && (
+                <input
+                  type="date"
+                  value={newTask.dueDate}
+                  onChange={(e) =>
+                    setNewTask({ ...newTask, dueDate: e.target.value })
+                  }
+                  className="w-full p-2 border rounded text-gray-700 mt-3"
+                  min={new Date().toISOString().split("T")[0]}
+                />
+              )}
               <p className="mt-3 p-1 text-gray-500">{t("priority")}</p>
               <select
                 value={newTask.priority}
@@ -294,7 +352,7 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
               <button
                 onClick={handleCreateTask}
                 className="flex-1 bg-calm-n-cool-4 text-white px-4 py-2 rounded hover:bg-calm-n-cool-5 active:bg-calm-n-cool-6 transition-all duration-200"
-                disabled={!newTask.title.trim() || !newTask.dueDate}
+                disabled={!newTask.title.trim()}
               >
                 {t("create")}
               </button>

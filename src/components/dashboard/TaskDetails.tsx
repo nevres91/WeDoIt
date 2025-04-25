@@ -28,7 +28,8 @@ const TaskDetails: React.FC<{
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(task.title);
   const [editedDescription, setEditedDescription] = useState(task.description);
-  const [editedDueDate, setEditedDueDate] = useState(task.dueDate);
+  const [editedDueDate, setEditedDueDate] = useState(task.dueDate || "");
+  const [hasDueDate, setHasDueDate] = useState(!!task.dueDate);
   const [error, setError] = useState<string | null>(null);
   const { handleDelete, handleDecline } = useTasks();
   const { activeTab } = useDashboard();
@@ -36,6 +37,7 @@ const TaskDetails: React.FC<{
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showRestartConfirm, setShowRestartConfirm] = useState(false);
   const [newDueDate, setNewDueDate] = useState("");
+  const [hasRestartDueDate, setHasRestartDueDate] = useState(true);
 
   const { t } = useTranslation();
 
@@ -61,7 +63,7 @@ const TaskDetails: React.FC<{
       await addDoc(collection(db, "notifications"), notification);
 
       // Update partner's user data with pending approvals
-      const partnerRef = doc(db, "users", taskState.partnerId); // TypeScript now knows partnerId is string
+      const partnerRef = doc(db, "users", taskState.partnerId);
       await updateDoc(partnerRef, {
         pendingTaskApprovals: arrayUnion(taskId),
       });
@@ -84,11 +86,11 @@ const TaskDetails: React.FC<{
         onUpdateTask(updatedTask);
       }
       setError(null);
-      setShowDeclineConfirm(false); // Close modal on success
-      onClose(); // Optionally close the task details after declining
+      setShowDeclineConfirm(false);
+      onClose();
     } else {
       setError(t("failed_to_decline_task"));
-      setShowDeclineConfirm(false); // Close modal on failure
+      setShowDeclineConfirm(false);
     }
   };
 
@@ -98,14 +100,14 @@ const TaskDetails: React.FC<{
         ...taskState,
         title: editedTitle,
         description: editedDescription,
-        dueDate: editedDueDate,
+        dueDate: hasDueDate ? editedDueDate : null,
         edited: true,
       };
       const taskRef = doc(db, "tasks", task.id);
       await updateDoc(taskRef, {
         title: editedTitle,
         description: editedDescription,
-        dueDate: editedDueDate,
+        dueDate: hasDueDate ? editedDueDate : null,
         edited: true,
       });
       setTaskState(updatedTask);
@@ -120,13 +122,13 @@ const TaskDetails: React.FC<{
   };
   const handleStatusChange = async (
     newStatus: Task["status"],
-    dueDate?: string
+    dueDate?: string | null
   ) => {
     try {
       let updatedTask = {
         ...taskState,
         status: newStatus,
-        ...(dueDate && { dueDate }),
+        ...(dueDate !== undefined && { dueDate }),
       };
 
       if (
@@ -145,13 +147,14 @@ const TaskDetails: React.FC<{
       const taskRef = doc(db, "tasks", task.id);
       await updateDoc(taskRef, {
         status: updatedTask.status,
-        ...(dueDate && { dueDate }),
+        ...(dueDate !== undefined && { dueDate }),
       });
 
       setTaskState(updatedTask);
       if (onUpdateTask) onUpdateTask(updatedTask);
       setError(null);
-      if (newStatus === "To Do" && dueDate) setShowRestartConfirm(false);
+      if (newStatus === "To Do" && dueDate !== undefined)
+        setShowRestartConfirm(false);
       onClose();
     } catch (err: any) {
       setError(t("failed_to_update_status") + err.message);
@@ -205,13 +208,29 @@ const TaskDetails: React.FC<{
               className="w-full p-2 border rounded text-gray-700"
               rows={4}
             />
-            <input
-              type="date"
-              value={editedDueDate}
-              onChange={(e) => setEditedDueDate(e.target.value)}
-              className="w-full p-2 mb-2 border rounded text-gray-700"
-              min={new Date().toISOString().split("T")[0]}
-            />
+            <div className="mt-3 flex items-center">
+              <input
+                type="checkbox"
+                checked={hasDueDate}
+                onChange={(e) => {
+                  setHasDueDate(e.target.checked);
+                  if (!e.target.checked) {
+                    setEditedDueDate("");
+                  }
+                }}
+                className="mr-2"
+              />
+              <label className="text-gray-700">{t("set_due_date")}</label>
+            </div>
+            {hasDueDate && (
+              <input
+                type="date"
+                value={editedDueDate}
+                onChange={(e) => setEditedDueDate(e.target.value)}
+                className="w-full p-2 mb-2 border rounded text-gray-700"
+                min={new Date().toISOString().split("T")[0]}
+              />
+            )}
           </>
         ) : (
           <>
@@ -268,11 +287,13 @@ const TaskDetails: React.FC<{
               </p>
               <p>
                 <span className="font-semibold">{t("due")}</span>{" "}
-                {new Date(taskState.dueDate).toLocaleDateString("de-DE", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                })}
+                {taskState.dueDate
+                  ? new Date(taskState.dueDate).toLocaleDateString("de-DE", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    })
+                  : t("no_due_date")}
               </p>
               {taskState.declined && (
                 <div>
@@ -411,6 +432,7 @@ const TaskDetails: React.FC<{
                 <button
                   onClick={handleSaveEdit}
                   className="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 active:bg-blue-700 transition-all duration-200"
+                  disabled={!editedTitle.trim()}
                 >
                   {t("save")}
                 </button>
@@ -514,23 +536,40 @@ const TaskDetails: React.FC<{
               <p className="text-gray-800 mb-4">
                 {t("restart_confirm_message")}
               </p>
-              <input
-                type="date"
-                value={newDueDate}
-                onChange={(e) => setNewDueDate(e.target.value)}
-                className="w-full p-2 mb-4 border rounded text-gray-700"
-                min={new Date().toISOString().split("T")[0]}
-              />
+              <div className="mt-3 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={hasRestartDueDate}
+                  onChange={(e) => {
+                    setHasRestartDueDate(e.target.checked);
+                    if (!e.target.checked) {
+                      setNewDueDate("");
+                    }
+                  }}
+                  className="mr-2"
+                />
+                <label className="text-gray-700">{t("set_due_date")}</label>
+              </div>
+              {hasRestartDueDate && (
+                <input
+                  type="date"
+                  value={newDueDate}
+                  onChange={(e) => setNewDueDate(e.target.value)}
+                  className="w-full p-2 mb-4 border rounded text-gray-700"
+                  min={new Date().toISOString().split("T")[0]}
+                />
+              )}
               <div className="flex space-x-2">
                 <button
                   onClick={() => {
-                    if (newDueDate) {
-                      handleStatusChange("To Do", newDueDate);
-                    } else {
-                      setError(t("please_select_due_date"));
-                    }
+                    handleStatusChange(
+                      "To Do",
+                      hasRestartDueDate ? newDueDate : null
+                    );
+                    setShowRestartConfirm(false);
+                    setNewDueDate("");
                   }}
-                  disabled={!newDueDate}
+                  disabled={hasRestartDueDate && !newDueDate}
                   className="flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 active:bg-green-700 transition-all duration-200 disabled:bg-gray-300"
                 >
                   {t("confirm")}
