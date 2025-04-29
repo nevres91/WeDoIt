@@ -5,6 +5,7 @@ export interface Tab {
   id: TabId;
   label: string | JSX.Element;
   color?: string;
+  fullLabel?: string;
 }
 export interface TabContent {
   [key: string]: JSX.Element;
@@ -15,11 +16,13 @@ export function TabsComponent({
   tabContent,
   defaultTab,
   onTabChange,
+  isSmallScreen,
 }: {
   tabs: Tab[];
   tabContent: TabContent;
   defaultTab: TabId;
   onTabChange?: (tabId: string) => void;
+  isSmallScreen?: boolean;
 }) {
   const [activeTab, setActiveTab] = useState<TabId>(defaultTab);
 
@@ -47,7 +50,14 @@ export function TabsComponent({
             }`}
             onClick={() => handleTabClick(tab.id)}
           >
-            {tab.label}
+            {isSmallScreen && activeTab === tab.id && tab.fullLabel ? (
+              <>
+                {tab.label} {/* Icon */}
+                <span>{tab.fullLabel}</span> {/* Label */}
+              </>
+            ) : (
+              tab.label /* Default rendering (icon on mobile, icon+label on desktop) */
+            )}
           </button>
         ))}
       </div>

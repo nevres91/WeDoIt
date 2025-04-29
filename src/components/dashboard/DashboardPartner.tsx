@@ -61,6 +61,7 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
           )}
         </>
       ),
+      fullLabel: t("to_do"),
       color: "red-300",
     },
     {
@@ -79,6 +80,7 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
           )}
         </>
       ),
+      fullLabel: t("in_progress"),
       color: "yellow-200",
     },
     {
@@ -97,6 +99,7 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
           )}
         </>
       ),
+      fullLabel: t("pending_approvals"),
       color: "yellow-500",
     },
     {
@@ -114,6 +117,7 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
           )}
         </>
       ),
+      fullLabel: t("done"),
       color: "green-200",
     },
   ];
@@ -266,6 +270,7 @@ const DashboardPartner: React.FC<DashboardPartnerProps> = ({
           tabContent={tabsContent}
           defaultTab="todo"
           onTabChange={handleTabChange}
+          isSmallScreen={isSmallScreen}
         />
       </div>
       {selectedTask && (
