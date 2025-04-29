@@ -7,15 +7,21 @@ import {
   doc,
   deleteDoc,
   updateDoc,
+  getDoc,
 } from "firebase/firestore";
 import { Task } from "../types";
 import { db } from "../services/firebase";
+import { useAuth } from "../context/AuthContext";
+import { sendNotification } from "../utils/sendNotification";
+import { useTranslation } from "react-i18next";
 
 export const useTasks = (userId?: string | null) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+  const { t } = useTranslation();
 
   // -------------------------------FETCH TASKS-------------------------------
   useEffect(() => {
@@ -61,18 +67,61 @@ export const useTasks = (userId?: string | null) => {
   };
 
   // -------------------------------DELETE TASK-------------------------------
+  const { user, userData } = useAuth();
   const handleDelete = async (taskId: string) => {
     try {
       if (!taskId) {
         throw new Error("Task ID is missing");
       }
+
+      // Get task data to check creator and status
       const taskRef = doc(db, "tasks", taskId);
+      const taskSnap = await getDoc(taskRef);
+
+      if (!taskSnap.exists()) {
+        throw new Error("Task not found");
+      }
+
+      const taskData = taskSnap.data();
+
+      // Delete the task
       await deleteDoc(taskRef);
+
+      // Update local state
       setTasks(tasks.filter((t) => t.id !== taskId));
       if (selectedTask?.id === taskId) {
         setSelectedTask(null);
       }
       setError(null);
+
+      // Send notification to partner if they created the task and it's in todo/inprogress
+      console.log(taskData);
+      if (
+        taskData.creatorId !== user?.uid && // Not the current user
+        ["To Do", "In Progress"].includes(taskData.status) &&
+        taskData.creatorId // Ensure there's a creator
+      ) {
+        console.log("conditions met");
+        const message =
+          userData.role === "wife"
+            ? t("task_deleted_notification_female", {
+                title: taskData.title,
+                deleterName: userData.firstName,
+              })
+            : t("task_deleted_notification_male", {
+                title: taskData.title,
+                deleterName: userData.firstName,
+              });
+        await sendNotification(
+          taskData.creatorId, // Send to task creator
+          message,
+          "task_deleted", // New notification type
+          taskId
+        );
+        console.log("taskdata", taskData);
+        console.log("title", taskData.title);
+        console.log("deleter name", userData.firstName);
+      }
     } catch (err: any) {
       setError("Failed to delete task: " + err.message);
       console.error("Delete error:", err);

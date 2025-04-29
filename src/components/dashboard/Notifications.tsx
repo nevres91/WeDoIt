@@ -34,6 +34,9 @@ export const Notifications = () => {
   const [otherNotifications, setOtherNotifications] = useState<Notification[]>(
     []
   );
+  const [taskDeletionNotification, setTaskDeletionNotification] = useState<
+    Notification[]
+  >([]);
   const [error, setError] = useState<string | null>(null);
   const [deletePromptId, setDeletePromptId] = useState<string | null>(null);
 
@@ -64,7 +67,7 @@ export const Notifications = () => {
       }
     );
 
-    // Query 2: Other notifications (recipient == user?.uid)
+    // Query 2: invitation notifications (recipient == user?.uid)
     const otherQuery = query(
       collection(db, "notifications"),
       where("recipient", "==", user?.uid),
@@ -84,10 +87,31 @@ export const Notifications = () => {
         setError(t("failed_to_fetch_notifications") + err.message);
       }
     );
+    // Query 3: task deletion notifications (recipient == user?.uid)
+    const taskDeletion = query(
+      collection(db, "notifications"),
+      where("recipient", "==", user?.uid),
+      where("type", "==", "task_deleted")
+    );
+
+    const taskDeletionUnsubscribe = onSnapshot(
+      taskDeletion,
+      (snapshot) => {
+        const fetchedNotifications = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Notification[];
+        setTaskDeletionNotification(fetchedNotifications);
+      },
+      (err) => {
+        setError(t("failed_to_fetch_notifications") + err.message);
+      }
+    );
 
     return () => {
       taskUnsubscribe();
       otherUnsubscribe();
+      taskDeletionUnsubscribe();
     };
   }, [user?.uid, userData?.partnerId, t]);
 
@@ -136,7 +160,11 @@ export const Notifications = () => {
   };
 
   // Combine and sort notifications by createdAt (newest first)
-  const allNotifications = [...taskNotifications, ...otherNotifications].sort(
+  const allNotifications = [
+    ...taskNotifications,
+    ...otherNotifications,
+    ...taskDeletionNotification,
+  ].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 

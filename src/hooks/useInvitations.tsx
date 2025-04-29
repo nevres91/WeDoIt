@@ -93,9 +93,14 @@ export const useInvitations = () => {
     if (!user?.uid) return;
     try {
       await rejectInvitation(user.uid, inviterId);
-      const message = t("invitation_rejected_message", {
-        name: userData.firstName,
-      });
+      const message =
+        userData.role === "wife"
+          ? t("invitation_rejected_message_female", {
+              name: userData.firstName,
+            })
+          : t("invitation_rejected_message_male", {
+              name: userData.firstName,
+            });
       await sendNotification(inviterId, message, "invitation");
       console.log("inviter id", inviterId);
       setInvitations((prevInvitations) =>

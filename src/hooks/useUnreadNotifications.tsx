@@ -22,7 +22,7 @@ const useUnreadNotifications = () => {
       collection(db, "notifications"),
       where("recipient", "==", user.uid),
       where("read", "==", false),
-      where("type", "==", "invitation")
+      where("type", "in", ["invitation", "task_deleted"])
     );
 
     const userUnsubscribe = onSnapshot(

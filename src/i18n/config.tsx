@@ -208,8 +208,10 @@ i18n
           image_too_large:
             "Image is too large (max 750 KB). Try a smaller image.",
           error_leaving_partner: "Failed to leave partner. Please try again.",
-          invitation_rejected_message:
-            "Your invitation to {{name}} was rejected.",
+          invitation_rejected_message_female:
+            "{{name}} has rejected your invitation.",
+          invitation_rejected_message_male:
+            "{{name}} has rejected your invitation.",
           invitation: "Invitation",
 
           // INITIAL TAsk
@@ -219,6 +221,11 @@ i18n
             'Familiarize yourself with the "Task Board" and add tasks for yourself or your partner by selecting "Add New Task". The bottom of each task card displays the task\'s priority (e.g., low), the creator (you or your partner), the completion time frame (e.g., 6 days), and whether the task has been edited (Edited).',
           initial_task_2_description:
             'By selecting the "Link Partner" option in the left sidebar, you can connect with your spouse by entering their email address and awaiting their acceptance of the invitation. Upon successful linking, additional options will become available in the sidebar menu.',
+          task_deleted_notification_female:
+            "{{deleterName}} has deleted a task {{title}}.",
+          task_deleted_notification_male:
+            "{{deleterName}} has deleted a task {{title}}.",
+
           set_due_date: "Time limit",
           no_due_date: "No Time Limit.",
           partners_profile: "Partner's Profile",
@@ -396,7 +403,9 @@ i18n
           image_too_large:
             "Fotografija je prevelika, (max 750kb), koristite manju fotografiju.",
           error_leaving_partner: "Failed to leave partner. Please try again.",
-          invitation_rejected_message: "{{name}} je odbio tvoj zahtjev.",
+          invitation_rejected_message_female:
+            "{{name}} je odbila tvoj zahtjev.",
+          invitation_rejected_message_male: "{{name}} je odbio tvoj zahtjev.",
           invitation: "Zahtjev",
 
           // INITIAL TAsk
@@ -406,6 +415,10 @@ i18n
             "Upoznaj svoju Tablu Zadataka i dodaj nekoliko zadataka za svog partnera ili za sebe klikom na Dodaj Novi Zadatak. U donjem dijelu kartice ovog zadatka prikazan je prioritet samog zadatka (nizak), ko je kreirao zadatak, ti ili tvoj partner (od tebe), vremenski period izvršenja zadatka (6 dana), i eventualno ako je zadatak uređen (uređeno).",
           initial_task_2_description:
             'Odabirom opcije "Poveži partnera" u lijevoj bočnoj traci, možete se povezati sa svojim supružnikom unosom njihove email adrese i čekanjem da prihvate vaš poziv. Nakon uspješnog povezivanja, dodatne opcije će postati dostupne u meniju bočne trake.',
+          task_deleted_notification_female:
+            "{{deleterName}} je izbrisala zadatak {{title}}.",
+          task_deleted_notification_male:
+            "{{deleterName}} je izbrisao zadatak {{title}}.",
 
           set_due_date: "Vremenski limit",
           no_due_date: "Bez ograničenja.",
