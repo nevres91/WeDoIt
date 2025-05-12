@@ -7,6 +7,7 @@ import { AuthProvider } from "./context/AuthContext";
 import LogIn from "./pages/LogIn";
 import Partner from "./components/Partner";
 import { ErrorProvider } from "./context/ErrorContext";
+import VerifyEmail from "./pages/VerifyEmail";
 
 export default function AppRouter() {
   return (
@@ -18,6 +19,7 @@ export default function AppRouter() {
             {/* <Route path="/" element={<TestingPage />} /> */}
             <Route path="/signup" element={<SignUp />} />
             <Route path="/login" element={<LogIn />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
             <Route element={<PrivateRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/partner" element={<Partner />} />

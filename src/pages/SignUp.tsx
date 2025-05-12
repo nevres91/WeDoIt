@@ -4,6 +4,7 @@ import { useState } from "react";
 import { auth, db } from "../services/firebase";
 import {
   createUserWithEmailAndPassword,
+  sendEmailVerification,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
@@ -52,6 +53,10 @@ const SignUp = () => {
         .required(t("required")),
       password: Yup.string()
         .min(6, t("password_min_length"))
+        .matches(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/,
+          t("password_requirements")
+        )
         .required(t("required")),
       confirmPassword: Yup.string()
         .oneOf([Yup.ref("password")], t("passwords_must_match"))
@@ -68,6 +73,10 @@ const SignUp = () => {
         console.log("User created:", userCredential.user);
         const user = userCredential.user;
 
+        // Send email verification
+        await sendEmailVerification(user);
+        console.log("Verification email sent");
+
         // Write data to firestore database
         await setDoc(doc(db, "users", user.uid), {
           firstName: values.firstName,
@@ -78,6 +87,7 @@ const SignUp = () => {
           invitations: [],
           language: values.language,
           createdAt: new Date().toISOString(),
+          emailVerified: false,
         });
         // Add initial tasks to Firestore 'tasks' collection
         const tasksCollection = collection(db, "tasks");
@@ -117,7 +127,7 @@ const SignUp = () => {
         console.log("User loged in");
 
         // Redirect to dashboard or another page (optional)
-        navigate("/dashboard");
+        navigate("/verify-email");
         // history.push("/dashboard"); // Uncomment if using React Router
 
         setError(null); // Clear any previous error

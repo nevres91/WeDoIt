@@ -213,6 +213,22 @@ i18n
           invitation_rejected_message_male:
             "{{name}} has rejected your invitation.",
           invitation: "Invitation",
+          password_requirements:
+            "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
+          verify_email_title: "Verify Your Email",
+          verify_email_message:
+            "Please check your email and click the verification link to continue.",
+          resend_verification_email: "Resend Verification Email",
+          check_verification: "Check Verification Status",
+          check_spam_folder:
+            "Didn't receive the email? Check your spam or junk folder.",
+          email_not_verified:
+            "Your email is not yet verified. Please check your inbox.",
+          sending: "Sending...",
+          checking: "Checking...",
+          resend_email_error:
+            "Failed to resend verification email. Please try again.",
+          verification_email_resent: "Verification email resent successfully!",
 
           // INITIAL TAsk
           initial_task_1_title: "Welcome to weDoIt!",
@@ -407,7 +423,20 @@ i18n
             "{{name}} je odbila tvoj zahtjev.",
           invitation_rejected_message_male: "{{name}} je odbio tvoj zahtjev.",
           invitation: "Zahtjev",
-
+          password_requirements:
+            "Password mora da sadrži najmanje jedno veliko slovo, jedno malo slovo, jedan broj i jedan znak.",
+          verify_email_title: "Potvrdite E-mail adresu",
+          verify_email_message:
+            "Molimo provjerite vaš e-mail i kliknite na link za potvrđivanje da bi nastavili.",
+          resend_verification_email: "Ponovo pošalji e-mail za potvrdu",
+          check_verification: "Provjeri status potvrde",
+          check_spam_folder: "Niste dobili e-mail? Provjerite neželjenu poštu.",
+          email_not_verified:
+            "Vaš e-mail nije potvrđen, provjerite vašu poštu.",
+          sending: "Slanje...",
+          checking: "Provjera...",
+          resend_email_error: "Neuspješno slanje, molimo pokušajte ponovo.",
+          verification_email_resent: "E-mail uspješno poslan.",
           // INITIAL TAsk
           initial_task_1_title: "Dobro došli.",
           initial_task_2_title: "Poveži se sa partnerom.",
