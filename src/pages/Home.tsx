@@ -7,6 +7,7 @@ import LanguageSwitcher from "../utils/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "../hooks/useLanguage";
 import { useError } from "../context/ErrorContext";
+import LoginPageImage from "../assets/LoginPage.jpg";
 
 const Home = () => {
   const [register, setRegister] = useState<boolean>(false);
@@ -27,7 +28,7 @@ const Home = () => {
       <div //BG image
         className="px-2 min-w-[380px]"
         style={{
-          backgroundImage: `url('src/assets/LoginPage.jpg')`,
+          backgroundImage: `url(${LoginPageImage})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           minHeight: "100vh",
