@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { auth } from "../services/firebase";
-import { sendEmailVerification, signOut, User } from "firebase/auth";
+import { sendEmailVerification, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 

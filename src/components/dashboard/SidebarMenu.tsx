@@ -10,7 +10,7 @@ export const SidebarMenu = ({
   setSidebar: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   const { setActiveTab } = useDashboard();
-  const { userData, user } = useAuth();
+  const { userData } = useAuth();
   const { t } = useTranslation();
   const buttonClassses =
     "mb-1 bg-calm-n-cool-1 w-full rounded-md p-1 text-calm-n-cool-6 hover:text-calm-n-cool-1 hover:bg-calm-n-cool-4 hover:cursor-pointer transition-all duration-100 ";
