@@ -147,7 +147,7 @@ export const UserProfile = ({
               backgroundImage: photoURL
                 ? `url(${photoURL})`
                 : `url(${
-                    userData.role === "husband" ? malePicture : femalePicture
+                    userData?.role === "husband" ? malePicture : femalePicture
                   })`,
             }}
           />
