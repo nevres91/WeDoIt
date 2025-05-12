@@ -5,7 +5,8 @@ import { useTasks } from "../../hooks/useTasks";
 import { auth } from "../../services/firebase";
 import { useTranslation } from "react-i18next";
 import imageCompression from "browser-image-compression";
-
+import femalePicture from "../../assets/profile_picture_f.png";
+import malePicture from "../../assets/profile_picture_m.png";
 export const UserProfile = ({
   setSidebar,
 }: {
@@ -143,7 +144,11 @@ export const UserProfile = ({
               photoURL ? "" : "bg-profile bg-contain"
             }`}
             style={{
-              backgroundImage: photoURL ? `url(${photoURL})` : undefined,
+              backgroundImage: photoURL
+                ? `url(${photoURL})`
+                : `url(${
+                    userData.role === "husband" ? malePicture : femalePicture
+                  })`,
             }}
           />
           <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">

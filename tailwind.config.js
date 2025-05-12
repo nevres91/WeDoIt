@@ -23,16 +23,11 @@ export default {
         "calm-n-cool-6": "#013440",
       },
       backgroundImage: {
-        couple: "url('/src/assets/couple.png')",
-        husband: "url('/src/assets/husband.png')",
-        wife: "url('/src/assets/wife.png')",
-        dashboard: `url('src/assets/dashboard_2.jpg')`,
         woman: `url('src/assets/woman_small.png')`,
         man: `url('src/assets/man.png')`,
         profile: `url('src/assets/profile_picture.jpg')`,
         findPartner: `url('src/assets/find_partner_2.png')`,
         cupid: `url('src/assets/cupid_2.png')`,
-        edit_profile: `url('src/assets/edit_profile.svg')`,
       },
       fontFamily: {
         montserrat: ["montserrat", "sans-serif"],

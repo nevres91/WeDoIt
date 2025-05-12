@@ -11,6 +11,8 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import { db } from "../../services/firebase";
 import { useTranslation } from "react-i18next";
+import findPartner from "../../assets/find_partner_2.png";
+import cupid from "../../assets/cupid_2.png";
 
 export const DashboardFindPartner = () => {
   const { user } = useAuth();
@@ -115,10 +117,22 @@ export const DashboardFindPartner = () => {
   return (
     <>
       <div //Container
-        className="w-full h-[100%] absolute top-0 left-0 flex justify-center bg-findPartner bg-no-repeat bg-cover bg-center"
+        className={`w-full h-[100%] absolute top-0 left-0 flex justify-center bg-no-repeat bg-cover bg-center`}
+        style={{
+          backgroundImage: `url(${findPartner})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
       >
         <div // Background overlay
-          className="absolute top-0 left-0 w-full h-full bg-cupid bg-no-repeat bg-contain bg-center opacity-40"
+          className="absolute top-0 left-0 w-full h-full bg-center opacity-40"
+          style={{
+            backgroundImage: `url(${cupid})`,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "contain",
+            backgroundPosition: "center",
+          }}
         />
         <div // Form
           className={`w-[500px] min-h-[220px] min-w-[280px] self-start ml-2 mr-2 p-6 mt-[30vh] landscape:mt-[20vh] bg-calm-n-cool-2 backdrop-blur-[2px] bg-opacity-15 rounded-md flex flex-col  ${

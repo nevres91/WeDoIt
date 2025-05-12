@@ -6,6 +6,8 @@ import { SidebarMenu } from "./SidebarMenu";
 import { UserProfile } from "./UserProfile";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "../../hooks/useLanguage";
+import manImage from "../../assets/man.png";
+import womanImage from "../../assets/woman_small.png";
 interface DashbarLeftProps {
   logout: () => void;
   role: string;
@@ -53,6 +55,12 @@ const DashbarLeft: React.FC<DashbarLeftProps> = ({
           className={`w-full h-full  opacity-5 ${
             role === "husband" ? "bg-man scale-x-[-1]" : "bg-woman"
           } bg-contain bg-no-repeat bg-center `}
+          style={{
+            backgroundImage: `url(${
+              role === "husband" ? manImage : womanImage
+            })`,
+            transform: role === "husband" ? "scaleX(-1)" : undefined,
+          }}
         />
         <div className="bg-calm-n-cool-6 w-full flex flex-col mt-auto pt-8 pb-2 rounded-b-md  ">
           <button //Leave Partner Button
