@@ -1,7 +1,7 @@
 import { useDashboard } from "../../context/DashboardContext";
 import { PartnerData, Task, UserData } from "../../types";
 import { DashboardFindPartner } from "./DashboardFindPartner";
-import Navbar from "./Navbar";
+// import Navbar from "./Navbar";
 import { ToDo } from "./ToDo";
 import { YourTasks } from "./YourTasks";
 import { Calendar } from "./Calendar";
@@ -23,9 +23,7 @@ interface DashboardMiddleProps {
   loading: boolean;
 }
 
-export const DashboardMiddle: React.FC<DashboardMiddleProps> = ({
-  visible,
-}) => {
+export const DashboardMiddle: React.FC<DashboardMiddleProps> = () => {
   const { activeTab } = useDashboard();
   const { tasks, setTasks } = useTasks(auth.currentUser?.uid);
 

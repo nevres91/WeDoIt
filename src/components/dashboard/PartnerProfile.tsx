@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { getAuth } from "firebase/auth";
 import { usePartnerData } from "../../hooks/usePartnerData";
 import { useTasks } from "../../hooks/useTasks";
@@ -13,7 +13,7 @@ const PartnerProfile: React.FC = () => {
     pendingApprovalTasks,
     loading: tasksLoading,
   } = useTasks(partnerData?.id);
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
 
   // Combine and sort tasks for recent tasks display
   const allTasks = [
@@ -26,9 +26,6 @@ const PartnerProfile: React.FC = () => {
   );
 
   const { t } = useTranslation();
-  useEffect(() => {
-    console.log(partnerData);
-  }, [partnerData]);
 
   const completedTasks = doneTasks.length;
   const activeTasks = toDoTasks.length + inProgressTasks.length;
@@ -52,13 +49,13 @@ const PartnerProfile: React.FC = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="max-w-3xl mx-auto p-6">
-        <p className="text-red-500 text-center">{error}</p>
-      </div>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <div className="max-w-3xl mx-auto p-6">
+  //       <p className="text-red-500 text-center">{error}</p>
+  //     </div>
+  //   );
+  // }
 
   const auth = getAuth();
   const currentUser = auth.currentUser;
