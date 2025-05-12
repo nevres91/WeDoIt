@@ -53,11 +53,11 @@ const DashbarLeft: React.FC<DashbarLeftProps> = ({
         <PartnershipInvitations userData={userData} />
         <div
           className={`w-full h-full  opacity-5 ${
-            role === "husband" ? "bg-man scale-x-[-1]" : "bg-woman"
+            userData.role === "husband" ? "bg-man scale-x-[-1]" : "bg-woman"
           } bg-contain bg-no-repeat bg-center `}
           style={{
             backgroundImage: `url(${
-              role === "husband" ? manImage : womanImage
+              userData.role === "husband" ? manImage : womanImage
             })`,
             transform: role === "husband" ? "scaleX(-1)" : undefined,
           }}
