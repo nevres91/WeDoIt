@@ -11,7 +11,7 @@ import {
   updateDoc,
   deleteDoc,
 } from "firebase/firestore";
-import "../../Index.css";
+import "../../index.css";
 
 interface Notification {
   id: string;
