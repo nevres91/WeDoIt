@@ -46,6 +46,7 @@ const TaskCard: React.FC<{
   ) => {
     try {
       if (!taskState.partnerId) {
+        console.log("task state: ", taskState);
         throw new Error("Partner ID is missing; cannot send notification.");
       }
 

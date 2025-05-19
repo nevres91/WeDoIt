@@ -10,9 +10,9 @@ const PrivateRoute = () => {
   }
 
   // If user is logged in but email is not verified, redirect to verify-email page
-  if (!user.emailVerified) {
-    return <Navigate to="/verify-email" />;
-  }
+  // if (!user.emailVerified) {
+  //   return <Navigate to="/verify-email" />;
+  // }
 
   // If user is logged in and email is verified, allow access to the protected route
   return <Outlet />;
