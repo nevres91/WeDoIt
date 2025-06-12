@@ -107,7 +107,13 @@ export const createTask = async (
         };
       }
 
-      const task = { ...taskBase, userId: partnerId };
+      const task = {
+        ...taskBase,
+        userId: partnerId,
+        partnerId: partnerId,
+        creatorId: currentUser.uid,
+        creator: "partner" as const,
+      };
       const docRef = await addDoc(tasksCollection, task);
       onAddTask({ ...task, id: docRef.id });
       return { success: true, message: "Task created for your partner!" };
